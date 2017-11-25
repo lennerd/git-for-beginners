@@ -115,7 +115,7 @@ class Spring {
     this.precision = options.precision;
   }
 
-  static create(value, options) {
+  static create(value, options = null) {
     if (value instanceof Spring) {
       return value;
     }
@@ -128,15 +128,15 @@ class Spring {
   }
 
   update(value, velocity) {
-    const spring = -this.stiffness * (this.value - value);
+    const spring = -this.stiffness * (value - this.value);
     const damper = -this.damping * velocity;
     const a = spring + damper;
 
     const newVelocity = velocity + a * SECOND_PER_FRAME;
-    const newValue = this.value + newVelocity * SECOND_PER_FRAME;
+    const newValue = value + newVelocity * SECOND_PER_FRAME;
 
-    if (Math.abs(newVelocity) < this.precision && Math.abs(newValue - value) < this.precision) {
-      returnTuple[0] = value;
+    if (Math.abs(newVelocity) < this.precision && Math.abs(newValue - this.value) < this.precision) {
+      returnTuple[0] = this.value;
       returnTuple[1] = 0;
 
       return returnTuple;
@@ -169,7 +169,7 @@ class Animate {
         return false;
       }
 
-      if (this._target[key] != null && this._target[key].value !== this._object[key]) {
+      if (this._target[key] != null && this._target[key] !== this._object[key]) {
         return false;
       }
     }
