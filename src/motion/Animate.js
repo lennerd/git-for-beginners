@@ -1,13 +1,18 @@
 import Spring from './Spring';
-import { SECOND_PER_FRAME } from './constants';
+import { SECOND_PER_FRAME, MS_PER_FRAME } from './constants';
+
+let nextID = 1;
 
 export default class Animate {
   _target = {};
   _velocity = {};
+  _prevTimestamp = 0;
+  _accumulatedTime = 0;
 
   constructor(object, group) {
     this._object = object;
     this._group = group;
+    this._id = nextID++;
   }
 
   _shouldStopAnimation() {
@@ -26,6 +31,9 @@ export default class Animate {
 
   start() {
     this._group.add(this);
+
+    this._prevTimestamp = performance.now();
+    this._accumulatedTime = 0;
 
     return this;
   }
@@ -60,12 +68,20 @@ export default class Animate {
     return this;
   }
 
-  update(accumulatedTime, framesToCatchUp, currentFrameCompletion) {
+  tick(currentTimestamp) {
     if (this._shouldStopAnimation()) {
       this.stop();
 
       return true;
     }
+
+    const timeDelta = currentTimestamp - this._prevTimestamp;
+
+    this._prevTimestamp = currentTimestamp;
+    this._accumulatedTime = this._accumulatedTime + timeDelta;
+
+    const framesToCatchUp = Math.floor(this._accumulatedTime / MS_PER_FRAME);
+    const currentFrameCompletion = (this._accumulatedTime - framesToCatchUp * MS_PER_FRAME) / MS_PER_FRAME;
 
     for (let key of Object.keys(this._target)) {
       const target = this._target[key];
@@ -83,6 +99,6 @@ export default class Animate {
       this._velocity[key] = lastVelocity + (newVelocity - lastVelocity) * currentFrameCompletion;
     }
 
-    return false;
+    this._accumulatedTime -= framesToCatchUp * MS_PER_FRAME;
   }
 }
