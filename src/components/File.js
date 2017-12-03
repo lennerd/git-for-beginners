@@ -2,8 +2,14 @@ import React, { PureComponent } from 'react';
 
 import FileObject from '../objects/File';
 import Object3D from './Object3D';
+import { place } from '../constants';
 
 class File extends PureComponent {
+  static defaultProps = {
+    column: 0,
+    row: 0,
+  };
+
   constructor(props) {
     super();
 
@@ -11,10 +17,10 @@ class File extends PureComponent {
   }
 
   render() {
-    const { level } = this.props;
+    const { level, column, row } = this.props;
 
     if (level != null) {
-      this.file.position.y = 0.2 * level;
+      place(this.file, column, row, level);
     }
 
     return (

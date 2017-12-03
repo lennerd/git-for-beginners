@@ -36,8 +36,8 @@ class Scene extends PureComponent {
   handleResize = () => {
     const rect = this.container.getBoundingClientRect();
 
-    this.camera.near = 1;
-    this.camera.far = 1000;
+    this.camera.near = 0.5;
+    this.camera.far = 500;
     this.camera.left = rect.width / -FRUSTRUM;
     this.camera.right = rect.width / FRUSTRUM;
     this.camera.top = rect.height / FRUSTRUM;
@@ -58,6 +58,7 @@ class Scene extends PureComponent {
     });
 
     this.renderer.shadowMap.enabled = true;
+    //this.renderer.sortObjects = false;
 
     ticker.addEventListener('tick', this.handleTick);
     window.addEventListener('resize', this.handleResize);
@@ -87,7 +88,7 @@ class Scene extends PureComponent {
     const { className } = this.props;
 
     // Update camera
-    this.camera.position.set(5, 5, 5);
+    this.camera.position.set(-5, 5, -5);
     this.camera.lookAt(this.scene.position);
     this.camera.updateProjectionMatrix();
 
@@ -96,6 +97,10 @@ class Scene extends PureComponent {
         <Canvas innerRef={(ref) => { this.canvas = ref; }} />
         <World />
         <Floor>
+          <Commit commit={[1, 2, 3, 4]} column={1} row={3} />
+          <Commit commit={[1, 2, 3, 4]} column={1} row={2} />
+          <Commit commit={[1, 2, 3, 4]} column={1} row={1} />
+          <Commit commit={[1, 2, 3, 4, 5, 6]} column={1} />
           <Commit commit={[1, 2, 3, 4, 5, 6, 7, 8]} />
         </Floor>
       </div>

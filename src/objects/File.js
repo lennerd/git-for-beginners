@@ -11,15 +11,15 @@ class File extends THREE.Mesh {
 
     const shadowMash = new THREE.Mesh(
       new THREE.BoxBufferGeometry(1, 0.2, FILE_SIZE_RATIO),
-      new THREE.ShadowMaterial(),
+      new THREE.ShadowMaterial({ depthWrite: false }),
     );
 
     fileMesh.position.y = 0.05;
     shadowMash.castShadow = true;
     shadowMash.position.y = 0.1;
 
-    this.add(fileMesh);
     this.add(shadowMash);
+    this.add(fileMesh);
   }
 }
 
