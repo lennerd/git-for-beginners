@@ -1,8 +1,7 @@
 import { observable, action } from 'mobx';
+import uuid from 'uuid/v4';
 
 import Position from './Position';
-
-let nextId = 1;
 
 class SceneObject {
   @observable parent;
@@ -10,7 +9,7 @@ class SceneObject {
   @observable children = [];
 
   constructor(children) {
-    this.id = nextId++;
+    this.id = uuid();
 
     if (Array.isArray(children)) {
       children.forEach((child) => {
