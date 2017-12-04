@@ -1,10 +1,9 @@
-import { observable } from 'mobx';
+import FileStatus, { STATUS_ADDED } from './FileStatus';
 
 class File {
-  @observable name;
-
   constructor(name) {
     this.name = name;
+    this.status = new FileStatus(this, STATUS_ADDED);
   }
 }
 

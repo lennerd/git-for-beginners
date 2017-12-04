@@ -6,7 +6,10 @@ import 'three/examples/js/controls/OrbitControls';
 import { ThreePropTypes } from './Object3D';
 import World from './World';
 import Floor from './Floor';
-import Commit from './Commit';
+//import Commit from './Commit';
+import File from './File';
+import FileModel from '../models/File';
+import { STATUS_MODIFIED, STATUS_DELETED } from '../models/FileStatus';
 
 const FRUSTRUM = 200;
 
@@ -92,16 +95,37 @@ class Scene extends PureComponent {
     this.camera.lookAt(this.scene.position);
     this.camera.updateProjectionMatrix();
 
+    const files = Array.apply(null, Array(4)).map((file, index) => {
+      file = new FileModel();
+
+      if (index < 2) {
+        file.status.type = STATUS_MODIFIED;
+        file.status.insertions = Math.round(Math.random() * 10);
+        file.status.deletions = Math.round(Math.random() * 10);
+      } else if (index === 3) {
+        file.status.type = STATUS_DELETED;
+      }
+
+      return (
+        <File
+          key={index}
+          level={index}
+          file={file}
+        />
+      );
+    });
+
     return (
       <div className={className} ref={(ref) => { this.container = ref; }}>
         <Canvas innerRef={(ref) => { this.canvas = ref; }} />
         <World />
         <Floor>
-          <Commit commit={[1, 2, 3, 4]} column={1} row={3} />
+          {/*<Commit commit={[1, 2, 3, 4]} column={1} row={3} />
           <Commit commit={[1, 2, 3, 4]} column={1} row={2} />
           <Commit commit={[1, 2, 3, 4]} column={1} row={1} />
           <Commit commit={[1, 2, 3, 4, 5, 6]} column={1} />
-          <Commit commit={[1, 2, 3, 4, 5, 6, 7, 8]} />
+          <Commit commit={[1, 2, 3, 4, 5, 6, 7, 8]} />*/}
+          {files}
         </Floor>
       </div>
     );
