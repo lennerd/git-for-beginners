@@ -1,15 +1,8 @@
 import React, { PureComponent } from 'react';
 
 import Object3D from './Object3D';
-import File from './File';
-import { place } from '../constants';
 
 class Commit extends PureComponent {
-  static defaultProps = {
-    column: 0,
-    row: 0,
-  };
-
   constructor() {
     super();
 
@@ -17,13 +10,11 @@ class Commit extends PureComponent {
   }
 
   render() {
-    const { commit, column, row } = this.props;
-
-    place(this.object3D, column, row);
+    const { children } = this.props;
 
     return (
       <Object3D object3D={this.object3D}>
-        {commit.map((file, index) => <File key={index} level={index} />)}
+        {children}
       </Object3D>
     )
   }

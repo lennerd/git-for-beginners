@@ -1,12 +1,12 @@
 import React, { PureComponent } from 'react';
 
-import Scene from './Scene';
+import Visualisation from './Visualisation';
 
 class App extends PureComponent {
   render() {
     return (
       <div>
-        <Scene />
+        <Visualisation />
       </div>
     );
   }
