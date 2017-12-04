@@ -13,7 +13,7 @@ const scene = new Scene([
   commit,
 ]);
 
-setInterval(() => {
+setTimeout(() => {
   commit.add(new File());
 }, 2000);
 
