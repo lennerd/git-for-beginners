@@ -94,26 +94,6 @@ class Visualisation extends PureComponent {
     this.camera.lookAt(this.scene.position);
     this.camera.updateProjectionMatrix();
 
-    /*const files = Array.apply(null, Array(4)).map((file, index) => {
-      file = new FileModel();
-
-      if (index < 2) {
-        file.status.type = STATUS_MODIFIED;
-        file.status.insertions = Math.round(Math.random() * 10);
-        file.status.deletions = Math.round(Math.random() * 10);
-      } else if (index === 3) {
-        file.status.type = STATUS_DELETED;
-      }
-
-      return (
-        <File
-          key={index}
-          level={index}
-          file={file}
-        />
-      );
-    });*/
-
     return (
       <div className={className} ref={(ref) => { this.container = ref; }}>
         <Canvas innerRef={(ref) => { this.canvas = ref; }} />

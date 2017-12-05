@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import Transition from 'react-transition-group/Transition';
-import { TimelineLite, TweenLite, Power2 } from 'gsap';
+import { TimelineLite, TweenLite } from 'gsap';
 
 import FileObject from '../objects/File';
 import SceneObject from './SceneObject';
@@ -14,44 +14,15 @@ class File extends PureComponent {
     this.object3D = new FileObject(file.status);
   }
 
-  componentDidMount() {
+  handleEntering = () => {
     const { file } = this.props;
+    const { previousWorldPosition } = file;
 
-    if (file.previousWorldPosition == null) {
-      file.previousWorldPosition = this.object3D.getWorldPosition();
-      console.log('mount', file.id, file.previousWorldPosition);
-    }
-  }
-
-  componentDidUpdate(prevProps) {
-    const { level, file } = this.props;
-
-    if (level === prevProps.level) {
-      return;
-    }
-
-    const { x, y, z } = file.previousWorldPosition;
-    file.previousWorldPosition = this.object3D.getWorldPosition();
-
-    TweenLite.from(this.object3D.position, 0.8, { x, y, z }).delay(0.4);
-  }
-
-  componentWillUnmount() {
-    const { file } = this.props;
-
-    file.previousWorldPosition = this.object3D.getWorldPosition();
-    console.log('unmount', file.id, file.previousWorldPosition);
-  }
-
-  handleEnter = () => {
-    const { file } = this.props;
-    console.log('enter', file.id, file.previousWorldPosition);
-
-    const newWorldPosition = this.object3D.getWorldPosition();
+    const newWorldPosition = file.previousWorldPosition = this.object3D.getWorldPosition();
     const newPosition = this.object3D.position.clone();
 
     const diff = new THREE.Vector3()
-      .subVectors(file.previousWorldPosition, newWorldPosition)
+      .subVectors(previousWorldPosition, newWorldPosition)
       .add(newPosition);
 
     this.object3D.position.copy(diff);
@@ -62,8 +33,8 @@ class File extends PureComponent {
       .to(this.object3D.position, 0.8, { z: newPosition.z, x: newPosition.x }, 0.8);
   }
 
-  handleExit = () => {
-    this.tween = null;
+  handleExit = (...args) => {
+    this.props.file.previousWorldPosition = this.object3D.getWorldPosition();
   }
 
   addEndListener = (node, done) => {
@@ -76,13 +47,29 @@ class File extends PureComponent {
     this.tween = null;
   }
 
+  componentWillUpdate() {
+    this.props.file.previousWorldPosition = this.object3D.getWorldPosition();
+  }
+
+  componentDidUpdate(prevProps) {
+    const { level, file } = this.props;
+
+    if (level === prevProps.level) {
+      return;
+    }
+
+    const { y } = file.previousWorldPosition;
+
+    TweenLite.from(this.object3D.position, 0.8, { y }).delay(0.4);
+  }
+
   render() {
     const { file, level, ...props } = this.props;
 
     return (
       <Transition
         {...props}
-        onEnter={this.handleEnter}
+        onEntering={this.handleEntering}
         onExit={this.handleExit}
         addEndListener={this.addEndListener}
       >

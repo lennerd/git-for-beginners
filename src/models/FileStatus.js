@@ -5,8 +5,8 @@ export const STATUS_DELETED = Symbol('status_deleted');
 export const STATUS_MODIFIED = Symbol('status_modified');
 
 class FileStatus {
-  @observable insertions;
-  @observable deletions;
+  @observable insertions = 0;
+  @observable deletions = 0;
 
   constructor(file, type) {
     this.file = file;
