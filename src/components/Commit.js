@@ -1,21 +1,25 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
+import { observer } from 'mobx-react';
+import TransitionGroup from 'react-transition-group/TransitionGroup';
 
-import Object3D from './Object3D';
+import File from './File';
+import SceneObject from './SceneObject';
 
-class Commit extends PureComponent {
-  constructor() {
-    super();
-
-    this.object3D = new THREE.Object3D();
-  }
-
+@observer
+class Commit extends Component {
   render() {
-    const { children } = this.props;
+    const { commit, ...props } = this.props;
+
+    const files = commit.children.map((file, index) => (
+      <File file={file} key={file.id} level={index} />
+    ));
 
     return (
-      <Object3D object3D={this.object3D}>
-        {children}
-      </Object3D>
+      <SceneObject {...props}>
+        <TransitionGroup>
+          {files}
+        </TransitionGroup>
+      </SceneObject>
     )
   }
 }

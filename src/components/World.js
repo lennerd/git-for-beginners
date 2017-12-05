@@ -11,8 +11,12 @@ class World extends PureComponent {
   }
 
   render() {
+    const { children } = this.props;
+
     return (
-      <Object3D object3D={this.world} />
+      <Object3D object3D={this.world}>
+        {children}
+      </Object3D>
     );
   }
 }

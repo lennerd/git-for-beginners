@@ -2,7 +2,7 @@ import FileStatus, { STATUS_ADDED } from './FileStatus';
 import SceneObject from './SceneObject';
 
 class File extends SceneObject {
-  type = 'file';
+  static type = 'file';
 
   constructor(name) {
     super();

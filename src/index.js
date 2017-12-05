@@ -12,7 +12,10 @@ TweenLite.defaultEase = Power2.easeInOut;
 useStrict(true);
 
 render((
-  <Provider scene={scene}>
+  <Provider
+    scene={scene}
+    ticker={TweenLite.ticker}
+  >
     <App />
   </Provider>
 ), document.getElementById('root'));

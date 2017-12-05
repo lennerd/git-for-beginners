@@ -1,6 +1,6 @@
 import { TweenMax } from 'gsap';
 
-import { place, LEVEL_HEIGHT, COLOR_FILE_DEFAULT, COLOR_ADDED, COLOR_DELETED } from '../constants';
+import { LEVEL_HEIGHT, COLOR_FILE_DEFAULT, COLOR_ADDED, COLOR_DELETED } from '../constants';
 import createChangesTexture from '../helpers/createChangesTexture';
 import createAddTexture from '../helpers/createAddTexture';
 import { STATUS_MODIFIED, STATUS_ADDED, STATUS_DELETED } from '../models/FileStatus';
@@ -76,10 +76,6 @@ class File extends THREE.Mesh {
     this.add(this.shadowMash);
     this.add(this.fileMesh);
     this.add(this.textureMesh);
-  }
-
-  place(column, row, level) {
-    place(this, column, row, level);
   }
 
   appear() {

@@ -2,10 +2,9 @@ import React, { PureComponent } from 'react';
 import { inject } from 'mobx-react';
 import styled from 'styled-components';
 import 'three/examples/js/controls/OrbitControls';
-import { TweenLite } from 'gsap';
 
 import { ThreePropTypes } from './Object3D';
-import SceneObject from './SceneObject';
+import Scene from './Scene';
 //import Commit from './Commit';
 /*import File from './File';
 import FileModel from '../models/File';
@@ -18,7 +17,7 @@ const Canvas = styled.canvas`
   position: fixed;
 `;
 
-@inject('scene')
+@inject('scene', 'ticker')
 class Visualisation extends PureComponent {
   static childContextTypes = {
     object3D: ThreePropTypes.object3D,
@@ -52,6 +51,8 @@ class Visualisation extends PureComponent {
   }
 
   componentDidMount() {
+    const { ticker } = this.props;
+
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
       antialias: true,
@@ -61,7 +62,7 @@ class Visualisation extends PureComponent {
     this.renderer.shadowMap.enabled = true;
     //this.renderer.sortObjects = false;
 
-    TweenLite.ticker.addEventListener('tick', this.handleTick);
+    ticker.addEventListener('tick', this.handleTick);
     window.addEventListener('resize', this.handleResize);
 
     this.handleResize();
@@ -70,9 +71,11 @@ class Visualisation extends PureComponent {
   }
 
   componentWillUnmount() {
+    const { ticker } = this.props;
+
     this.renderer.dispose();
 
-    TweenLite.ticker.removeEventListener('tick', this.handleTick);
+    ticker.removeEventListener('tick', this.handleTick);
     window.removeEventListener('resize', this.handleResize);
   }
 
@@ -114,7 +117,7 @@ class Visualisation extends PureComponent {
     return (
       <div className={className} ref={(ref) => { this.container = ref; }}>
         <Canvas innerRef={(ref) => { this.canvas = ref; }} />
-        <SceneObject object={scene} />
+        <Scene scene={scene} />
       </div>
     );
   }

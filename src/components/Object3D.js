@@ -18,19 +18,22 @@ class Object3D extends PureComponent {
   constructor(props) {
     super();
 
-    this.object3D = props.object3D || new THREE.Group();
+    this.object3D = props.object3D || new THREE.Object3D();
   }
 
   getChildContext() {
+    const { object3D } = this.props;
+
     return {
-      object3D: this.object3D,
+      object3D,
     };
   }
 
   componentDidMount() {
     const { object3D: parentObject3D } = this.context;
+    const { object3D } = this.props;
 
-    parentObject3D.add(this.object3D);
+    parentObject3D.add(object3D);
   }
 
   componentWillUnmount() {
@@ -42,9 +45,7 @@ class Object3D extends PureComponent {
   render() {
     const { children } = this.props;
 
-    return (
-      <div>{children}</div>
-    );
+    return <div>{children}</div>;
   }
 }
 
