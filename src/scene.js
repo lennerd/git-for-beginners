@@ -1,6 +1,7 @@
 import { runInAction } from 'mobx';
 
 import Scene from './models/Scene';
+import FileStatus from './models/FileStatus';
 //import Commit from './models/Commit';
 import Version from './models/Version';
 import File from './models/File';
@@ -56,6 +57,23 @@ setTimeout(() => {
 
 
 const scene = new Scene();
+
+function createRandomStatus() {
+  const status = new FileStatus();
+  const randomStatus = Math.floor(Math.random() * 3 % 3);
+
+  if (randomStatus === 0) {
+    status.type = STATUS_MODIFIED;
+    status.insertions = Math.round(Math.random() * 10);
+    status.deletions = Math.round(Math.random() * 10);
+  } else if (randomStatus === 1) {
+    status.type = STATUS_DELETED;
+  } else if (randomStatus === 2) {
+    status.type = STATUS_ADDED;
+  }
+
+  return status;
+}
 
 class Timeline {
   constructor() {
@@ -145,6 +163,7 @@ function init() {
   const version = new Version();
 
   const file = new File();
+  file.status = createRandomStatus();
   version.add(file);
   this.file = file;
 
@@ -156,13 +175,14 @@ function newVersion() {
   this.version = version;
 
   runInAction(() => {
-    this.scene.limit(10);
+    this.scene.limit(6);
     this.scene.addFront(version);
   });
 }
 
 function copyFile() {
   this.file = this.file.copy();
+  this.file.status = createRandomStatus();
 
   this.version.add(this.file);
 }
