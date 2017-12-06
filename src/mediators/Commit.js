@@ -1,29 +1,20 @@
-import React, { Component } from 'react';
-import { observer } from 'mobx-react';
-import TransitionGroup from 'react-transition-group/TransitionGroup';
+import Mediator from './Mediator';
 
-import File from './File';
-import SceneObject from './SceneObject';
+import { CELL_WIDTH } from '../constants';
 import { STATUS_ADDED, STATUS_DELETED, STATUS_MODIFIED } from '../models/FileStatus';
 
-@observer
-class Commit extends Component {
-  render() {
-    const { commit, ...props } = this.props;
+class Commit extends Mediator {
+  update(props) {
+    const { column } = props;
 
-    const files = commit.children
-      .sort(sortByChanges)
-      .map((file, index) => (
-        <File file={file} key={file.id} level={index} />
-      ));
+    this.object3D.position.z = CELL_WIDTH * column;
+  }
 
-    return (
-      <SceneObject {...props}>
-        <TransitionGroup>
-          {files}
-        </TransitionGroup>
-      </SceneObject>
-    )
+  compose() {
+    const { children } = this.model;
+
+    return children.sort(sortByChanges)
+      .map((file, index) => this.mediate(file, { level: index }));
   }
 }
 

@@ -6,6 +6,7 @@ import { Provider } from 'mobx-react';
 
 import App from './components/App';
 import scene from './scene';
+import mediatorStore from './mediatorStore';
 import './injectGlobal';
 
 TweenLite.defaultEase = Power2.easeInOut;
@@ -13,8 +14,9 @@ useStrict(true);
 
 render((
   <Provider
-    scene={scene}
     ticker={TweenLite.ticker}
+    scene={scene}
+    mediatorStore={mediatorStore}
   >
     <App />
   </Provider>

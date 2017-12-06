@@ -1,7 +1,7 @@
-import SceneGroup from './SceneGroup';
+import Model from './Model';
 
-class Scene extends SceneGroup {
-  static type = 'scene';
+class Scene extends Model {
+
 }
 
 export default Scene;

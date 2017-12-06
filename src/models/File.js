@@ -1,7 +1,7 @@
 import FileStatus, { STATUS_ADDED } from './FileStatus';
-import SceneObject from './SceneObject';
+import Model from './Model';
 
-class File extends SceneObject {
+class File extends Model {
   static type = 'file';
 
   constructor(name) {

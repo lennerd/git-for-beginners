@@ -3,12 +3,9 @@ import { inject } from 'mobx-react';
 import styled from 'styled-components';
 import 'three/examples/js/controls/OrbitControls';
 
-import { ThreePropTypes } from './Object3D';
-import Scene from './Scene';
-//import Commit from './Commit';
-/*import File from './File';
-import FileModel from '../models/File';
-import { STATUS_MODIFIED, STATUS_DELETED } from '../models/FileStatus';*/
+import Composer from '../mediators/Composer';
+import World from '../objects/World';
+import Floor from '../objects/Floor';
 
 const FRUSTRUM = 200;
 
@@ -17,18 +14,16 @@ const Canvas = styled.canvas`
   position: fixed;
 `;
 
-@inject('scene', 'ticker')
+@inject('scene', 'mediatorStore', 'ticker')
 class Visualisation extends PureComponent {
-  static childContextTypes = {
-    object3D: ThreePropTypes.object3D,
-    scene: ThreePropTypes.scene,
-  };
-
-  constructor() {
+  constructor(props) {
     super();
+
+    const { mediatorStore, scene } = props;
 
     this.scene = new THREE.Scene();
     this.camera = new THREE.OrthographicCamera();
+    this.composer = new Composer(mediatorStore, scene);
   }
 
   handleTick = () => {
@@ -60,7 +55,6 @@ class Visualisation extends PureComponent {
     });
 
     this.renderer.shadowMap.enabled = true;
-    //this.renderer.sortObjects = false;
 
     ticker.addEventListener('tick', this.handleTick);
     window.addEventListener('resize', this.handleResize);
@@ -68,28 +62,29 @@ class Visualisation extends PureComponent {
     this.handleResize();
 
     this.container.appendChild(this.renderer.domElement);
+
+    const world = new World();
+    const floor = new Floor();
+
+    world.add(floor);
+    this.scene.add(world);
+
+    floor.add(this.composer.mediator.object3D);
   }
 
   componentWillUnmount() {
     const { ticker } = this.props;
 
     this.renderer.dispose();
+    this.composer.dispose();
 
     ticker.removeEventListener('tick', this.handleTick);
     window.removeEventListener('resize', this.handleResize);
   }
 
-  getChildContext() {
-    return {
-      scene: this.scene,
-      object3D: this.scene,
-    };
-  }
-
   render() {
-    const { className, scene } = this.props;
+    const { className } = this.props;
 
-    // Update camera
     this.camera.position.set(-5, 5, -5);
     this.camera.lookAt(this.scene.position);
     this.camera.updateProjectionMatrix();
@@ -97,7 +92,6 @@ class Visualisation extends PureComponent {
     return (
       <div className={className} ref={(ref) => { this.container = ref; }}>
         <Canvas innerRef={(ref) => { this.canvas = ref; }} />
-        <Scene scene={scene} />
       </div>
     );
   }

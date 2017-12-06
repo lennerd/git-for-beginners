@@ -1,7 +1,6 @@
-import SceneGroup from './SceneGroup';
+import Model from './Model';
 
-class Commit extends SceneGroup {
-  static type = 'commit';
+class Commit extends Model {
 }
 
 export default Commit;

@@ -1,12 +1,13 @@
 import { observable, action } from 'mobx';
+import uuid from 'uuid/v4';
 
-import SceneObject from './SceneObject';
-
-class SceneGroup extends SceneObject {
+class Model {
   @observable children = [];
+  @observable parent;
 
   constructor(children) {
-    super();
+    this.id = uuid();
+    this.type = this.constructor.type;
 
     if (Array.isArray(children)) {
       children.forEach((child) => {
@@ -30,4 +31,4 @@ class SceneGroup extends SceneObject {
   }
 }
 
-export default SceneGroup;
+export default Model;
