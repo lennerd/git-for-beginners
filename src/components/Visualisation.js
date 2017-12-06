@@ -23,7 +23,7 @@ class Visualisation extends PureComponent {
 
     this.scene = new THREE.Scene();
     this.camera = new THREE.OrthographicCamera();
-    this.composer = new Composer(mediatorStore, scene);
+    this.composer = Composer.create(mediatorStore, scene);
   }
 
   handleTick = () => {

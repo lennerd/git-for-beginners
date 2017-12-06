@@ -1,7 +1,7 @@
-import { TimelineLite, Power2 } from 'gsap';
+import { TimelineLite, TweenLite, Power2 } from 'gsap';
 
 import Mediator from './Mediator';
-import { LEVEL_HEIGHT, COLOR_FILE_DEFAULT, COLOR_ADDED, COLOR_DELETED, CELL_HEIGHT } from '../constants';
+import { LEVEL_HEIGHT, COLOR_FILE_DEFAULT, COLOR_ADDED, COLOR_DELETED } from '../constants';
 import { STATUS_MODIFIED, STATUS_ADDED, STATUS_DELETED } from '../models/FileStatus';
 import createChangesTexture from '../helpers/createChangesTexture';
 import createAddTexture from '../helpers/createAddTexture';
@@ -52,10 +52,7 @@ class File extends Mediator {
 
   update(props) {
     const { level } = props;
-
-    this.object3D.position.y = LEVEL_HEIGHT * level;
-
-    const { status } = this.model;
+    const { status, parent } = this.model;
     let color = COLOR_FILE_DEFAULT;
 
     if (status.type === STATUS_ADDED) {
@@ -108,28 +105,32 @@ class File extends Mediator {
     }
 
     this.prevChanges = status.changes;
-  }
 
-  mounted() {
-    if (this.prevWorldPosition == null) {
-      return;
+    this.object3D.position.y = LEVEL_HEIGHT * level;
+
+    if (this.prevParent != null && this.prevParent !== parent) {
+      const worldPosition = this.object3D.getWorldPosition();
+      const newPosition = this.object3D.position.clone();
+      const oldPosition = this.prevWorldPosition
+        .sub(worldPosition);
+
+      this.object3D.position.add(oldPosition);
+
+      new TimelineLite()
+        .to(this.object3D.position, 0.8, { z: oldPosition.z / 2, x: oldPosition.x / 2 }, 0)
+        .to(this.object3D.position, 0.8, { y: newPosition.y }, 0.4)
+        .to(this.object3D.position, 0.8, { z: newPosition.z, x: newPosition.x }, 0.8);
+    } else if (this.prevLevel != null && level !== this.prevLevel) {
+      console.log('level');
+
+      TweenLite
+        .from(this.object3D.position, 0.4, { y: LEVEL_HEIGHT * this.prevLevel })
+        .delay(0.4);
     }
 
-    const worldPosition = this.object3D.getWorldPosition();
-    const newPosition = this.object3D.position;
-    const oldPosition = worldPosition.sub(this.prevWorldPosition)
-      .add(newPosition);
-
-    this.object3D.position.add(oldPosition);
-
-    new TimelineLite()
-      .to(this.object3D.position, 0.8, { z: oldPosition.z / 2, x: oldPosition.x / 2 }, 0)
-      .to(this.object3D.position, 0.8, { y: newPosition.y }, 0.4)
-      .to(this.object3D.position, 0.8, { z: newPosition.z, x: newPosition.x }, 0.8);
-  }
-
-  unmount() {
+    this.prevParent = parent;
     this.prevWorldPosition = this.object3D.getWorldPosition();
+    this.prevLevel = level;
   }
 
   shrink() {

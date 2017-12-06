@@ -1,9 +1,16 @@
 import { autorun } from 'mobx';
 
+// @TODO Find better name!
 class Composer {
-  constructor(mediatorStore, model, props) {
+  static create(mediatorStore, model, props) {
+    const mediator = mediatorStore.get(model);
+
+    return new this(mediatorStore, mediator, model, props);
+  }
+
+  constructor(mediatorStore, mediator, model, props) {
     this.mediatorStore = mediatorStore;
-    this.mediator = this.mediatorStore.get(model);
+    this.mediator = mediator;
     this.props = props || {};
     this.children = [];
 
@@ -11,19 +18,24 @@ class Composer {
     this.updateDisposer = autorun(this.update, this);
   }
 
-  composeChildren(children) {
+  // @TODO Reuse composers!
+  reuseChildren(children) {
     if (children == null) {
       return [];
     }
 
-    return children.map(({ model, props }) => (
-      new this.constructor(this.mediatorStore, model, props)
-    ));
+    return children.map(({ model, props }) => {
+      const mediator = this.mediatorStore.get(model);
+
+      return (
+        new this.constructor(this.mediatorStore, mediator, model, props)
+      );
+    });
   }
 
   updateChildren() {
     this.prevChildren = this.children;
-    this.children = this.composeChildren(this.mediator.compose());
+    this.children = this.reuseChildren(this.mediator.compose());
 
     const { object3D } = this.mediator;
 

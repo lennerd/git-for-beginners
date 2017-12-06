@@ -27,15 +27,7 @@ class Mediator {
 
   }
 
-  mounted() {
-
-  }
-
   unmount() {
-
-  }
-
-  unmounted() {
 
   }
 }
