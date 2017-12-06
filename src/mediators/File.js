@@ -51,7 +51,13 @@ class File extends Mediator {
   }
 
   update(props) {
-    const { level } = props;
+    let { level } = props;
+
+    // @TODO Add default props
+    if (level == null) {
+      level = 0;
+    }
+
     const { status, parent } = this.model;
     let color = COLOR_FILE_DEFAULT;
 
@@ -107,6 +113,7 @@ class File extends Mediator {
     this.prevChanges = status.changes;
 
     this.object3D.position.y = LEVEL_HEIGHT * level;
+    const prevWorldPosition = this.object3D.getWorldPosition();
 
     if (this.prevParent != null && this.prevParent !== parent) {
       const worldPosition = this.object3D.getWorldPosition();
@@ -116,20 +123,21 @@ class File extends Mediator {
 
       this.object3D.position.add(oldPosition);
 
-      new TimelineLite()
+      /*new TimelineLite()
         .to(this.object3D.position, 0.8, { z: oldPosition.z / 2, x: oldPosition.x / 2 }, 0)
         .to(this.object3D.position, 0.8, { y: newPosition.y }, 0.4)
-        .to(this.object3D.position, 0.8, { z: newPosition.z, x: newPosition.x }, 0.8);
-    } else if (this.prevLevel != null && level !== this.prevLevel) {
-      console.log('level');
+        .to(this.object3D.position, 0.8, { z: newPosition.z, x: newPosition.x }, 0.8);*/
 
+      TweenLite
+        .to(this.object3D.position, 0.8, { x: newPosition.x, z: newPosition.z });
+    } else if (this.prevLevel != null && level !== this.prevLevel) {
       TweenLite
         .from(this.object3D.position, 0.4, { y: LEVEL_HEIGHT * this.prevLevel })
         .delay(0.4);
     }
 
     this.prevParent = parent;
-    this.prevWorldPosition = this.object3D.getWorldPosition();
+    this.prevWorldPosition = prevWorldPosition;
     this.prevLevel = level;
   }
 

@@ -25,6 +25,15 @@ class Model {
     child.parent = this;
   }
 
+  @action addFront(child) {
+    if (child.parent != null) {
+      child.parent.remove(child);
+    }
+
+    this.children.unshift(child);
+    child.parent = this;
+  }
+
   @action remove(child) {
     this.children.remove(child);
     child.parent = null;
