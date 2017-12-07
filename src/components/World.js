@@ -4,17 +4,16 @@ import WorldObject from '../objects/World';
 import Object3D from './Object3D';
 
 class World extends PureComponent {
-  constructor() {
-    super();
-
-    this.world = new WorldObject();
-  }
+  state = {
+    worldObject: new WorldObject(),
+  };
 
   render() {
     const { children } = this.props;
+    const { worldObject } = this.state;
 
     return (
-      <Object3D object3D={this.world}>
+      <Object3D object3D={worldObject}>
         {children}
       </Object3D>
     );

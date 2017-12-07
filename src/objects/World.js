@@ -1,5 +1,5 @@
-class World extends THREE.Object3D {
-  constructor(floor) {
+class World extends THREE.Group {
+  constructor() {
     super();
 
     const shadowCaster = new THREE.DirectionalLight(0xFEFFF5, 0.4);

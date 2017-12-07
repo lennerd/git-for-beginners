@@ -56,7 +56,7 @@ function createTextTexture(width, height, text, options) {
   }
 
   if (options.horizontalAlignment === 'center') {
-    x = width / 2 - measure(ctx, text, options);
+    x = width / 2 - measure(ctx, text, options) / 2;
   } else if (options.horizontalAlignment === 'right') {
     x = width - measure(ctx, text, options);
   }

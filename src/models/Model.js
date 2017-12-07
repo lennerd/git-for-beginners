@@ -7,7 +7,6 @@ class Model {
 
   constructor(children) {
     this.id = uuid();
-    this.type = this.constructor.type;
 
     if (Array.isArray(children)) {
       children.forEach((child) => {

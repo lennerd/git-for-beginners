@@ -3,9 +3,9 @@ import { inject } from 'mobx-react';
 import styled from 'styled-components';
 import 'three/examples/js/controls/OrbitControls';
 
-import Composer from '../mediators/Composer';
-import World from '../objects/World';
-import Floor from '../objects/Floor';
+import Scene from './Scene';
+import World from './World';
+import Floor from './Floor';
 
 const FRUSTRUM = 200;
 
@@ -14,16 +14,13 @@ const Canvas = styled.canvas`
   position: fixed;
 `;
 
-@inject('scene', 'mediatorStore', 'ticker')
+@inject('ticker')
 class Visualisation extends PureComponent {
   constructor(props) {
     super();
 
-    const { mediatorStore, scene } = props;
-
     this.scene = new THREE.Scene();
     this.camera = new THREE.OrthographicCamera();
-    this.composer = Composer.create(mediatorStore, scene);
   }
 
   handleTick = () => {
@@ -61,29 +58,20 @@ class Visualisation extends PureComponent {
 
     this.handleResize();
 
-    this.container.appendChild(this.renderer.domElement);
-
-    const world = new World();
-    const floor = new Floor();
-
-    world.add(floor);
-    this.scene.add(world);
-
-    floor.add(this.composer.mediator.object3D);
+    console.log(this.scene);
   }
 
   componentWillUnmount() {
     const { ticker } = this.props;
 
     this.renderer.dispose();
-    this.composer.dispose();
 
     ticker.removeEventListener('tick', this.handleTick);
     window.removeEventListener('resize', this.handleResize);
   }
 
   render() {
-    const { className } = this.props;
+    const { className, children } = this.props;
 
     this.camera.position.set(-5, 5, -5);
     this.camera.lookAt(this.scene.position);
@@ -92,6 +80,13 @@ class Visualisation extends PureComponent {
     return (
       <div className={className} ref={(ref) => { this.container = ref; }}>
         <Canvas innerRef={(ref) => { this.canvas = ref; }} />
+        <Scene scene={this.scene}>
+          <World>
+            <Floor>
+              {children}
+            </Floor>
+          </World>
+        </Scene>
       </div>
     );
   }
@@ -103,5 +98,4 @@ export default styled(Visualisation)`
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: linear-gradient(to bottom right, #ffffff, #B9C0E5);
 `;

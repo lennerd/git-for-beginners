@@ -2,8 +2,6 @@ import FileStatus, { STATUS_ADDED } from './FileStatus';
 import Model from './Model';
 
 class File extends Model {
-  static type = 'file';
-
   constructor(name) {
     super();
 
@@ -12,13 +10,7 @@ class File extends Model {
   }
 
   copy() {
-    const file = new this.constructor(this.name);
-
-    if (this.parent != null) {
-      this.parent.add(file);
-    }
-
-    return file;
+    return new this.constructor(this.name);
   }
 }
 
