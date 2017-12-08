@@ -5,21 +5,31 @@ class Color extends THREE.Color {
 }
 
 function rem(size) {
+  if (isNaN(size)) {
+    debugger;
+  }
+
   return `${size / 16}rem`;
 }
 
 const SPACING = 20;
 
-function spacing(multiply) {
-  return rem(SPACING * multiply);
+class Spacing {
+  constructor(multiply = 1) {
+    this.multiply = multiply;
+  }
+
+  n(multiply) {
+    return new Spacing(multiply);
+  }
+
+  toString() {
+    return rem(this.multiply * SPACING);
+  }
 }
 
-spacing.toString = () => {
-  return rem(SPACING);
-};
-
 export default {
-  spacing,
+  spacing: new Spacing(),
 
   vis: {
     cellWidth: 3,

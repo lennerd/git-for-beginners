@@ -55,27 +55,27 @@ export default styled(NavigationItem)`
     width: 100%;
     height: 100%;
     background-color: white;
-    clip-path: polygon(0% 0%, calc(50% - ${props => props.theme.spacing(0.75)}) 0%, 50% 0%, calc(50% + ${props => props.theme.spacing(0.75)}) 0%, 100% 0%, 100% 100%, 0% 100%);
+    clip-path: polygon(0% 0%, calc(50% - ${props => props.theme.spacing.n(0.75)}) 0%, 50% 0%, calc(50% + ${props => props.theme.spacing.n(0.75)}) 0%, 100% 0%, 100% 100%, 0% 100%);
     z-index: 0;
   }
 
   &.active:after,
   &:hover:after {
-    clip-path: polygon(0% 0%, calc(50% - ${props => props.theme.spacing(0.75)}) 0%, 50% ${props => props.theme.spacing(0.75)}, calc(50% + ${props => props.theme.spacing(0.75)}) 0%, 100% 0%, 100% 100%, 0% 100%);
+    clip-path: polygon(0% 0%, calc(50% - ${props => props.theme.spacing.n(0.75)}) 0%, 50% ${props => props.theme.spacing.n(0.75)}, calc(50% + ${props => props.theme.spacing.n(0.75)}) 0%, 100% 0%, 100% 100%, 0% 100%);
   }
 
   &:before {
     transition: 200ms border-radius, 200ms transform, 200ms background-color;
     will-change: border-radius, transform, background-color;
-    width: ${props => props.theme.spacing(0.25)};
-    height: ${props => props.theme.spacing(0.25)};
+    width: ${props => props.theme.spacing.n(0.25)};
+    height: ${props => props.theme.spacing.n(0.25)};
     background-color: ${props => props.theme.color.grey};
     left: 50%;
     top: 50%;
-    transform: translate(${props => props.theme.spacing(-0.1)}, ${props => props.theme.spacing(-0.1)}) scale(1);
+    transform: translate(${props => props.theme.spacing.n(-0.1)}, ${props => props.theme.spacing.n(-0.1)}) scale(1);
     z-index: 2;
-    border-radius: ${props => props.theme.spacing(0.125)};
-    outline: ${props => props.theme.spacing(0.2)} solid white;
+    border-radius: ${props => props.theme.spacing.n(0.125)};
+    outline: ${props => props.theme.spacing.n(0.2)} solid white;
   }
 
   &.active:before {

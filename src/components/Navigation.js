@@ -6,7 +6,7 @@ import NavigationItem from './NavigationItem';
 
 const NavigationContent = styled.div`
   position: relative;
-  height: ${props => props.theme.spacing(2.75)};
+  height: ${props => props.theme.spacing.n(2.75)};
   display: flex;
   justify-content: stretch;
   align-items: stretch;

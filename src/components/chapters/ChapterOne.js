@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
+import { Helmet } from 'react-helmet';
 import { observable, action } from 'mobx';
 import { observer } from 'mobx-react';
 import { TimelineLite } from 'gsap';
 
 import Visualisation from '../Visualisation';
 import Chapter from './Chapter';
+import ChapterText from './ChapterText';
 import File from '../File';
 import FileLabel from '../FileLabel';
 import FileModel from '../../models/File';
@@ -129,11 +131,14 @@ class ChapterOne extends Component {
 
     return (
       <Chapter {...this.props}>
-        <div style={{ position: 'relative', zIndex: 1 }}>
+        <Helmet>
+          <title>Versioning of Files</title>
+        </Helmet>
+        <ChapterText>
           <h1>Versionierung</h1>
           <p>Erklärung, wie Versionierung funktioniert.</p>
           <button onClick={this.handleNext}>Wir erstellen eine Datei</button>
-        </div>
+        </ChapterText>
         <Visualisation>
           {files}
         </Visualisation>

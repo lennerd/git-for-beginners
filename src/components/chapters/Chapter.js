@@ -3,6 +3,9 @@ import Transition from 'react-transition-group/Transition';
 import { TweenLite } from 'gsap';
 import styled from 'styled-components';
 
+import Visualisation from '../Visualisation';
+import ChapterText from './ChapterText';
+
 export const FORWARD = Symbol('forward');
 export const BACK = Symbol('back');
 
@@ -52,4 +55,16 @@ class Chapter extends Component {
 export default styled(Chapter)`
   will-change: transform, opacity;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  ${Visualisation} {
+    z-index: 0;
+  }
+
+  ${ChapterText} {
+    position: relative;
+    z-index: 1;
+  }
 `;

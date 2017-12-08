@@ -1,9 +1,15 @@
 import React, { PureComponent, cloneElement } from 'react';
+import Loadable from 'react-loadable';
 import styled from 'styled-components';
 import TransitionGroup from 'react-transition-group/TransitionGroup';
 
-import ChapterOne from './chapters/ChapterOne';
 import Chapter, { FORWARD, BACK } from './chapters/Chapter';
+import LoadingSpinner from './LoadingSpinner';
+
+const ChapterOne = Loadable({
+  loader: () => import('./chapters/ChapterOne'),
+  loading: LoadingSpinner,
+});
 
 const CHAPTERS = [
   ChapterOne,
