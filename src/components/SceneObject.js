@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
+import { withTheme } from 'styled-components';
 import { observer } from 'mobx-react';
 
 import Object3D from './Object3D';
-import { CELL_WIDTH, CELL_HEIGHT, LEVEL_HEIGHT } from '../constants';
 
+@withTheme
 @observer
 class SceneObject extends Component {
   static defaultProps = {
@@ -19,12 +20,12 @@ class SceneObject extends Component {
   }
 
   render() {
-    const { column, row, level, children } = this.props;
+    const { column, row, level, children, theme } = this.props;
 
     this.object3D.position.set(
-      row * CELL_HEIGHT,
-      level * LEVEL_HEIGHT,
-      column * CELL_WIDTH,
+      row * theme.vis.cellHeight,
+      level * theme.vis.levelHeight,
+      column * theme.vis.cellWidth,
     );
 
     return (

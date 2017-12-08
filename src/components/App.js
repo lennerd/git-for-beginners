@@ -26,6 +26,7 @@ export default styled(App)`
   background-image: linear-gradient(to bottom right, #FFF9F7, #B9C0E5);
   display: flex;
   flex-direction: column-reverse;
+  color: ${props => props.theme.color.text};
 
   ${Navigation} {
     flex-shrink: 0;

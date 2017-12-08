@@ -2,9 +2,10 @@ import React, { PureComponent } from 'react';
 import { TweenLite } from 'gsap';
 
 import Object3D from './Object3D';
-import { CELL_WIDTH, LEVEL_HEIGHT } from '../constants';
 import FileObject/*, { FILE_DEPTH, FILE_HEIGHT, FILE_WIDTH }*/ from '../objects/File';
+import { withTheme } from 'styled-components';
 
+@withTheme
 class File extends PureComponent {
   static defaultProps = {
     column: 0,
@@ -36,20 +37,21 @@ class File extends PureComponent {
   }
 
   componentDidUpdate(prevProps) {
+    const { theme } = this.props;
     const { group } = this.state;
 
     TweenLite.from(group.position, 0.8, {
-      z: CELL_WIDTH * prevProps.column,
-      y: LEVEL_HEIGHT * prevProps.level,
+      z: theme.vis.cellWidth * prevProps.column,
+      y: theme.vis.levelHeight * prevProps.level,
     });
   }
 
   render() {
-    const { children, column, level } = this.props;
+    const { children, column, level, theme } = this.props;
     const { group } = this.state;
 
-    group.position.z = CELL_WIDTH * column;
-    group.position.y = LEVEL_HEIGHT * level;
+    group.position.z = theme.vis.cellWidth * column;
+    group.position.y = theme.vis.levelHeight * level;
 
     return (
       <Object3D object3D={group}>

@@ -1,11 +1,11 @@
-import { LEVEL_HEIGHT, COLOR_FILE_DEFAULT/*, COLOR_ADDED, COLOR_DELETED */} from '../constants';
+import theme from '../theme';
 /*import createChangesTexture from '../helpers/createChangesTexture';
 import createAddTexture from '../helpers/createAddTexture';
 import { STATUS_MODIFIED, STATUS_ADDED, STATUS_DELETED } from '../models/FileStatus';
 import createDeleteTexture from '../helpers/createDeleteTexture';*/
 
 export const FILE_SIZE_RATIO = 1 / Math.sqrt(2);
-export const FILE_HEIGHT = LEVEL_HEIGHT / 2;
+export const FILE_HEIGHT = theme.vis.levelHeight / 2;
 export const FILE_WIDTH = FILE_HEIGHT * 10;
 export const FILE_DEPTH = FILE_WIDTH * FILE_SIZE_RATIO;
 //const TEXTURE_WIDTH = 4096;
@@ -18,7 +18,7 @@ class File extends THREE.Group {
 
     this.fileMesh = new THREE.Mesh(
       new THREE.BoxBufferGeometry(FILE_WIDTH, FILE_HEIGHT, FILE_DEPTH),
-      new THREE.MeshLambertMaterial({ color: COLOR_FILE_DEFAULT }),
+      new THREE.MeshLambertMaterial({ color: theme.color.fileDefault }),
     );
 
     this.shadowMash = new THREE.Mesh(

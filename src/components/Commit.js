@@ -1,8 +1,9 @@
 import React, { PureComponent } from 'react';
+import { withTheme } from 'styled-components';
 
 import Object3D from './Object3D';
-import { CELL_WIDTH } from '../constants';
 
+@withTheme
 class Commit extends PureComponent {
   static defaultProps = {
     column: 0,
@@ -13,10 +14,10 @@ class Commit extends PureComponent {
   };
 
   render() {
-    const { children, column } = this.props;
+    const { children, column, theme } = this.props;
     const { commitGroup } = this.state;
 
-    commitGroup.position.z = CELL_WIDTH * column;
+    commitGroup.position.z = theme.vis.cellWidth * column;
 
     return (
       <Object3D object3D={commitGroup}>
