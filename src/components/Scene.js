@@ -1,6 +1,9 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 
+import World from './World';
+import Floor from './Floor';
+
 class Scene extends PureComponent {
   static childContextTypes = {
     parentObject3D: PropTypes.object,
@@ -18,9 +21,11 @@ class Scene extends PureComponent {
     const { children } = this.props;
 
     return (
-      <div>
-        {children}
-      </div>
+      <World>
+        <Floor>
+          {children}
+        </Floor>
+      </World>
     );
   }
 }

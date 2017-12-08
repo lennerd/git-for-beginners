@@ -1,27 +1,20 @@
 import React, { PureComponent } from 'react';
 import { inject } from 'mobx-react';
 import styled from 'styled-components';
-import 'three/examples/js/controls/OrbitControls';
 
 import Scene from './Scene';
-import World from './World';
-import Floor from './Floor';
 
 const FRUSTRUM = 200;
 
-const Canvas = styled.canvas`
-  display: block;
-  position: fixed;
-`;
-
 @inject('ticker')
 class Visualisation extends PureComponent {
-  constructor(props) {
-    super();
+  static defaultProps = {
+    offsetX: 3,
+    offsetZ: 0,
+  };
 
-    this.scene = new THREE.Scene();
-    this.camera = new THREE.OrthographicCamera();
-  }
+  scene = new THREE.Scene();
+  camera = new THREE.OrthographicCamera();
 
   handleTick = () => {
     this.renderer.render(this.scene, this.camera);
@@ -30,20 +23,11 @@ class Visualisation extends PureComponent {
   handleResize = () => {
     const rect = this.container.getBoundingClientRect();
 
-    this.camera.near = 0.5;
-    this.camera.far = 500;
-    this.camera.left = rect.width / -FRUSTRUM;
-    this.camera.right = rect.width / FRUSTRUM;
-    this.camera.top = rect.height / FRUSTRUM;
-    this.camera.bottom = rect.height / -FRUSTRUM;
-    this.camera.updateProjectionMatrix();
-
-    this.renderer.setSize(rect.width, rect.height);
-    this.renderer.setPixelRatio(window.devicePixelRatio);
+    this.resize(rect.width, rect.height);
   }
 
   componentDidMount() {
-    const { ticker } = this.props;
+    const { ticker, offsetX, offsetZ } = this.props;
 
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
@@ -57,35 +41,51 @@ class Visualisation extends PureComponent {
     window.addEventListener('resize', this.handleResize);
 
     this.handleResize();
+    this.offsetCamera(offsetX, offsetZ);
+  }
 
-    console.log(this.scene);
+  componentDidUpdate() {
+    const { offsetX, offsetZ } = this.props;
+
+    this.offsetCamera(offsetX, offsetZ);
   }
 
   componentWillUnmount() {
     const { ticker } = this.props;
 
-    this.renderer.dispose();
-
     ticker.removeEventListener('tick', this.handleTick);
     window.removeEventListener('resize', this.handleResize);
+
+    this.renderer.dispose();
+  }
+
+  offsetCamera(x, z) {
+    this.camera.position.set(-5 + x, 5, -5 + z);
+    this.camera.lookAt(x, 0, z);
+    this.camera.updateProjectionMatrix();
+  }
+
+  resize(width, height) {
+    this.camera.near = 0.5;
+    this.camera.far = 500;
+    this.camera.left = width / -FRUSTRUM;
+    this.camera.right = width / FRUSTRUM;
+    this.camera.top = height / FRUSTRUM;
+    this.camera.bottom = height / -FRUSTRUM;
+    this.camera.updateProjectionMatrix();
+
+    this.renderer.setSize(width, height);
+    this.renderer.setPixelRatio(window.devicePixelRatio);
   }
 
   render() {
     const { className, children } = this.props;
 
-    this.camera.position.set(-5, 5, -5);
-    this.camera.lookAt(this.scene.position);
-    this.camera.updateProjectionMatrix();
-
     return (
       <div className={className} ref={(ref) => { this.container = ref; }}>
-        <Canvas innerRef={(ref) => { this.canvas = ref; }} />
+        <canvas ref={(ref) => { this.canvas = ref; }} />
         <Scene scene={this.scene}>
-          <World>
-            <Floor>
-              {children}
-            </Floor>
-          </World>
+          {children}
         </Scene>
       </div>
     );
@@ -98,4 +98,9 @@ export default styled(Visualisation)`
   left: 0;
   width: 100%;
   height: 100%;
+
+  canvas {
+    display: block;
+    position: fixed;
+  }
 `;

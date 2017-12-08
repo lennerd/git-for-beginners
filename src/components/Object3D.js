@@ -30,6 +30,40 @@ class Object3D extends PureComponent {
     const { parentObject3D } = this.context;
 
     parentObject3D.remove(object3D);
+
+    object3D.traverse((child) => {
+      if (child.geometry != null) {
+        child.geometry.dispose();
+      }
+
+      if (child.material != null) {
+        child.material.dispose();
+
+        if (child.material.map) {
+          child.material.map.dispose();
+        }
+
+        if (child.material.lightMap) {
+          child.material.lightMap.dispose();
+        }
+
+        if (child.material.bumpMap) {
+          child.material.bumpMap.dispose();
+        }
+
+        if (child.material.normalMap) {
+          child.material.normalMap.dispose();
+        }
+
+        if (child.material.specularMap) {
+          child.material.specularMap.dispose();
+        }
+
+        if (child.material.envMap) {
+          child.material.envMap.dispose();
+        }
+      }
+    });
   }
 
   render() {

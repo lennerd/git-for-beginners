@@ -3,7 +3,7 @@ import { TweenLite } from 'gsap';
 
 import Object3D from './Object3D';
 import { CELL_WIDTH, LEVEL_HEIGHT } from '../constants';
-import FileObject from '../objects/File';
+import FileObject/*, { FILE_DEPTH, FILE_HEIGHT, FILE_WIDTH }*/ from '../objects/File';
 
 class File extends PureComponent {
   static defaultProps = {
@@ -12,23 +12,33 @@ class File extends PureComponent {
     appear: false,
   };
 
-  state = {
-    fileObject: new FileObject(),
-  };
+  constructor() {
+    super();
+
+    const fileObject = new FileObject();
+    const group = new THREE.Group();
+
+    group.add(fileObject);
+
+    this.state = {
+      fileObject,
+      group,
+    }
+  }
 
   componentDidMount() {
-    const { fileObject } = this.state;
+    const { group } = this.state;
     const { appear } = this.props;
 
     if (appear) {
-      TweenLite.from(fileObject.scale, 0.8, { y: 0 });
+      TweenLite.from(group.scale, 0.8, { y: 0 });
     }
   }
 
   componentDidUpdate(prevProps) {
-    const { fileObject } = this.state;
+    const { group } = this.state;
 
-    TweenLite.from(fileObject.position, 0.8, {
+    TweenLite.from(group.position, 0.8, {
       z: CELL_WIDTH * prevProps.column,
       y: LEVEL_HEIGHT * prevProps.level,
     });
@@ -36,13 +46,13 @@ class File extends PureComponent {
 
   render() {
     const { children, column, level } = this.props;
-    const { fileObject } = this.state;
+    const { group } = this.state;
 
-    fileObject.position.z = CELL_WIDTH * column;
-    fileObject.position.y = LEVEL_HEIGHT * level;
+    group.position.z = CELL_WIDTH * column;
+    group.position.y = LEVEL_HEIGHT * level;
 
     return (
-      <Object3D object3D={fileObject}>
+      <Object3D object3D={group}>
         {children}
       </Object3D>
     );

@@ -1,16 +1,16 @@
-import { LEVEL_HEIGHT, COLOR_FILE_DEFAULT, COLOR_ADDED, COLOR_DELETED } from '../constants';
-import createChangesTexture from '../helpers/createChangesTexture';
+import { LEVEL_HEIGHT, COLOR_FILE_DEFAULT/*, COLOR_ADDED, COLOR_DELETED */} from '../constants';
+/*import createChangesTexture from '../helpers/createChangesTexture';
 import createAddTexture from '../helpers/createAddTexture';
 import { STATUS_MODIFIED, STATUS_ADDED, STATUS_DELETED } from '../models/FileStatus';
-import createDeleteTexture from '../helpers/createDeleteTexture';
+import createDeleteTexture from '../helpers/createDeleteTexture';*/
 
 export const FILE_SIZE_RATIO = 1 / Math.sqrt(2);
 export const FILE_HEIGHT = LEVEL_HEIGHT / 2;
 export const FILE_WIDTH = FILE_HEIGHT * 10;
 export const FILE_DEPTH = FILE_WIDTH * FILE_SIZE_RATIO;
-const TEXTURE_WIDTH = 4096;
-const TEXTURE_HEIGHT = 512;
-const TEXTURE_HORIZONTAL_SCALE = (FILE_WIDTH / FILE_HEIGHT) / (TEXTURE_WIDTH / TEXTURE_HEIGHT);
+//const TEXTURE_WIDTH = 4096;
+//const TEXTURE_HEIGHT = 512;
+//const TEXTURE_HORIZONTAL_SCALE = (FILE_WIDTH / FILE_HEIGHT) / (TEXTURE_WIDTH / TEXTURE_HEIGHT);
 
 class File extends THREE.Group {
   constructor(status) {

@@ -1,19 +1,21 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import styled from 'styled-components';
-import { Route, Redirect, Switch } from 'react-router-dom';
+import { Route, Redirect } from 'react-router-dom';
 
-import ChapterOne from './chapters/ChapterOne';
+import Navigation from './Navigation';
+import Tutorial from './Tutorial';
 
-class App extends PureComponent {
+class App extends Component {
   render() {
     const { className } = this.props;
 
     return (
       <div className={className}>
-        <Switch>
-          <Route path="/chapter-1" component={ChapterOne} />
-          <Redirect from="/" to="/chapter-1" />
-        </Switch>
+        <Route exact path="/" render={() => (
+          <Redirect to="/chapter/0"/>
+        )} />
+        <Navigation />
+        <Route path="/chapter/:chapter" component={Tutorial} />
       </div>
     );
   }
@@ -21,5 +23,11 @@ class App extends PureComponent {
 
 export default styled(App)`
   height: 100%;
-  background-image: linear-gradient(to bottom right, #ffffff, #B9C0E5);
+  background-image: linear-gradient(to bottom right, #FFF9F7, #B9C0E5);
+  display: flex;
+  flex-direction: column-reverse;
+
+  ${Navigation} {
+    flex-shrink: 0;
+  }
 `;

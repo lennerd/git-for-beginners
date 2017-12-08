@@ -64,7 +64,34 @@ function createTextTexture(width, height, text, options) {
   write(ctx, text, x, y, options);
 
   const texture = new THREE.CanvasTexture(canvas);
-  texture.premultiplyAlpha = true;
+  //texture.premultiplyAlpha = true;
+  texture.anisotropy = 0;
+  texture.magFilter = THREE.NearestFilter;
+  texture.minFilter = THREE.LinearFilter;
+
+  //document.body.appendChild(canvas);
+
+  return texture;
+}
+
+function ceilPow2( number ){
+  return Math.pow(2, Math.ceil(Math.log(number) / Math.log(2)));
+}
+
+export function createTextTextureV2(width, height, text, options) {
+  const textureWidth = ceilPow2(width);
+  const textureHeight = ceilPow2(height);
+
+  const texture = createTextTexture(textureWidth, textureHeight, text, options);
+
+  const widthRepeat = textureWidth / width;
+  const heightRepeat = textureHeight / height;
+
+  const widthOffset = (textureWidth - width) / textureWidth / -2;
+  const heightOffset = (textureHeight - height) / textureHeight / 2;
+
+  texture.repeat.set(widthRepeat, heightRepeat);
+  texture.offset.set(widthOffset, heightOffset);
 
   return texture;
 }

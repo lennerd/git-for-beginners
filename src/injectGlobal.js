@@ -1,7 +1,9 @@
 import { injectGlobal } from 'styled-components';
+import 'normalize.css';
 
 injectGlobal`
-  @import url('https://fonts.googleapis.com/css?family=Source+Code+Pro:900');
+  @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro');
+  @import url('https://fonts.googleapis.com/css?family=Source+Code+Pro:400,900');
 
   body {
     margin: 0;
@@ -11,5 +13,13 @@ injectGlobal`
   body,
   #root {
     height: 100%;
+  }
+
+  body {
+    font-family: 'Source Sans Pro', sans-serif;
+  }
+
+  h1, p {
+    margin: 0;
   }
 `;
