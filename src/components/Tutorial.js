@@ -1,56 +1,49 @@
-import React, { PureComponent, cloneElement } from 'react';
-import Loadable from 'react-loadable';
+import React, { Component, cloneElement } from 'react';
 import styled from 'styled-components';
 import TransitionGroup from 'react-transition-group/TransitionGroup';
+import { inject, observer } from 'mobx-react';
+import { computed } from 'mobx';
 
-import Chapter, { FORWARD, BACK } from './chapters/Chapter';
-import LoadingSpinner from './LoadingSpinner';
-
-const ChapterOne = Loadable({
-  loader: () => import('./chapters/ChapterOne'),
-  loading: LoadingSpinner,
-});
-
-const CHAPTERS = [
-  ChapterOne,
-  ChapterOne,
-  ChapterOne,
-];
+import Navigation from './nav/Navigation';
 
 const ChapterGroup = styled.div`
   position: relative;
   height: 100%;
-
-  ${Chapter} {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-  }
 `;
 
-class Tutorial extends PureComponent {
-  componentWillReceiveProps(nextProps) {
-    const { chapter } = this.props.match.params;
+@inject('tutorial')
+@observer
+class Tutorial extends Component {
+  constructor(props) {
+    super();
 
-    this.direction = chapter < nextProps.match.params.chapter ? FORWARD : BACK;
+    const { tutorial, match } = props;
+
+    tutorial.navigate(match.params.id);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { tutorial, match } = nextProps;
+
+    tutorial.navigate(match.params.id);
   }
 
   render() {
-    const { className, match } = this.props;
-    const { chapter } = match.params;
-
-    const Chapter = CHAPTERS[chapter];
+    const { className, tutorial } = this.props;
+    const { direction, currentChapter } = tutorial;
 
     return (
       <div className={className}>
         <TransitionGroup
           component={ChapterGroup}
-          childFactory={child => cloneElement(child, { direction: this.direction })}
+          childFactory={child => cloneElement(child, { direction })}
         >
-          {Chapter != null && <Chapter key={chapter} />}
+          {
+            currentChapter != null &&
+            <currentChapter.component key={currentChapter.id} chapter={currentChapter} />
+          }
         </TransitionGroup>
+        <Navigation />
       </div>
     );
   }
@@ -60,4 +53,11 @@ export default styled(Tutorial)`
   position: relative;
   height: 100%;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background-image: linear-gradient(to bottom right, #FFF9F7, #B9C0E5);
+
+  ${Navigation} {
+    flex-shrink: 0;
+  }
 `;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from 'react-dom';
-import { TweenLite, Power2 } from 'gsap';
+import { TweenLite, Power1 } from 'gsap';
 import { useStrict } from 'mobx';
 import { Provider } from 'mobx-react';
 import { BrowserRouter } from 'react-router-dom'
@@ -11,7 +11,7 @@ import stores from './stores';
 import theme from './theme';
 import './injectGlobal';
 
-TweenLite.defaultEase = Power2.easeInOut;
+TweenLite.defaultEase = Power1.easeInOut;
 useStrict(true);
 
 render((

@@ -3,8 +3,7 @@ import Transition from 'react-transition-group/Transition';
 import { TweenLite } from 'gsap';
 import styled from 'styled-components';
 
-import Visualisation from '../Visualisation';
-import ChapterText from './ChapterText';
+import Container from '../common/Container';
 
 export const FORWARD = Symbol('forward');
 export const BACK = Symbol('back');
@@ -35,8 +34,6 @@ class Chapter extends Component {
   render() {
     const { children, className, ...props } = this.props;
 
-    delete props.direction;
-
     return (
       <Transition
         {...props}
@@ -44,9 +41,13 @@ class Chapter extends Component {
         onExit={this.handleExit}
         addEndListener={this.addEndListener}
       >
-        <div className={className}>
-          {children}
-        </div>
+        {(status) => (
+          <div className={className}>
+            <Container>
+              {children(status)}
+            </Container>
+          </div>
+        )}
       </Transition>
     );
   }
@@ -54,17 +55,9 @@ class Chapter extends Component {
 
 export default styled(Chapter)`
   will-change: transform, opacity;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-
-  ${Visualisation} {
-    z-index: 0;
-  }
-
-  ${ChapterText} {
-    position: relative;
-    z-index: 1;
-  }
 `;

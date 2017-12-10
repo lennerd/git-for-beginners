@@ -1,35 +1,30 @@
+import { css } from 'styled-components';
+
 class Color extends THREE.Color {
   toString() {
     return this.getStyle();
   }
+
+  alpha(alpha) {
+    return `rgba(${(this.r * 255) | 0}, ${(this.g * 255) | 0}, ${(this.b * 255) | 0}, ${alpha})`;
+  }
 }
 
 function rem(size) {
-  if (isNaN(size)) {
-    debugger;
-  }
-
-  return `${size / 16}rem`;
+  return css`${props => size / props.theme.baseFontSize}rem`;
 }
 
-const SPACING = 20;
-
-class Spacing {
-  constructor(multiply = 1) {
-    this.multiply = multiply;
-  }
-
-  n(multiply) {
-    return new Spacing(multiply);
-  }
-
-  toString() {
-    return rem(this.multiply * SPACING);
-  }
+function spacing(multiply = 1) {
+  return css`${({ theme }) => theme.rem(theme.baseSpacing * multiply)}`;
 }
 
 export default {
-  spacing: new Spacing(),
+  baseFontSize: 16,
+  baseLineHeight: 1.5625,
+  baseSpacing: 20,
+
+  rem,
+  spacing,
 
   vis: {
     cellWidth: 3,
@@ -47,6 +42,18 @@ export default {
   },
 
   text: {
-    small: rem(14),
+    small: css`
+      font-size: ${props => props.theme.rem(14)};
+      line-height: ${18 / 14};
+    `,
+    big: css`
+      font-size: ${props => props.theme.rem(14)};
+      line-height: ${45 / 36};
+    `,
+    caps: css`
+      ${props => props.theme.text.small}
+      font-variant-caps: all-small-caps;
+      letter-spacing: 0.89px;
+    `,
   }
 };

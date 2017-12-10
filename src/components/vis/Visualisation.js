@@ -9,15 +9,19 @@ const FRUSTRUM = 200;
 @inject('ticker')
 class Visualisation extends PureComponent {
   static defaultProps = {
-    offsetX: 3,
-    offsetZ: 0,
+    offsetX: 2,
+    offsetZ: -2,
+    tick: true,
   };
 
   scene = new THREE.Scene();
   camera = new THREE.OrthographicCamera();
+  ticking = false;
 
   handleTick = () => {
-    this.renderer.render(this.scene, this.camera);
+    if (this.props.tick) {
+      this.renderer.render(this.scene, this.camera);
+    }
   }
 
   handleResize = () => {
@@ -27,7 +31,40 @@ class Visualisation extends PureComponent {
   }
 
   componentDidMount() {
-    const { ticker, offsetX, offsetZ } = this.props;
+    const { offsetX, offsetZ } = this.props;
+
+    this.offsetCamera(offsetX, offsetZ);
+    this.startTicking();
+  }
+
+  componentDidUpdate() {
+    const { offsetX, offsetZ } = this.props;
+
+    this.offsetCamera(offsetX, offsetZ);
+    this.startTicking();
+  }
+
+  componentWillUnmount() {
+    if (!this.ticking) {
+      return;
+    }
+
+    const { ticker } = this.props;
+
+    ticker.removeEventListener('tick', this.handleTick);
+    window.removeEventListener('resize', this.handleResize);
+
+    this.renderer.dispose();
+  }
+
+  startTicking() {
+    const { tick, ticker } = this.props;
+
+    if (this.ticking || !tick) {
+      return;
+    }
+
+    this.ticking = true;
 
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
@@ -41,22 +78,7 @@ class Visualisation extends PureComponent {
     window.addEventListener('resize', this.handleResize);
 
     this.handleResize();
-    this.offsetCamera(offsetX, offsetZ);
-  }
-
-  componentDidUpdate() {
-    const { offsetX, offsetZ } = this.props;
-
-    this.offsetCamera(offsetX, offsetZ);
-  }
-
-  componentWillUnmount() {
-    const { ticker } = this.props;
-
-    ticker.removeEventListener('tick', this.handleTick);
-    window.removeEventListener('resize', this.handleResize);
-
-    this.renderer.dispose();
+    this.handleTick();
   }
 
   offsetCamera(x, z) {

@@ -123,17 +123,19 @@ module.exports = {
         include: paths.appSrc,
       },
       {
-        include: path.join(require.resolve('three'), 'examples/js'),
-        use: [
-          'imports-loader?THREE=three',
-          'exports-loader?THREE.OrbitControls',
-        ],
-      },
-      {
         // "oneOf" will traverse all following loaders until one will
         // match the requirements. When no loader matches it will fall
         // back to the "file" loader at the end of the loader list.
         oneOf: [
+          // JSON fonts
+          {
+            test: /\.json$/,
+            include: path.resolve(__dirname, '../src/fonts'),
+            loader: require.resolve('file-loader'),
+            options: {
+              name: 'static/fonts/[name].[hash:8].[ext]',
+            }
+          },
           // "url" loader works like "file" loader except that it embeds assets
           // smaller than specified limit in bytes as data URLs to avoid requests.
           // A missing `test` is equivalent to a match.

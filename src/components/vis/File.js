@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react';
 import { TweenLite } from 'gsap';
+import { withTheme } from 'styled-components';
 
 import Object3D from './Object3D';
-import FileObject/*, { FILE_DEPTH, FILE_HEIGHT, FILE_WIDTH }*/ from '../objects/File';
-import { withTheme } from 'styled-components';
+import FileObject/*, { FILE_DEPTH, FILE_HEIGHT, FILE_WIDTH }*/ from '../../objects/File';
 
 @withTheme
 class File extends PureComponent {

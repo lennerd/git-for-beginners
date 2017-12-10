@@ -65,9 +65,7 @@ function createTextTexture(width, height, text, options) {
 
   const texture = new THREE.CanvasTexture(canvas);
   //texture.premultiplyAlpha = true;
-  texture.anisotropy = 0;
-  texture.magFilter = THREE.NearestFilter;
-  texture.minFilter = THREE.LinearFilter;
+  //texture.anisotropy = 0;
 
   //document.body.appendChild(canvas);
 
@@ -84,14 +82,14 @@ export function createTextTextureV2(width, height, text, options) {
 
   const texture = createTextTexture(textureWidth, textureHeight, text, options);
 
-  const widthRepeat = textureWidth / width;
+  /*const widthRepeat = textureWidth / width;
   const heightRepeat = textureHeight / height;
 
   const widthOffset = (textureWidth - width) / textureWidth / -2;
   const heightOffset = (textureHeight - height) / textureHeight / 2;
 
-  texture.repeat.set(widthRepeat, heightRepeat);
-  texture.offset.set(widthOffset, heightOffset);
+  //texture.repeat.set(widthRepeat, heightRepeat);
+  //texture.offset.set(widthOffset, heightOffset);*/
 
   return texture;
 }

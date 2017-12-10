@@ -2,11 +2,12 @@ import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
 import styled from 'styled-components';
 import { Route, Redirect } from 'react-router-dom';
+import FontFaceObserver from 'fontfaceobserver';
 
-import Navigation from './Navigation';
 import Tutorial from './Tutorial';
 
 class App extends Component {
+
   render() {
     const { className } = this.props;
 
@@ -14,23 +15,19 @@ class App extends Component {
       <div className={className}>
         <Helmet titleTemplate="%s — Learn Git" defaultTitle="Learn Git" />
         <Route exact path="/" render={() => (
-          <Redirect to="/chapter/0"/>
+          <Redirect to="/chapter/1"/>
         )} />
-        <Navigation />
-        <Route path="/chapter/:chapter" component={Tutorial} />
+        <Route path="/chapter/:id" component={Tutorial} />
       </div>
     );
   }
 }
 
+// Preload Source Code Pro font for usage in textures etc.
+new FontFaceObserver('Source Code Pro', { weight: 400 }).load();
+new FontFaceObserver('Source Code Pro', { weight: 900 }).load();
+
 export default styled(App)`
   height: 100%;
-  background-image: linear-gradient(to bottom right, #FFF9F7, #B9C0E5);
-  display: flex;
-  flex-direction: column-reverse;
   color: ${props => props.theme.color.text};
-
-  ${Navigation} {
-    flex-shrink: 0;
-  }
 `;

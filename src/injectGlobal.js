@@ -1,4 +1,5 @@
 import { injectGlobal } from 'styled-components';
+import theme from './theme';
 import 'normalize.css';
 
 injectGlobal`
@@ -17,10 +18,17 @@ injectGlobal`
 
   body {
     font-family: 'Source Sans Pro', sans-serif;
-    line-height: 1.7857;
+    line-height: ${theme.baseLineHeight};
+    font-size: ${theme.baseFontSize}px;
   }
 
   h1, p {
     margin: 0;
+  }
+
+  button {
+    font-family: inherit;
+    color: inherit;
+    cursor: pointer;
   }
 `;

@@ -3,12 +3,15 @@ import { Helmet } from 'react-helmet';
 import { observable, action } from 'mobx';
 import { observer } from 'mobx-react';
 import { TimelineLite } from 'gsap';
+import styled from 'styled-components';
+import { ENTERED } from 'react-transition-group/Transition';
 
-import Visualisation from '../Visualisation';
 import Chapter from './Chapter';
 import ChapterText from './ChapterText';
-import File from '../File';
-import FileLabel from '../FileLabel';
+import ChapterButton from './ChapterButton';
+import Visualisation from '../vis/Visualisation';
+import File from '../vis/File';
+import FileLabel from '../vis/FileLabel';
 import FileModel from '../../models/File';
 
 const ACTION_ADD_FIRST_FILE = Symbol('ADD_FIRST_FILE');
@@ -47,7 +50,11 @@ class ChapterOne extends Component {
 
     this.copyTimeline.add(this.copyLastFile, '+=1.5');
 
-    //this.addFirstFile();
+    this.addFirstFile();
+    this.useVersioning = true;
+    this.copyLastFile();
+    this.copyTimeline.seek(2);
+    this.copyTimeline.play();
   }
 
   componentWillUnmount() {
@@ -123,6 +130,8 @@ class ChapterOne extends Component {
   }
 
   render() {
+    const { className, chapter, ...props } = this.props;
+
     const files = this.files.map(file => (
       <File column={file.column} appear={file.appear} key={file.id}>
         {file.name && <FileLabel label={file.name} />}
@@ -130,21 +139,36 @@ class ChapterOne extends Component {
     ));
 
     return (
-      <Chapter {...this.props}>
-        <Helmet>
-          <title>Versioning of Files</title>
-        </Helmet>
-        <ChapterText>
-          <h1>Versionierung</h1>
-          <p>Erklärung, wie Versionierung funktioniert.</p>
-          <button onClick={this.handleNext}>Wir erstellen eine Datei</button>
-        </ChapterText>
-        <Visualisation>
-          {files}
-        </Visualisation>
+      <Chapter {...props}>
+        {(status) => (
+          <div className={className}>
+            <Helmet>
+              <title>Versioning of Files</title>
+            </Helmet>
+            <ChapterText chapter={chapter} half>
+              <p>So Git can be used to make version of you files. Okay, but what is version? Let’s check the basics first.</p>
+              <p>Everything starts with a file. Maybe a small text file we put together to write a application for a new job. Or a draft for a new exciting project.</p>
+              <ChapterButton onClick={this.handleNext}>Wir erstellen eine Datei</ChapterButton>
+            </ChapterText>
+            <Visualisation tick={status === ENTERED}>
+              {files}
+            </Visualisation>
+          </div>
+        )}
       </Chapter>
     );
   }
 }
 
-export default ChapterOne;
+export default styled(ChapterOne)`
+  height: 100%;
+
+  ${ChapterText} {
+    position: relative;
+    z-index: 1;
+  }
+
+  ${Visualisation} {
+    z-index: 0;
+  }
+`;
