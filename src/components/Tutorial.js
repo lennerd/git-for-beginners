@@ -2,7 +2,6 @@ import React, { Component, cloneElement } from 'react';
 import styled from 'styled-components';
 import TransitionGroup from 'react-transition-group/TransitionGroup';
 import { inject, observer } from 'mobx-react';
-import { computed } from 'mobx';
 
 import Navigation from './nav/Navigation';
 
@@ -19,13 +18,13 @@ class Tutorial extends Component {
 
     const { tutorial, match } = props;
 
-    tutorial.navigate(match.params.id);
+    tutorial.navigate(parseInt(match.params.id, 10));
   }
 
   componentWillReceiveProps(nextProps) {
     const { tutorial, match } = nextProps;
 
-    tutorial.navigate(match.params.id);
+    tutorial.navigate(parseInt(match.params.id, 10));
   }
 
   render() {
@@ -40,7 +39,10 @@ class Tutorial extends Component {
         >
           {
             currentChapter != null &&
-            <currentChapter.component key={currentChapter.id} chapter={currentChapter} />
+            <currentChapter.component
+              key={currentChapter.id}
+              chapter={currentChapter}
+            />
           }
         </TransitionGroup>
         <Navigation />

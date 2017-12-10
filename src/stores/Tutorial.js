@@ -20,7 +20,7 @@ class Tutorial {
   }
 
   @action navigate(id) {
-    this.currentChapterId = parseInt(id, 10);
+    this.currentChapterId = id;
   }
 
   @computed get direction() {

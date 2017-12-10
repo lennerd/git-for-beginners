@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Transition from 'react-transition-group/Transition';
+import { Helmet } from 'react-helmet';
 import { TweenLite } from 'gsap';
 import styled from 'styled-components';
 
@@ -32,7 +33,7 @@ class Chapter extends Component {
   }
 
   render() {
-    const { children, className, ...props } = this.props;
+    const { children, className, chapter, ...props } = this.props;
 
     return (
       <Transition
@@ -43,6 +44,9 @@ class Chapter extends Component {
       >
         {(status) => (
           <div className={className}>
+            <Helmet>
+              <title>{chapter.title}</title>
+            </Helmet>
             <Container>
               {children(status)}
             </Container>

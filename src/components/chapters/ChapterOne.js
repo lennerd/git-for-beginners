@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Helmet } from 'react-helmet';
 import { observable, action } from 'mobx';
 import { observer } from 'mobx-react';
 import { TimelineLite } from 'gsap';
@@ -49,12 +48,6 @@ class ChapterOne extends Component {
     });
 
     this.copyTimeline.add(this.copyLastFile, '+=1.5');
-
-    this.addFirstFile();
-    this.useVersioning = true;
-    this.copyLastFile();
-    this.copyTimeline.seek(2);
-    this.copyTimeline.play();
   }
 
   componentWillUnmount() {
@@ -99,9 +92,12 @@ class ChapterOne extends Component {
   }
 
   @action.bound handleNext() {
+    const { chapter } = this.props;
+
     if (this.action === ACTION_ADD_FIRST_FILE) {
       this.addFirstFile();
       this.action = ACTION_COPY_LAST_FILE;
+      chapter.progress = 0.25;
 
       return;
     }
@@ -109,6 +105,7 @@ class ChapterOne extends Component {
     if (this.action === ACTION_COPY_LAST_FILE) {
       this.copyLastFile();
       this.action = ACTION_LOOP;
+      chapter.progress = 0.5;
 
       return;
     }
@@ -117,6 +114,7 @@ class ChapterOne extends Component {
       this.copyTimeline.seek(2);
       this.copyTimeline.play();
       this.action = ACTION_ADD_FILENAMES;
+      chapter.progress = 0.75;
 
       return;
     }
@@ -124,8 +122,61 @@ class ChapterOne extends Component {
     if (this.action === ACTION_ADD_FILENAMES) {
       this.useVersioning = true;
       this.action = ACTION_NONE;
+      chapter.progress = 1;
 
       return;
+    }
+  }
+
+  renderText() {
+    const { chapter } = this.props;
+
+    if (this.action === ACTION_ADD_FIRST_FILE) {
+      return (
+        <ChapterText chapter={chapter} half>
+          <p>So Git can be used to make version of you files. Okay, but what is a version? Let’s check the basics first.</p>
+          <p>Everything starts with a file. Maybe a small text file we put together to write a application for a new job. Or a draft for a new exciting project.</p>
+          <ChapterButton onClick={this.handleNext}>Create a new file.</ChapterButton>
+        </ChapterText>
+      );
+    }
+
+    if (this.action === ACTION_COPY_LAST_FILE) {
+      return (
+        <ChapterText chapter={chapter} half>
+          <p>After a bunch of work on our file a few hours later, we rethought some parts of it.</p>
+          <p>To be safe, we decide to create a backup file, which is nothing more than creating.</p>
+          <p>To make a new version the file, we simply make a copy of it.</p>
+          <ChapterButton onClick={this.handleNext}>Create a copy.</ChapterButton>
+        </ChapterText>
+      );
+    }
+
+    if (this.action === ACTION_LOOP) {
+      return (
+        <ChapterText chapter={chapter} half>
+          <p>And this goes on, and on, and on.</p>
+          <ChapterButton onClick={this.handleNext}>Start</ChapterButton>
+        </ChapterText>
+      );
+    }
+
+    if (this.action === ACTION_ADD_FILENAMES) {
+      return (
+        <ChapterText chapter={chapter} half>
+          <p>And this goes on, and on, and on.</p>
+          <ChapterButton onClick={this.handleNext}>Start</ChapterButton>
+        </ChapterText>
+      );
+    }
+
+    if (this.action === ACTION_NONE) {
+      return (
+        <ChapterText chapter={chapter} half>
+          <p>And this goes on, and on, and on.</p>
+          <ChapterButton onClick={this.handleNext}>Start</ChapterButton>
+        </ChapterText>
+      );
     }
   }
 
@@ -139,17 +190,10 @@ class ChapterOne extends Component {
     ));
 
     return (
-      <Chapter {...props}>
+      <Chapter chapter={chapter} {...props}>
         {(status) => (
           <div className={className}>
-            <Helmet>
-              <title>Versioning of Files</title>
-            </Helmet>
-            <ChapterText chapter={chapter} half>
-              <p>So Git can be used to make version of you files. Okay, but what is version? Let’s check the basics first.</p>
-              <p>Everything starts with a file. Maybe a small text file we put together to write a application for a new job. Or a draft for a new exciting project.</p>
-              <ChapterButton onClick={this.handleNext}>Wir erstellen eine Datei</ChapterButton>
-            </ChapterText>
+            {this.renderText()}
             <Visualisation tick={status === ENTERED}>
               {files}
             </Visualisation>

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { inject } from 'mobx-react';
+import { inject, observer } from 'mobx-react';
 
 import Container from '../common/Container';
 import NavigationItem from './NavigationItem';
@@ -59,6 +59,7 @@ const NavigationTimeline = styled.div`
 `;
 
 @inject('tutorial')
+@observer
 class Navigation extends Component {
   render() {
     const { className, tutorial } = this.props;
