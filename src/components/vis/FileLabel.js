@@ -10,24 +10,19 @@ class FileLabel extends PureComponent {
     appear: false,
   };
 
-  state = {
-    fileLabelObject: new FileLabelObject(),
-  };
+  fileLabelObject = new FileLabelObject();
 
   componentDidMount() {
-    const { fileLabelObject } = this.state;
-
-    fileLabelObject.appear();
+    this.fileLabelObject.appear();
   }
 
   render() {
-    const { label } = this.props;
-    const { fileLabelObject } = this.state;
+    const { font, label } = this.props;
 
-    fileLabelObject.updateLabel(label);
+    this.fileLabelObject.update(font, label);
 
     return (
-      <Object3D object3D={fileLabelObject} />
+      <Object3D object3D={this.fileLabelObject} />
     );
   }
 }

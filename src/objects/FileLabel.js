@@ -1,11 +1,7 @@
 import { TweenLite } from 'gsap';
 
-import { FILE_DEPTH, FILE_WIDTH } from './File';
+import { FILE_WIDTH } from './File';
 import theme from '../theme';
-
-import SourceCodeProRegular from '../fonts/SourceCodeProRegular';
-
-const fontLoader = new THREE.FontLoader();
 
 const FILE_LABEL_SIZE = 0.13;
 
@@ -17,7 +13,11 @@ class FileLabel extends THREE.Group {
 
     this.textMesh = new THREE.Mesh(
       this.textGeometry,
-      new THREE.MeshBasicMaterial({ color: theme.color.highlight, side: THREE.DoubleSide }),
+      new THREE.MeshBasicMaterial({
+        color: theme.color.highlight,
+        side: THREE.DoubleSide,
+        transparent: true
+      }),
     );
 
     this.textMesh.position.x = (FILE_WIDTH / -2) - FILE_LABEL_SIZE - 0.2;
@@ -28,20 +28,15 @@ class FileLabel extends THREE.Group {
     this.add(this.textMesh);
   }
 
-  updateLabel(label) {
-    fontLoader.load(
-      SourceCodeProRegular,
-      (font) => {
-        const shapes = font.generateShapes(label, FILE_LABEL_SIZE, 2);
-        const geometry = new THREE.ShapeGeometry(shapes);
+  update(font, label) {
+    const shapes = font.generateShapes(label, FILE_LABEL_SIZE, 2);
+    const geometry = new THREE.ShapeGeometry(shapes);
 
-        geometry.computeBoundingBox();
-        const xMid = -0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
-        geometry.translate( xMid, 0, 0 );
+    geometry.computeBoundingBox();
+    const xMid = (geometry.boundingBox.max.x - geometry.boundingBox.min.x) / -2;
+    geometry.translate(xMid, 0, 0);
 
-        this.textGeometry.fromGeometry(geometry);
-      }
-    );
+    this.textGeometry.fromGeometry(geometry);
   }
 
   appear() {

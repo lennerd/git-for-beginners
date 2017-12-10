@@ -130,11 +130,11 @@ class ChapterOne extends Component {
   }
 
   render() {
-    const { className, chapter, ...props } = this.props;
+    const { className, chapter, font, ...props } = this.props;
 
     const files = this.files.map(file => (
       <File column={file.column} appear={file.appear} key={file.id}>
-        {file.name && <FileLabel label={file.name} />}
+        {file.name && <FileLabel font={font} label={file.name} />}
       </File>
     ));
 

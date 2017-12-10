@@ -10,4 +10,12 @@ function Loadable(loader, options) {
   })
 }
 
+Loadable.Map = (loader, options) => {
+  return BaseLoadable.Map({
+    loading: LoadingSpinner,
+    ...options,
+    loader,
+  })
+};
+
 export default Loadable;
