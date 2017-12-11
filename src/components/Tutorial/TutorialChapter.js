@@ -4,6 +4,7 @@ import { inject } from 'mobx-react';
 import TutorialWrapper from './TutorialWrapper';
 import ChapterTransitionGroup from './Chapter/ChapterTransitionGroup';
 import Navigation from './Navigation';
+import LoadingSpinner from '../common/LoadingSpinner';
 
 @inject('tutorial')
 class TutorialChapter extends PureComponent {

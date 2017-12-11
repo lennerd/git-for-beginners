@@ -1,15 +1,15 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
 
-const spinning = (props) => keyframes`
-  0% { border-radius: ${props.theme.spacing(0.25)}; transform: rotateZ(-45deg); }
+const spinning = keyframes`
+  0% { border-radius: 5px; transform: rotateZ(-45deg); }
   33% { border-radius: 0px; transform: scale(1.2) rotateZ(-45deg); }
   66% { border-radius: 0px; transform: scale(1.2) rotateZ(-135deg); }
-  100% { border-radius: ${props.theme.spacing(0.25)}; transform: rotateZ(-135deg); }
+  100% { border-radius: 5px; transform: rotateZ(-135deg); }
 `;
 
 function LoadingSpinner({ className, pastDelay, ...props }) {
-  if (pastDelay) {
+  if (!pastDelay) {
     return null;
   }
 
