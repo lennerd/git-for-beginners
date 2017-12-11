@@ -1,28 +1,58 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
-import { Provider } from 'mobx-react';
+import { Provider, observer, inject } from 'mobx-react';
+import { Redirect } from 'react-router-dom';
 
 import ChapterWrapper from './ChapterWrapper';
-import ChapterText from './ChapterText';
-import ChapterButton from './ChapterButton';
 
-class Chapter extends PureComponent {
-  componentDidMount() {
-    const { chapter } = this.props;
+@inject('tutorial')
+@observer
+class Chapter extends Component {
+  static defaultProps = {
+    storyInitialiser: Story => new Story(),
+  };
 
-    chapter.reset();
+  constructor(props) {
+    super();
+
+    const { storyInitialiser, loaded, chapter } = props;
+
+    this.story = storyInitialiser(loaded);
+    chapter.setStory(this.story);
+  }
+
+  renderRedirect() {
+    const { tutorial, chapter } = this.props;
+
+    if (!this.story.nextChapter) {
+      return null;
+    }
+
+    const { currentChapter } = tutorial;
+    const { nextChapter } = chapter;
+
+    if (nextChapter == null || nextChapter === currentChapter) {
+      return null;
+    }
+
+    return <Redirect to={`/chapter/${nextChapter.id}`} />;
   }
 
   render() {
-    const { chapter, children, ...props } = this.props;
+    const { chapter, ...props } = this.props;
+
+    delete props.storyInitialiser;
+    delete props.loaded;
 
     return (
-      <Provider chapter={chapter}>
+      <Provider chapter={chapter} story={this.story}>
         <ChapterWrapper {...props}>
+          {this.renderRedirect()}
           <Helmet>
             <title>{chapter.title}</title>
           </Helmet>
-          {children}
+          {this.story.write({ chapter, ...props })}
+          {this.story.visualise({ chapter, ...props })}
         </ChapterWrapper>
       </Provider>
     );
@@ -30,8 +60,3 @@ class Chapter extends PureComponent {
 }
 
 export default Chapter;
-
-export {
-  ChapterText,
-  ChapterButton,
-}

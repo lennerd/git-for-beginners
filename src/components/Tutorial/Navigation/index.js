@@ -6,18 +6,18 @@ import NavigationItem from './NavigationItem';
 import NavigationWrapper from './NavigationWrapper';
 import NavigationTimeline from './NavigationTimeline';
 
-@inject('tutorial', 'chapter')
+@inject('tutorial')
 @observer
 class Navigation extends Component {
   render() {
-    const { tutorial, chapter: currentChapter } = this.props;
+    const { tutorial } = this.props;
     const { chapters } = tutorial;
 
     const navigationItems = chapters.map(chapter => (
       <NavigationItem
         key={chapter.id}
         to={`/chapter/${chapter.id}`}
-        done={tutorial.done(chapter, currentChapter)}
+        done={chapter.done}
       >
           {chapter.title}
       </NavigationItem>
@@ -29,7 +29,7 @@ class Navigation extends Component {
           {navigationItems}
           <NavigationTimeline
             items={chapters.length}
-            progress={tutorial.progress(currentChapter)}
+            progress={tutorial.progress}
           />
         </NavigationWrapper>
       </Container>

@@ -7,22 +7,34 @@ import Navigation from './Navigation';
 
 @inject('tutorial')
 class TutorialChapter extends PureComponent {
-  render() {
+  componentWillMount() {
     const { tutorial, match } = this.props;
 
     const chapterId = parseInt(match.params.chapterId, 10);
-    const chapter = tutorial.findChapter(chapterId);
+    tutorial.navigate(chapterId);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { tutorial, match } = nextProps;
+
+    const chapterId = parseInt(match.params.chapterId, 10);
+    tutorial.navigate(chapterId);
+  }
+
+  render() {
+    const { tutorial, match } = this.props;
+    const { currentChapter: chapter } = tutorial;
 
     if (chapter == null) {
-      console.error('Unknown chapter.');
-
       return null;
     }
 
     return (
       <TutorialWrapper>
-        <Navigation chapter={chapter} />
+        <Navigation />
         <ChapterTransitionGroup match={match}>
+          {/* We pass the current chapter to the component to be able to switch between multiple
+              chapter components via transitions */}
           <chapter.component key={match.params.chapterId} chapter={chapter} />
         </ChapterTransitionGroup>
       </TutorialWrapper>

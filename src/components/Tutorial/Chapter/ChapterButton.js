@@ -1,10 +1,27 @@
+import React, { PureComponent } from 'react';
 import styled from 'styled-components';
+import { inject } from 'mobx-react';
 
 function inlineSVG(svg) {
   return `url(data:image/svg+xml;base64,${btoa(svg)})`;
 }
 
-const ChapterButton = styled.button`
+@inject('story')
+class ChapterButton extends PureComponent {
+  handleClick = () => {
+    const { story } = this.props;
+
+    story.next();
+  }
+
+  render() {
+    return (
+      <button onClick={this.handleClick} {...this.props} />
+    );
+  }
+}
+
+export default styled(ChapterButton)`
   transition: 200ms background-color;
   position: relative;
   appearance: none;
@@ -42,5 +59,3 @@ const ChapterButton = styled.button`
     opacity: 0;
   }
 `;
-
-export default ChapterButton;
