@@ -1,4 +1,4 @@
-import theme from '../theme';
+import theme from '../../../theme';
 /*import createChangesTexture from '../helpers/createChangesTexture';
 import createAddTexture from '../helpers/createAddTexture';
 import { STATUS_MODIFIED, STATUS_ADDED, STATUS_DELETED } from '../models/FileStatus';

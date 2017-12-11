@@ -1,15 +1,12 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import Transition from 'react-transition-group/Transition';
-import { Helmet } from 'react-helmet';
 import { TweenLite } from 'gsap';
 import styled from 'styled-components';
-
-import Container from '../common/Container';
 
 export const FORWARD = Symbol('forward');
 export const BACK = Symbol('back');
 
-class Chapter extends Component {
+class ChapterWrapper extends PureComponent {
   handleEnter = (node) => {
     const { direction } = this.props;
 
@@ -33,7 +30,9 @@ class Chapter extends Component {
   }
 
   render() {
-    const { children, className, chapter, ...props } = this.props;
+    const { children, className, direction, ...props } = this.props;
+
+    delete props.direction;
 
     return (
       <Transition
@@ -42,22 +41,15 @@ class Chapter extends Component {
         onExit={this.handleExit}
         addEndListener={this.addEndListener}
       >
-        {(status) => (
-          <div className={className}>
-            <Helmet>
-              <title>{chapter.title}</title>
-            </Helmet>
-            <Container>
-              {children(status)}
-            </Container>
-          </div>
-        )}
+        <div className={className}>
+          {children}
+        </div>
       </Transition>
     );
   }
 }
 
-export default styled(Chapter)`
+export default styled(ChapterWrapper)`
   will-change: transform, opacity;
   position: absolute;
   top: 0;

@@ -1,7 +1,7 @@
 import { TweenLite } from 'gsap';
 
 import { FILE_WIDTH } from './File';
-import theme from '../theme';
+import theme from '../../../theme';
 
 const FILE_LABEL_SIZE = 0.13;
 

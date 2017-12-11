@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 
 import Object3D from './Object3D';
-import FileLabelObject from '../../objects/FileLabel';
+import FileLabelObject from './objects/FileLabel';
 
 class FileLabel extends PureComponent {
   static defaultProps = {

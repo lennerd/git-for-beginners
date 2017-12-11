@@ -3,25 +3,28 @@ import { render } from 'react-dom';
 import { TweenLite, Power1 } from 'gsap';
 import { useStrict } from 'mobx';
 import { Provider } from 'mobx-react';
-import { BrowserRouter } from 'react-router-dom'
+import { BrowserRouter, Route } from 'react-router-dom'
 import { ThemeProvider } from 'styled-components';
 
-import App from './components/App';
-import stores from './stores';
+import App, { AppStore } from './components/App';
+import VisualisationStore from './components/Visualisation/VisualisationStore';
 import theme from './theme';
 import './injectGlobal';
 
 TweenLite.defaultEase = Power1.easeInOut;
 useStrict(true);
 
+const app = new AppStore();
+const visualisation = new VisualisationStore(TweenLite.ticker);
+
 render((
   <Provider
-    ticker={TweenLite.ticker}
-    {...stores}
+    app={app}
+    visualisation={visualisation}
   >
     <ThemeProvider theme={theme}>
       <BrowserRouter>
-        <App />
+        <Route component={App} />
       </BrowserRouter>
     </ThemeProvider>
   </Provider>

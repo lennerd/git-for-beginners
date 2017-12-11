@@ -1,17 +1,17 @@
-import React, { PureComponent } from 'react';
-import { inject } from 'mobx-react';
+import React, { Component } from 'react';
+import { inject, observer } from 'mobx-react';
 import styled from 'styled-components';
 
 import Scene from './Scene';
 
 const FRUSTRUM = 200;
 
-@inject('ticker')
-class Visualisation extends PureComponent {
+@inject('visualisation')
+@observer
+class Visualisation extends Component {
   static defaultProps = {
     offsetX: 2,
     offsetZ: -2,
-    tick: true,
   };
 
   scene = new THREE.Scene();
@@ -19,7 +19,9 @@ class Visualisation extends PureComponent {
   ticking = false;
 
   handleTick = () => {
-    if (this.props.tick) {
+    const { tick } = this.props.visualisation;
+
+    if (tick) {
       this.renderer.render(this.scene, this.camera);
     }
   }
@@ -49,7 +51,7 @@ class Visualisation extends PureComponent {
       return;
     }
 
-    const { ticker } = this.props;
+    const { ticker } = this.props.visualisation;
 
     ticker.removeEventListener('tick', this.handleTick);
     window.removeEventListener('resize', this.handleResize);
@@ -58,7 +60,7 @@ class Visualisation extends PureComponent {
   }
 
   startTicking() {
-    const { tick, ticker } = this.props;
+    const { tick, ticker } = this.props.visualisation;
 
     if (this.ticking || !tick) {
       return;
@@ -120,6 +122,7 @@ export default styled(Visualisation)`
   left: 0;
   width: 100%;
   height: 100%;
+  z-index: 0;
 
   canvas {
     display: block;

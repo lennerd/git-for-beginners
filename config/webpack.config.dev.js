@@ -254,7 +254,6 @@ module.exports = {
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     new webpack.ProvidePlugin({
       THREE: 'three',
-      CANNON: 'cannon',
     }),
   ],
   // Some libraries import Node modules but don't use them in the browser.

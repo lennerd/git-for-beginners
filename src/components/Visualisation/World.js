@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 
-import WorldObject from '../../objects/World';
+import WorldObject from './objects/World';
 import Object3D from './Object3D';
 
 class World extends PureComponent {
