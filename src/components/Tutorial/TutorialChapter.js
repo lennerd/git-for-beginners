@@ -18,9 +18,9 @@ class TutorialChapter extends PureComponent {
 
   @action navigate(props = this.props) {
     const { tutorial, match } = props;
-    const chapterId = parseInt(match.params.chapterId, 10);
+    const chapterIndex = parseInt(match.params.chapterIndex, 10);
 
-    tutorial.currentChapterId = chapterId;
+    tutorial.currentChapterIndex = chapterIndex;
   }
 
   render() {
@@ -37,7 +37,7 @@ class TutorialChapter extends PureComponent {
         <ChapterTransitionGroup match={match}>
           {/* We pass the current chapter to the component to be able to switch between multiple
               chapter components via transitions */}
-          <chapter.component key={match.params.chapterId} chapter={chapter} />
+          <chapter.component key={chapter.index} chapter={chapter} />
         </ChapterTransitionGroup>
       </TutorialWrapper>
     );

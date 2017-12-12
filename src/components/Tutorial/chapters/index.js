@@ -14,38 +14,34 @@ function LoadableChapter(loader, storyInitialiser) {
 }
 
 const Introduction = LoadableChapter(() => (
-  Promise.all([
-    import(/* webpackChunkName: "introduction" */'./Introduction'),
-    fontLoader.load(SourceCodeProRegular),
-  ])
-), ([Introduction, font]) => new Introduction.default(font));
+  import('./Introduction')
+));
 
 const VersioningOfFiles = LoadableChapter(() => (
   Promise.all([
-    import(/* webpackChunkName: "versioningOfFiles" */'./VersioningOfFiles'),
+    import('./VersioningOfFiles'),
     fontLoader.load(SourceCodeProRegular),
   ])
 ), ([VersioningOfFiles, font]) => new VersioningOfFiles.default(font));
 
+const VersioningInGit = LoadableChapter(() => (
+  Promise.all([
+    import('./VersioningInGit'),
+    fontLoader.load(SourceCodeProRegular),
+  ])
+), ([VersioningInGit, font]) => new VersioningInGit.default(font));
+
 export default [
   {
-    id: 1,
     title: 'Introduction',
     component: Introduction,
   },
   {
-    id: 2,
     title: 'Versioning of Files',
     component: VersioningOfFiles,
   },
   {
-    id: 3,
-    title: 'Version Database',
-    component: Introduction,
-  },
-  {
-    id: 4,
     title: 'Versioning in Git',
-    component: Introduction,
+    component: VersioningInGit,
   },
 ];

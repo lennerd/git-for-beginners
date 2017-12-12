@@ -10,51 +10,51 @@ class File extends PureComponent {
   static defaultProps = {
     column: 0,
     level: 0,
+    row: 0,
     appear: false,
   };
 
-  constructor() {
-    super();
-
-    const fileObject = new FileObject();
-    const group = new THREE.Group();
-
-    group.add(fileObject);
-
-    this.state = {
-      fileObject,
-      group,
-    }
-  }
+  fileObject = new FileObject();
 
   componentDidMount() {
-    const { group } = this.state;
     const { appear } = this.props;
 
     if (appear) {
-      TweenLite.from(group.scale, 0.8, { y: 0 });
+      TweenLite.from(this.fileObject.scale, 0.8, { y: 0 });
     }
   }
 
   componentDidUpdate(prevProps) {
     const { theme } = this.props;
-    const { group } = this.state;
 
-    TweenLite.from(group.position, 0.8, {
+    TweenLite.from(this.fileObject.position, 0.8, {
       z: theme.vis.cellWidth * prevProps.column,
+      x: theme.vis.cellHeight * prevProps.row,
       y: theme.vis.levelHeight * prevProps.level,
     });
   }
 
-  render() {
-    const { children, column, level, theme } = this.props;
-    const { group } = this.state;
+  handleRaycastEnter = () => {
 
-    group.position.z = theme.vis.cellWidth * column;
-    group.position.y = theme.vis.levelHeight * level;
+  };
+
+  onRaycastLeave = () => {
+
+  };
+
+  render() {
+    const { children, column, row, level, theme } = this.props;
+
+    this.fileObject.position.x = theme.vis.cellHeight * row;
+    this.fileObject.position.z = theme.vis.cellWidth * column;
+    this.fileObject.position.y = theme.vis.levelHeight * level;
 
     return (
-      <Object3D object3D={group}>
+      <Object3D
+        object3D={this.fileObject}
+        onRaycastEnter={this.handleRaycastEnter}
+        onRaycastLeave={this.handleRaycastLeave}
+      >
         {children}
       </Object3D>
     );

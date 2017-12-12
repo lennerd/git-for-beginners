@@ -31,7 +31,7 @@ const FILE_NAME_VARIANTS = [
   '_final_itsatrap',
 ];
 
-class VersioningOfFiles extends Story {
+class VersioningInGit extends Story {
   @observable files = [];
   @observable useFileNames = false;
   @observable useVersionDatabase = false;
@@ -70,10 +70,12 @@ class VersioningOfFiles extends Story {
 
   @action copyLastFile() {
     if (this.useVersionDatabase) {
-      this.files.forEach((file, index) => {
-        file.column = 1;
-        file.row = index;
-        file.name = 'file';
+      this.files.forEach((file) => {
+        if (file.column === 0) {
+          file.column = 1;
+        } else {
+          file.row++;
+        }
       });
     } else {
       this.files.forEach((file) => {
@@ -117,6 +119,14 @@ class VersioningOfFiles extends Story {
 
   @action addVersionDatabase() {
     this.useVersionDatabase = true;
+
+    this.files.forEach((file, index) => {
+      file.column = index === 0 ? 0 : 1;
+      file.row = index <= 1 ? 0 : (index - 1);
+      file.name = 'file';
+
+      this.copyTimeline.restart();
+    });
   }
 
   write() {
@@ -209,4 +219,4 @@ class VersioningOfFiles extends Story {
   }
 }
 
-export default VersioningOfFiles;
+export default VersioningInGit;

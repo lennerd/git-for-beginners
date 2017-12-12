@@ -2,6 +2,11 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 
 class Object3D extends PureComponent {
+  static defaultProps = {
+    onRaycastEnter: () => {},
+    onRaycastLeave: () => {},
+  };
+
   static childContextTypes = {
     parentObject3D: PropTypes.object,
   };
@@ -22,14 +27,22 @@ class Object3D extends PureComponent {
     const { object3D } = this.props;
     const { parentObject3D } = this.context;
 
+    object3D.component = true;
     parentObject3D.add(object3D);
+
+    object3D.addEventListener('raycast-enter', this.handleRaycastEnter);
+    object3D.addEventListener('raycast-leave', this.handleRaycastLeave);
   }
 
   componentWillUnmount() {
     const { object3D } = this.props;
     const { parentObject3D } = this.context;
 
+    object3D.component = false;
     parentObject3D.remove(object3D);
+
+    object3D.removeEventListener('raycast-enter', this.handleRaycastEnter);
+    object3D.removeEventListener('raycast-leave', this.handleRaycastLeave);
 
     object3D.traverse((child) => {
       if (child.geometry != null) {
@@ -65,6 +78,14 @@ class Object3D extends PureComponent {
       }
     });
   }
+
+  handleRaycastEnter = (event) => {
+    this.props.onRaycastEnter(event);
+  };
+
+  handleRaycastLeave = (event) => {
+    this.props.onRaycastLeave(event);
+  };
 
   render() {
     const { children } = this.props;

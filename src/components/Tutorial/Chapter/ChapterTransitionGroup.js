@@ -6,16 +6,16 @@ import { FORWARD, BACK } from './ChapterWrapper';
 
 class ChapterTransitionGroup extends PureComponent {
   get direction() {
-    const { chapterId } = this.props.match.params;
+    const { chapterIndex } = this.props.match.params;
 
-    if (this.prevChapterId == null) {
-      this.prevChapterId = chapterId;
+    if (this.prevChapterIndex == null) {
+      this.prevChapterIndex = chapterIndex;
 
       return null;
     }
 
-    const direction = chapterId > this.prevChapterId ? FORWARD : BACK;
-    this.prevChapterId = chapterId;
+    const direction = chapterIndex > this.prevChapterIndex ? FORWARD : BACK;
+    this.prevChapterIndex = chapterIndex;
 
     return direction;
   }

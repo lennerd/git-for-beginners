@@ -4,17 +4,6 @@ import { inject } from 'mobx-react';
 
 import Container from '../../common/Container';
 
-const ChapterTextWrapper = styled.div`
-  width: ${props => props.half ? 40 : 100}%;
-  padding-top: 25vh;
-  position: relative;
-  z-index: 1;
-
-  * + * {
-    margin-top: ${props => props.theme.spacing(0.75)};
-  }
-`;
-
 const ChapterIndicator = styled.div`
   position: relative;
   ${props => props.theme.text.caps}
@@ -38,19 +27,37 @@ const ChapterHeadline = styled.h1`
   font-size: ${props => props.theme.text.big};
   color: ${props => props.theme.color.highlight};
   line-height: ${props => props.theme.text.lineHeightBig};
-  margin-bottom: ${props => props.theme.spacing(1)};
+
+  ${ChapterIndicator} + & {
+    margin-top: ${props => props.theme.spacing(0.75)};
+  }
+`;
+
+const ChapterTextWrapper = styled.div`
+  width: ${props => props.half ? 40 : 60}%;
+  margin: 0 ${props => props.half ? 0 : 'auto'};
+  padding-top: 25vh;
+  position: relative;
+  z-index: 1;
+
+  ${ChapterHeadline} + p {
+    margin-top: ${props => props.theme.spacing(1)};
+  }
+
+  p + p {
+    margin-top: ${props => props.theme.spacing(0.75)};
+  }
 `;
 
 @inject('tutorial', 'chapter')
 class ChapterText extends PureComponent {
   render() {
     const { children, chapter, tutorial, half } = this.props;
-    const chapterNumber = tutorial.chapters.indexOf(chapter) + 1;
 
     return (
       <Container>
         <ChapterTextWrapper half={half}>
-          <ChapterIndicator>Chapter {chapterNumber} of {tutorial.chapters.length}</ChapterIndicator>
+          <ChapterIndicator>Chapter {chapter.index} of {tutorial.chapters.length - 1}</ChapterIndicator>
           <ChapterHeadline>{chapter.title}</ChapterHeadline>
           {children}
         </ChapterTextWrapper>

@@ -1,7 +1,8 @@
 import { observable, computed, extendObservable } from "mobx";
 
 class Chapter {
-  @observable story;
+  @observable storyInitialiser;
+  @observable loaded;
 
   constructor(tutorial, data) {
     this.tutorial = tutorial;
@@ -11,6 +12,10 @@ class Chapter {
 
   @computed get index() {
     return this.tutorial.chapters.indexOf(this);
+  }
+
+  @computed get active() {
+    return this.index === this.tutorial.currentChapter.index;
   }
 
   @computed get done() {
@@ -27,17 +32,25 @@ class Chapter {
 
     return this.tutorial.chapters[nextIndex];
   }
+
+  @computed get story() {
+    if (this.storyInitialiser == null) {
+      return null;
+    }
+
+    return this.storyInitialiser(this.loaded);
+  }
 }
 
 class TutorialStore {
-  @observable currentChapterId;
+  @observable currentChapterIndex;
 
   constructor(chapters) {
     this.chapters = chapters.map(chapter => new Chapter(this, chapter));
   }
 
   @computed get currentChapter() {
-    return this.chapters.find(chapter => chapter.id === this.currentChapterId);
+    return this.chapters[this.currentChapterIndex];
   }
 
   @computed get progress() {

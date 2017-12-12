@@ -4,7 +4,7 @@ class Floor extends THREE.Group {
 
     this.shadowMesh = new THREE.Mesh(
       new THREE.PlaneBufferGeometry(50, 50),
-      new THREE.ShadowMaterial({ opacity: 0.05 }),
+      new THREE.ShadowMaterial({ opacity: 0.1, depthWrite: false }),
     );
 
 

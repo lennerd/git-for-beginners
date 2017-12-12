@@ -14,13 +14,7 @@ class Navigation extends Component {
     const { chapters } = tutorial;
 
     const navigationItems = chapters.map(chapter => (
-      <NavigationItem
-        key={chapter.id}
-        to={`/chapter/${chapter.id}`}
-        done={chapter.done}
-      >
-          {chapter.title}
-      </NavigationItem>
+      <NavigationItem key={chapter.index} chapter={chapter} />
     ));
 
     return (

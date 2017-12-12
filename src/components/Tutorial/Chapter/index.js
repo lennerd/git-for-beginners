@@ -10,7 +10,7 @@ import ChapterWrapper from './ChapterWrapper';
 @observer
 class Chapter extends Component {
   static defaultProps = {
-    storyInitialiser: Story => new Story(),
+    storyInitialiser: Story => new Story.default(),
   };
 
   constructor(props) {
@@ -18,17 +18,16 @@ class Chapter extends Component {
 
     const { storyInitialiser, loaded, chapter } = props;
 
-    this.story = storyInitialiser(loaded);
-
     runInAction(() => {
-      chapter.story = this.story;
+      chapter.storyInitialiser = storyInitialiser;
+      chapter.loaded = loaded;
     });
   }
 
   renderRedirect() {
     const { tutorial, chapter } = this.props;
 
-    if (!this.story.nextChapter) {
+    if (!chapter.story.nextChapter) {
       return null;
     }
 
@@ -39,7 +38,7 @@ class Chapter extends Component {
       return null;
     }
 
-    return <Redirect to={`/chapter/${nextChapter.id}`} />;
+    return <Redirect to={`/chapter/${nextChapter.index}`} />;
   }
 
   render() {
@@ -47,16 +46,17 @@ class Chapter extends Component {
 
     delete props.storyInitialiser;
     delete props.loaded;
+    delete props.tutorial;
 
     return (
-      <Provider chapter={chapter} story={this.story}>
+      <Provider chapter={chapter}>
         <ChapterWrapper {...props}>
           {this.renderRedirect()}
           <Helmet>
             <title>{chapter.title}</title>
           </Helmet>
-          {this.story.write({ chapter, ...props })}
-          {this.story.visualise({ chapter, ...props })}
+          {chapter.story.write({ chapter, ...props })}
+          {chapter.story.visualise({ chapter, ...props })}
         </ChapterWrapper>
       </Provider>
     );

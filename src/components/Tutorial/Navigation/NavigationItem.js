@@ -1,16 +1,38 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import cx from 'classnames';
-import { NavLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { observer } from 'mobx-react';
+import { runInAction } from 'mobx';
 
+@observer
 class NavigationItem extends Component {
+  handleClick = (event) => {
+    const { chapter } = this.props;
+
+    if (chapter.active) {
+      event.preventDefault();
+
+      runInAction(() => {
+        const loaded = chapter.loaded;
+        chapter.loaded = null;
+        chapter.loaded = loaded;
+      });
+    }
+  }
+
   render() {
-    const { to, className, children, done } = this.props;
+    const { chapter, className } = this.props;
+    const { index, done, active, title } = chapter;
 
     return (
-      <NavLink to={to} className={cx(className, { done })} activeClassName="active">
-        <NavigationLabel>{children}</NavigationLabel>
-      </NavLink>
+      <Link
+        to={`/chapter/${index}`}
+        className={cx(className, { done, active })}
+        onClick={this.handleClick}
+      >
+        <NavigationLabel>{title}</NavigationLabel>
+      </Link>
     );
   }
 }

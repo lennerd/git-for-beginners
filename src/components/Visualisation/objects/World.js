@@ -15,7 +15,7 @@ class World extends THREE.Group {
     const ambientLight = new THREE.AmbientLight(0xF5FDFF, 0.7);
 
     this.add(shadowCaster);
-    // this.add(new THREE.DirectionalLightHelper(shadowCaster)); // debug
+    //this.add(new THREE.DirectionalLightHelper(shadowCaster)); // debug
     this.add(ambientLight);
   }
 }

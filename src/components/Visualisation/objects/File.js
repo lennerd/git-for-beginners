@@ -12,7 +12,7 @@ export const FILE_DEPTH = FILE_WIDTH * FILE_SIZE_RATIO;
 //const TEXTURE_HEIGHT = 512;
 //const TEXTURE_HORIZONTAL_SCALE = (FILE_WIDTH / FILE_HEIGHT) / (TEXTURE_WIDTH / TEXTURE_HEIGHT);
 
-class File extends THREE.Group {
+class File extends THREE.Object3D {
   constructor(status) {
     super();
 
@@ -21,28 +21,25 @@ class File extends THREE.Group {
       new THREE.MeshLambertMaterial({ color: theme.color.fileDefault }),
     );
 
+    this.hoverMesh = new THREE.Mesh(
+      new THREE.BoxBufferGeometry(FILE_WIDTH + 0.015, FILE_HEIGHT + 0.015, FILE_DEPTH + 0.015),
+      new THREE.MeshBasicMaterial({ opacity: 1, transparent: true, depthWrite: false, color: theme.color.highlight, side: THREE.BackSide }),
+    );
+
     this.shadowMash = new THREE.Mesh(
       new THREE.BoxBufferGeometry(FILE_WIDTH, FILE_HEIGHT * 2, FILE_DEPTH),
       new THREE.ShadowMaterial({ depthWrite: false }),
     );
 
-    this.textureMesh = new THREE.Mesh(
-      new THREE.PlaneBufferGeometry(FILE_WIDTH, FILE_HEIGHT),
-      new THREE.MeshBasicMaterial({ opacity: 0, transparent: true, depthWrite: false, blending: THREE.CustomBlending }),
-    );
-
     this.fileMesh.position.y = FILE_HEIGHT / 2;
+    this.hoverMesh.position.y = FILE_HEIGHT / 2;
 
     this.shadowMash.castShadow = true;
     this.shadowMash.position.y = 0.1;
 
-    this.textureMesh.rotation.y = Math.PI;
-    this.textureMesh.position.y = FILE_HEIGHT / 2 - 0.01;
-    this.textureMesh.position.z = FILE_DEPTH / -2 - 0.001;
-
     this.add(this.shadowMash);
+    this.add(this.hoverMesh);
     this.add(this.fileMesh);
-    this.add(this.textureMesh);
   }
 }
 

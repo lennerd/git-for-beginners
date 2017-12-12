@@ -14,22 +14,75 @@ class Visualisation extends Component {
     offsetZ: -2,
   };
 
+  intersections = new Set();
+  ticking = false;
   scene = new THREE.Scene();
   camera = new THREE.OrthographicCamera();
-  ticking = false;
+  raycaster = new THREE.Raycaster();
+  mouse = new THREE.Vector2();
+  rect = new THREE.Vector2();
 
   handleTick = () => {
     const { tick } = this.props.visualisation;
 
-    if (tick) {
-      this.renderer.render(this.scene, this.camera);
+    if (!tick) {
+      return;
     }
+
+    this.raycaster.setFromCamera(this.mouse, this.camera);
+
+    this.prevIntersections = new Set(this.intersections);
+    this.intersections.clear();
+
+    const intersections = this.raycaster.intersectObjects(this.scene.children, true);
+
+    for (let intersection of intersections) {
+      if (intersection.object.component) {
+        this.intersections.add(intersection.object);
+      }
+
+      intersection.object.traverseAncestors((object) => {
+        if (object.component) {
+          this.intersections.add(object);
+        }
+      });
+    }
+
+    const enterEvent = { type: 'raycast-enter' };
+
+    for (let intersection of this.intersections.values()) {
+      if (this.prevIntersections.has(intersection)) {
+        continue;
+      }
+
+      intersection.dispatchEvent(enterEvent);
+    }
+
+    const leaveEvent = { type: 'raycast-leave' };
+
+    for (let prevIntersection of this.prevIntersections.values()) {
+      if (this.intersections.has(prevIntersection)) {
+        continue;
+      }
+
+      prevIntersection.dispatchEvent(leaveEvent);
+    }
+
+    this.renderer.render(this.scene, this.camera);
   }
 
   handleResize = () => {
     const rect = this.container.getBoundingClientRect();
 
-    this.resize(rect.width, rect.height);
+    this.rect.set(rect.width, rect.height);
+    this.resize();
+  }
+
+  handleMouseMove = (event) => {
+    this.mouse.set(
+      (event.clientX / this.rect.x) * 2 - 1,
+      -(event.clientY / this.rect.y) * 2 + 1,
+    );
   }
 
   componentDidMount() {
@@ -89,16 +142,16 @@ class Visualisation extends Component {
     this.camera.updateProjectionMatrix();
   }
 
-  resize(width, height) {
+  resize() {
     this.camera.near = 0.5;
     this.camera.far = 500;
-    this.camera.left = width / -FRUSTRUM;
-    this.camera.right = width / FRUSTRUM;
-    this.camera.top = height / FRUSTRUM;
-    this.camera.bottom = height / -FRUSTRUM;
+    this.camera.left = this.rect.x / -FRUSTRUM;
+    this.camera.right = this.rect.x / FRUSTRUM;
+    this.camera.top = this.rect.y / FRUSTRUM;
+    this.camera.bottom = this.rect.y / -FRUSTRUM;
     this.camera.updateProjectionMatrix();
 
-    this.renderer.setSize(width, height);
+    this.renderer.setSize(this.rect.x, this.rect.y);
     this.renderer.setPixelRatio(window.devicePixelRatio);
   }
 
@@ -106,7 +159,11 @@ class Visualisation extends Component {
     const { className, children } = this.props;
 
     return (
-      <div className={className} ref={(ref) => { this.container = ref; }}>
+      <div
+        className={className}
+        ref={(ref) => { this.container = ref; }}
+        onMouseMove={this.handleMouseMove}
+      >
         <canvas ref={(ref) => { this.canvas = ref; }} />
         <Scene scene={this.scene}>
           {children}

@@ -19,7 +19,7 @@ class Tutorial extends PureComponent {
         <Switch>
           <Redirect exact from="/" to="/chapter/1" />
           <Route
-            path="/chapter/:chapterId"
+            path="/chapter/:chapterIndex"
             component={TutorialChapter}
           />
         </Switch>

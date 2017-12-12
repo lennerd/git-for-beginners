@@ -28,7 +28,7 @@ export default {
 
   vis: {
     cellWidth: 3,
-    cellHeight: 2.3,
+    cellHeight: 3.5,
     levelHeight: 0.3,
   },
 

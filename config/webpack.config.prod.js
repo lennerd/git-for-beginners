@@ -338,6 +338,7 @@ module.exports = {
     // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
     // You can remove this if you don't use Moment.js:
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    // THREE is provided best by having a global variable.
     new webpack.ProvidePlugin({
       THREE: 'three',
     }),

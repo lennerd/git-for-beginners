@@ -13,7 +13,11 @@ class FileLabel extends PureComponent {
   fileLabelObject = new FileLabelObject();
 
   componentDidMount() {
-    this.fileLabelObject.appear();
+    const { appear } = this.props;
+
+    if (appear) {
+      this.fileLabelObject.appear();
+    }
   }
 
   render() {

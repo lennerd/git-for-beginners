@@ -16,7 +16,9 @@ class Story {
   }
 
   @action next() {
-    this.nextAction.handler.call(this);
+    if (this.nextAction.handler) {
+      this.nextAction.handler.call(this);
+    }
 
     const nextActionIndex = this.nextActionIndex + 1;
 
