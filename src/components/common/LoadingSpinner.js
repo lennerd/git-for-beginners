@@ -2,10 +2,10 @@ import React from 'react';
 import styled, { keyframes } from 'styled-components';
 
 const spinning = keyframes`
-  0% { border-radius: 5px; transform: rotateZ(-45deg); }
-  33% { border-radius: 0px; transform: scale(1.2) rotateZ(-45deg); }
-  66% { border-radius: 0px; transform: scale(1.2) rotateZ(-135deg); }
-  100% { border-radius: 5px; transform: rotateZ(-135deg); }
+  0% { border-radius: 50%; transform: rotateZ(-45deg); }
+  33% { border-radius: 0%; transform: scale(1.2) rotateZ(-45deg); }
+  66% { border-radius: 0%; transform: scale(1.2) rotateZ(-135deg); }
+  100% { border-radius: 50%; transform: rotateZ(-135deg); }
 `;
 
 function LoadingSpinner({ className, pastDelay, ...props }) {
@@ -32,6 +32,7 @@ export default styled(LoadingSpinner)`
   &:before {
     content: '';
     display: inline-block;
+    vertical-align: -1px;
     width: ${props => props.theme.spacing(0.5)};
     height: ${props => props.theme.spacing(0.5)};
     will-change: transformation, border-radius;
