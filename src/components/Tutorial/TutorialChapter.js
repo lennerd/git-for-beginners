@@ -1,25 +1,26 @@
 import React, { PureComponent } from 'react';
 import { inject } from 'mobx-react';
+import { action } from 'mobx';
 
 import TutorialWrapper from './TutorialWrapper';
 import ChapterTransitionGroup from './Chapter/ChapterTransitionGroup';
 import Navigation from './Navigation';
-import LoadingSpinner from '../common/LoadingSpinner';
 
 @inject('tutorial')
 class TutorialChapter extends PureComponent {
   componentWillMount() {
-    const { tutorial, match } = this.props;
-
-    const chapterId = parseInt(match.params.chapterId, 10);
-    tutorial.navigate(chapterId);
+    this.navigate();
   }
 
   componentWillReceiveProps(nextProps) {
-    const { tutorial, match } = nextProps;
+    this.navigate(nextProps);
+  }
 
+  @action navigate(props = this.props) {
+    const { tutorial, match } = props;
     const chapterId = parseInt(match.params.chapterId, 10);
-    tutorial.navigate(chapterId);
+
+    tutorial.currentChapterId = chapterId;
   }
 
   render() {

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
 import { Provider, observer, inject } from 'mobx-react';
 import { Redirect } from 'react-router-dom';
+import { runInAction } from 'mobx';
 
 import ChapterWrapper from './ChapterWrapper';
 
@@ -18,7 +19,10 @@ class Chapter extends Component {
     const { storyInitialiser, loaded, chapter } = props;
 
     this.story = storyInitialiser(loaded);
-    chapter.setStory(this.story);
+
+    runInAction(() => {
+      chapter.story = this.story;
+    });
   }
 
   renderRedirect() {

@@ -1,4 +1,4 @@
-import { observable, action, computed, extendObservable } from "mobx";
+import { observable, computed, extendObservable } from "mobx";
 
 class Chapter {
   @observable story;
@@ -7,10 +7,6 @@ class Chapter {
     this.tutorial = tutorial;
 
     extendObservable(this, data);
-  }
-
-  @action setStory(story) {
-    this.story = story
   }
 
   @computed get index() {
@@ -38,10 +34,6 @@ class TutorialStore {
 
   constructor(chapters) {
     this.chapters = chapters.map(chapter => new Chapter(this, chapter));
-  }
-
-  @action navigate(chapterId) {
-    this.currentChapterId = chapterId;
   }
 
   @computed get currentChapter() {
