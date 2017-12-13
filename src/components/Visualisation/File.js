@@ -36,15 +36,11 @@ class File extends PureComponent {
   }
 
   render() {
-    const { font, status, children, column, row, level, theme } = this.props;
+    const { children, column, row, level, theme } = this.props;
 
     this.fileObject.position.x = theme.vis.cellHeight * row;
     this.fileObject.position.z = theme.vis.cellWidth * column;
     this.fileObject.position.y = theme.vis.levelHeight * level;
-
-    if (status != null) {
-      this.fileObject.update(font, status);
-    }
 
     return (
       <Object3D object3D={this.fileObject}>

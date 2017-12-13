@@ -48,6 +48,10 @@ class Story {
     return this.nextAction.name === name;
   }
 
+  unmount() {
+
+  }
+
   @computed get nextAction() {
     return this.actions[this.nextActionIndex];
   }

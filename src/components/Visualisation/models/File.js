@@ -1,4 +1,6 @@
-import FileStatus, { STATUS_ADDED } from './FileStatus';
+import { action } from 'mobx';
+
+import FileStatus, { STATUS_ADDED, STATUS_MODIFIED } from './FileStatus';
 import Model from './Model';
 
 class File extends Model {
@@ -19,6 +21,17 @@ class File extends Model {
     clone.status = this.status.clone();
 
     return clone;
+  }
+
+  @action reset() {
+    this.status.insertions = 0;
+    this.status.deletions = 0;
+  }
+
+  @action modify() {
+    this.status.type = STATUS_MODIFIED;
+    this.status.insertions = Math.round(Math.random() * 20);
+    this.status.deletions = Math.round(Math.random() * 20);
   }
 }
 

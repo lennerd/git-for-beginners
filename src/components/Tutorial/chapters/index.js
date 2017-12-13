@@ -21,8 +21,9 @@ const VersioningOfFiles = LoadableChapter(() => (
   Promise.all([
     import('./VersioningOfFiles'),
     fontLoader.load(SourceCodeProRegular),
+    fontLoader.load(SourceCodeProBlack),
   ])
-), ([VersioningOfFiles, font]) => new VersioningOfFiles.default(font));
+), ([VersioningOfFiles, fontRegular, fontBold]) => new VersioningOfFiles.default(fontRegular, fontBold));
 
 const VersioningInGit = LoadableChapter(() => (
   Promise.all([

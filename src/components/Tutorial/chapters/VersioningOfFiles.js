@@ -1,16 +1,18 @@
 import React, { Fragment } from 'react';
 import { observable, action } from 'mobx';
-import { TimelineLite } from 'gsap';
+import { TweenLite, TimelineLite } from 'gsap';
 
 import Story, { ACTION_NEXT } from './Story';
 import ChapterButton from '../Chapter/ChapterButton';
 import Visualisation from '../../Visualisation';
 import File from '../../Visualisation/File';
+import FileStatus from '../../Visualisation/FileStatus';
 import Section from '../../Visualisation/Section';
 import FileLabel from '../../Visualisation/FileLabel';
 import SectionLabel from '../../Visualisation/SectionLabel';
 import FileModel from '../../Visualisation/models/File';
 import letterSpacing from '../../../fonts/letterSpacing';
+import { STATUS_MODIFIED } from '../../Visualisation/models/FileStatus';
 
 const ACTION_ADD_FIRST_FILE = 'ADD_FIRST_FILE';
 const ACTION_COPY_LAST_FILE = 'COPY_LAST_FILE';
@@ -36,7 +38,7 @@ class VersioningOfFiles extends Story {
   @observable useVersionDatabase = false;
   @observable versions = 0;
 
-  constructor(font) {
+  constructor(font, fontBold) {
     super({ half: true });
 
     this.add(ACTION_ADD_FIRST_FILE, this.addFirstFile);
@@ -47,6 +49,7 @@ class VersioningOfFiles extends Story {
     this.add(ACTION_NEXT);
 
     this.fileLabelFont = font;
+    this.fontBold = letterSpacing(fontBold, 1.2);
     this.sectionLabelFont = letterSpacing(font, 1.2);
 
     this.copyTimeline = new TimelineLite({
@@ -65,6 +68,14 @@ class VersioningOfFiles extends Story {
     file.appear = true;
 
     this.files.push(file);
+    this.addChangesToLastFile();
+  }
+
+  @action.bound addChangesToLastFile() {
+    console.log('addChanges');
+
+    const file = this.files[0];
+    file.modify();
   }
 
   @action.bound copyLastFile() {
@@ -103,6 +114,8 @@ class VersioningOfFiles extends Story {
 
     this.files.unshift(file);
     this.files.splice(10);
+
+    TweenLite.delayedCall(0.8, this.addChangesToLastFile);
   }
 
   @action loop() {
@@ -118,6 +131,10 @@ class VersioningOfFiles extends Story {
     this.useVersionDatabase = true;
   }
 
+  unmount() {
+    this.copyTimeline.kill();
+  }
+
   write() {
     if (this.will(ACTION_ADD_FIRST_FILE)) {
       return (
@@ -125,7 +142,7 @@ class VersioningOfFiles extends Story {
           <p>As a VCS Git is able to store version of my files. Okay, nice. But what is a version after all?</p>
           <p>Let’s take a step back and a look at a typical way versions are created on many computers out there.</p>
           <p>Everything starts with a file. Maybe a small text file we put together to review the last project meeting. Or a draft for a new exciting project.</p>
-          <ChapterButton>Create a New file</ChapterButton>
+          <ChapterButton>Create a New File and Add Content</ChapterButton>
         </Fragment>
       );
     }
@@ -182,7 +199,13 @@ class VersioningOfFiles extends Story {
 
   visualise() {
     const files = this.files.map(file => (
-      <File column={file.column} row={file.row} appear={file.appear} key={file.id}>
+      <File
+        column={file.column}
+        row={file.row}
+        appear={file.appear}
+        key={file.id}
+        statusType={file.status.type}
+      >
         {
           file.name &&
           <FileLabel
@@ -191,6 +214,12 @@ class VersioningOfFiles extends Story {
             appear
           />
         }
+        <FileStatus
+          font={this.fontBold}
+          type={file.status.type}
+          insertions={file.status.insertions}
+          deletions={file.status.deletions}
+        />
       </File>
     ));
 

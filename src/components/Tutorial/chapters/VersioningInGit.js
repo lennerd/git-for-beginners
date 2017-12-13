@@ -1,18 +1,18 @@
 import React from 'react';
 import { observable, action } from 'mobx';
-import { TimelineLite } from 'gsap';
+import { TweenLite, TimelineLite } from 'gsap';
 
 import letterSpacing from '../../../fonts/letterSpacing';
 import Story, { ACTION_NEXT } from './Story';
 import Visualisation from '../../Visualisation';
 import File from '../../Visualisation/File';
+import FileStatus from '../../Visualisation/FileStatus';
 import Section from '../../Visualisation/Section';
 import SectionLabel from '../../Visualisation/SectionLabel';
 import Commit from '../../Visualisation/Commit';
 import Popup from '../../Visualisation/Popup';
 import FileModel from '../../Visualisation/models/File';
 import CommitModel from '../../Visualisation/models/Commit';
-import { STATUS_MODIFIED } from '../../Visualisation/models/FileStatus';
 
 class VersioningInGit extends Story {
   @observable commits = [];
@@ -48,10 +48,7 @@ class VersioningInGit extends Story {
 
     for (let i = 0; i < 5; i++) {
       const file = new FileModel();
-
-      file.status.type = STATUS_MODIFIED;
-      file.status.insertions = Math.round(Math.random() * 20);
-      file.status.deletions = Math.round(Math.random() * 20);
+      file.modify();
 
       commit.add(file);
     }
@@ -73,18 +70,26 @@ class VersioningInGit extends Story {
     commit.row = 0;
     commit.author = author.name;
 
-    for (let file of commit.children) {
-      file.status.type = STATUS_MODIFIED;
-      file.status.insertions = Math.round(Math.random() * 20);
-      file.status.deletions = Math.round(Math.random() * 20);
-    }
-
     this.commits.unshift(commit);
     this.commits.splice(10);
+
+    TweenLite.delayedCall(0.8, this.addChanges);
+  }
+
+  @action.bound addChanges() {
+    const commit = this.commits[0];
+
+    for (let file of commit.children) {
+      file.modify();
+    }
   }
 
   write() {
 
+  }
+
+  unmount() {
+    this.copyTimeline.kill();
   }
 
   visualise() {
@@ -100,7 +105,14 @@ class VersioningInGit extends Story {
           />
         }
         {commit.children.map((file, index) => (
-          <File key={file.id} level={index} font={this.fontBold} status={file.status} />
+          <File key={file.id} level={index} statusType={file.status.type}>
+            <FileStatus
+              font={this.fontBold}
+              type={file.status.type}
+              insertions={file.status.insertions}
+              deletions={file.status.deletions}
+            />
+          </File>
         ))}
       </Commit>
     ));

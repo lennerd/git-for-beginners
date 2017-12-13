@@ -26,6 +26,10 @@ class Chapter extends Component {
     });
   }
 
+  componentWillUnmount() {
+    this.story.unmount();
+  }
+
   renderRedirect() {
     const { tutorial, chapter } = this.props;
 
