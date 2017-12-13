@@ -8,13 +8,20 @@ class FileStatus {
   @observable insertions = 0;
   @observable deletions = 0;
 
-  constructor(file, type) {
-    this.file = file;
+  constructor(type) {
     this.type = type;
   }
 
   @computed get changes() {
     return this.insertions + this.deletions;
+  }
+
+  clone() {
+    const clone = new this.constructor(this.type);
+    clone.insertions = this.insertions;
+    clone.deletions = this.deletions;
+
+    return clone;
   }
 }
 

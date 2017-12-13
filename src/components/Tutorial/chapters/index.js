@@ -1,7 +1,7 @@
 import React from 'react';
 
 import Loadable from '../../common/Loadable';
-import { fontLoader, SourceCodeProRegular } from '../../../fonts';
+import { fontLoader, SourceCodeProRegular, SourceCodeProBlack } from '../../../fonts';
 import Chapter from '../Chapter';
 
 function LoadableChapter(loader, storyInitialiser) {
@@ -28,9 +28,10 @@ const VersioningInGit = LoadableChapter(() => (
   Promise.all([
     import('./VersioningInGit'),
     fontLoader.load(SourceCodeProRegular),
-    fetch('https://uinames.com/api/?amount=10&region=united%20states&maxlen=10').then(response => response.json()),
+    fontLoader.load(SourceCodeProBlack),
+    fetch('https://uinames.com/api/?amount=10&region=united%20states&maxlen=20').then(response => response.json()),
   ])
-), ([VersioningInGit, font, randomAuthors]) => new VersioningInGit.default(font, randomAuthors));
+), ([VersioningInGit, fontRegular, fontBold, randomAuthors]) => new VersioningInGit.default(fontRegular, fontBold, randomAuthors));
 
 export default [
   {

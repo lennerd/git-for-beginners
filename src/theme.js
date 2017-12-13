@@ -36,6 +36,8 @@ export default {
     fileDefault: new Color('#FFFCFA'),
     fileAdded: new Color('#8ECF4F'),
     fileDeleted: new Color('#FF6147'),
+    added: new Color('#348900'),
+    deleted: new Color('#C40000'),
     highlight: new Color('#1126B4'),
     text: new Color('#333336'),
     grey: new Color('#999999'),

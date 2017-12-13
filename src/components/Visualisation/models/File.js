@@ -6,7 +6,7 @@ class File extends Model {
     super();
 
     this.name = name;
-    this.status = new FileStatus(this, STATUS_ADDED);
+    this.status = new FileStatus(STATUS_ADDED);
   }
 
   clone() {
@@ -15,6 +15,8 @@ class File extends Model {
     if (this.parent != null) {
       this.parent.add(clone);
     }
+
+    clone.status = this.status.clone();
 
     return clone;
   }

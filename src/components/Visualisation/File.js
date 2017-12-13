@@ -12,6 +12,7 @@ class File extends PureComponent {
     level: 0,
     row: 0,
     appear: false,
+    status: null,
   };
 
   fileObject = new FileObject();
@@ -34,27 +35,19 @@ class File extends PureComponent {
     });
   }
 
-  handleRaycastEnter = () => {
-    console.log('enter');
-  };
-
-  handleRaycastLeave = () => {
-    console.log('leave');
-  };
-
   render() {
-    const { children, column, row, level, theme } = this.props;
+    const { font, status, children, column, row, level, theme } = this.props;
 
     this.fileObject.position.x = theme.vis.cellHeight * row;
     this.fileObject.position.z = theme.vis.cellWidth * column;
     this.fileObject.position.y = theme.vis.levelHeight * level;
 
+    if (status != null) {
+      this.fileObject.update(font, status);
+    }
+
     return (
-      <Object3D
-        object3D={this.fileObject}
-        onRaycastEnter={this.handleRaycastEnter}
-        onRaycastLeave={this.handleRaycastLeave}
-      >
+      <Object3D object3D={this.fileObject}>
         {children}
       </Object3D>
     );

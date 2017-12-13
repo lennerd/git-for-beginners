@@ -12,17 +12,19 @@ import Commit from '../../Visualisation/Commit';
 import Popup from '../../Visualisation/Popup';
 import FileModel from '../../Visualisation/models/File';
 import CommitModel from '../../Visualisation/models/Commit';
+import { STATUS_MODIFIED } from '../../Visualisation/models/FileStatus';
 
 class VersioningInGit extends Story {
   @observable commits = [];
 
-  constructor(font, randomAuthors) {
+  constructor(fontRegular, fontBold, randomAuthors) {
     super({ half: true });
 
     this.add(ACTION_NEXT);
 
-    this.font = letterSpacing(font, 1.2);
-    this.sectionLabelFont = letterSpacing(font, 1.2);
+    this.fontRegular = fontRegular;
+    this.fontBold = letterSpacing(fontBold, 1.2);
+    this.sectionLabelFont = letterSpacing(fontRegular, 1.2);
 
     this.randomAuthors = randomAuthors;
 
@@ -47,6 +49,10 @@ class VersioningInGit extends Story {
     for (let i = 0; i < 5; i++) {
       const file = new FileModel();
 
+      file.status.type = STATUS_MODIFIED;
+      file.status.insertions = Math.round(Math.random() * 20);
+      file.status.deletions = Math.round(Math.random() * 20);
+
       commit.add(file);
     }
 
@@ -67,6 +73,12 @@ class VersioningInGit extends Story {
     commit.row = 0;
     commit.author = author.name;
 
+    for (let file of commit.children) {
+      file.status.type = STATUS_MODIFIED;
+      file.status.insertions = Math.round(Math.random() * 20);
+      file.status.deletions = Math.round(Math.random() * 20);
+    }
+
     this.commits.unshift(commit);
     this.commits.splice(10);
   }
@@ -82,13 +94,13 @@ class VersioningInGit extends Story {
           commit.column > 0 &&
           <Popup
             appear
-            font={this.font}
+            font={this.fontRegular}
             label={`Date: ${commit.date}\nAuthor: ${commit.author}`}
             level={commit.children.length}
           />
         }
         {commit.children.map((file, index) => (
-          <File key={file.id} level={index} />
+          <File key={file.id} level={index} font={this.fontBold} status={file.status} />
         ))}
       </Commit>
     ));
