@@ -1,7 +1,5 @@
 import { TweenLite } from 'gsap';
 
-import theme from '../../../theme';
-
 class Section extends THREE.Group {
   constructor(width, height) {
     super();

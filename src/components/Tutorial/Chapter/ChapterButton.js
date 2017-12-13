@@ -6,10 +6,10 @@ function inlineSVG(svg) {
   return `url(data:image/svg+xml;base64,${btoa(svg)})`;
 }
 
-@inject('chapter')
+@inject('story')
 class ChapterButton extends PureComponent {
   handleClick = () => {
-    const { story } = this.props.chapter;
+    const { story } = this.props;
 
     story.next();
   }

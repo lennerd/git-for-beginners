@@ -2,13 +2,13 @@ import React, { PureComponent, cloneElement } from 'react';
 import styled from 'styled-components';
 import TransitionGroup from 'react-transition-group/TransitionGroup';
 
-import { FORWARD, BACK } from './ChapterWrapper';
+import { FORWARD, BACK } from '../../common/ContentTransition';
 
 class ChapterTransitionGroup extends PureComponent {
   get direction() {
     const { chapterIndex } = this.props.match.params;
 
-    if (this.prevChapterIndex == null) {
+    if (this.prevChapterIndex == null || chapterIndex === this.prevChapterIndex) {
       this.prevChapterIndex = chapterIndex;
 
       return null;

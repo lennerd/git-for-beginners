@@ -1,50 +1,18 @@
 import React, { PureComponent } from 'react';
-import Transition from 'react-transition-group/Transition';
-import { TweenLite } from 'gsap';
 import styled from 'styled-components';
 
-export const FORWARD = Symbol('forward');
-export const BACK = Symbol('back');
+import ContentTransition from '../../common/ContentTransition';
 
 class ChapterWrapper extends PureComponent {
-  handleEnter = (node) => {
-    const { direction } = this.props;
-
-    this.tween = TweenLite.from(node, 1, {
-      x: direction === BACK ? '-100vw' : '100vw',
-      opacity: 0,
-    });
-  };
-
-  handleExit = (node) => {
-    const { direction } = this.props;
-
-    this.tween = TweenLite.to(node, 1, {
-      x: direction === BACK ? '100vw' : '-100vw',
-      opacity: 0,
-    });
-  };
-
-  addEndListener = (node, done) => {
-    this.tween.eventCallback('onComplete', done);
-  }
-
   render() {
-    const { children, className, direction, ...props } = this.props;
-
-    delete props.direction;
+    const { children, className, ...props } = this.props;
 
     return (
-      <Transition
-        {...props}
-        onEnter={this.handleEnter}
-        onExit={this.handleExit}
-        addEndListener={this.addEndListener}
-      >
+      <ContentTransition {...props}>
         <div className={className}>
           {children}
         </div>
-      </Transition>
+      </ContentTransition>
     );
   }
 }

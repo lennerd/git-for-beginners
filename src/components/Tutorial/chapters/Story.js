@@ -1,6 +1,6 @@
 import { observable, computed, action } from 'mobx';
 
-export const ACTION_NEXT = Symbol('NEXT');
+export const ACTION_NEXT = 'NEXT';
 
 class Story {
   @observable actions = [];

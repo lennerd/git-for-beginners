@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet';
 import { Provider, observer, inject } from 'mobx-react';
 import { Redirect } from 'react-router-dom';
 import { runInAction } from 'mobx';
+import TransitionGroup from 'react-transition-group/TransitionGroup';
 
 import ChapterWrapper from './ChapterWrapper';
 
@@ -17,10 +18,10 @@ class Chapter extends Component {
     super();
 
     const { storyInitialiser, loaded, chapter } = props;
+    this.story = storyInitialiser(loaded);
 
     runInAction(() => {
-      chapter.storyInitialiser = storyInitialiser;
-      chapter.loaded = loaded;
+      chapter.story = this.story;
     });
   }
 
@@ -49,14 +50,16 @@ class Chapter extends Component {
     delete props.tutorial;
 
     return (
-      <Provider chapter={chapter}>
+      <Provider chapter={chapter} story={this.story}>
         <ChapterWrapper {...props}>
           {this.renderRedirect()}
           <Helmet>
             <title>{chapter.title}</title>
           </Helmet>
-          {chapter.story.write({ chapter, ...props })}
-          {chapter.story.visualise({ chapter, ...props })}
+          <TransitionGroup>
+            {this.story.write({ chapter, ...props })}
+          </TransitionGroup>
+          {this.story.visualise({ chapter, ...props })}
         </ChapterWrapper>
       </Provider>
     );

@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { inject } from 'mobx-react';
 
 import Container from '../../common/Container';
+import ContentTransition from '../../common/ContentTransition';
 
 const ChapterIndicator = styled.div`
   position: relative;
@@ -35,9 +36,10 @@ const ChapterHeadline = styled.h1`
 
 const ChapterTextWrapper = styled.div`
   width: ${props => props.half ? 40 : 60}%;
-  margin: 0 ${props => props.half ? 0 : 'auto'};
+  transform: ${props => props.half ? null : 'translateX(-50%)'};
+  left: ${props => props.half ? null : '50%'};
   padding-top: 25vh;
-  position: relative;
+  position: absolute;
   z-index: 1;
 
   ${ChapterHeadline} + p {
@@ -52,15 +54,17 @@ const ChapterTextWrapper = styled.div`
 @inject('tutorial', 'chapter')
 class ChapterText extends PureComponent {
   render() {
-    const { children, chapter, tutorial, half } = this.props;
+    const { children, chapter, tutorial, half, ...props } = this.props;
 
     return (
       <Container>
-        <ChapterTextWrapper half={half}>
-          <ChapterIndicator>Chapter {chapter.index} of {tutorial.chapters.length - 1}</ChapterIndicator>
-          <ChapterHeadline>{chapter.title}</ChapterHeadline>
-          {children}
-        </ChapterTextWrapper>
+        <ContentTransition {...props}>
+          <ChapterTextWrapper half={half}>
+            <ChapterIndicator>Chapter {chapter.index} of {tutorial.chapters.length - 1}</ChapterIndicator>
+            <ChapterHeadline>{chapter.title}</ChapterHeadline>
+            {children}
+          </ChapterTextWrapper>
+        </ContentTransition>
       </Container>
     );
   }

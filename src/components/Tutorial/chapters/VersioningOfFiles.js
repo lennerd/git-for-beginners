@@ -13,11 +13,11 @@ import SectionLabel from '../../Visualisation/SectionLabel';
 import FileModel from '../../Visualisation/models/File';
 import letterSpacing from '../../../fonts/letterSpacing';
 
-const ACTION_ADD_FIRST_FILE = Symbol('ADD_FIRST_FILE');
-const ACTION_COPY_LAST_FILE = Symbol('COPY_LAST_FILE');
-const ACTION_LOOP = Symbol('LOOP');
-const ACTION_ADD_FILENAMES = Symbol('ADD_FILENAMES');
-const ACTION_ADD_VERSION_DATABASE = Symbol('USE_VERSION_DATABASE');
+const ACTION_ADD_FIRST_FILE = 'ADD_FIRST_FILE';
+const ACTION_COPY_LAST_FILE = 'COPY_LAST_FILE';
+const ACTION_LOOP = 'LOOP';
+const ACTION_ADD_FILENAMES = 'ADD_FILENAMES';
+const ACTION_ADD_VERSION_DATABASE = 'USE_VERSION_DATABASE';
 
 const FILE_NAME_VARIANTS = [
   '_final',
@@ -122,7 +122,7 @@ class VersioningOfFiles extends Story {
   write() {
     if (this.will(ACTION_ADD_FIRST_FILE)) {
       return (
-        <ChapterText half>
+        <ChapterText half key={ACTION_ADD_FIRST_FILE}>
           <p>As a VCS Git is able to store version of my files. Okay, nice. But what is a version after all?</p>
           <p>Let’s take a step back and a look at a typical way versions are created on many computers out there.</p>
           <p>Everything starts with a file. Maybe a small text file we put together to review the last project meeting. Or a draft for a new exciting project.</p>
@@ -133,7 +133,7 @@ class VersioningOfFiles extends Story {
 
     if (this.will(ACTION_COPY_LAST_FILE)) {
       return (
-        <ChapterText half>
+        <ChapterText half key={ACTION_COPY_LAST_FILE}>
           <p>After a while we come back. We got some new ideas, a chapter of the text we want to try to make better this time.</p>
           <p>We could of course make the changes directly in our file. But that would mean we would lose the last version of the text. So we create a copy of the file as a backup.</p>
           <ChapterButton>Create a Copy</ChapterButton>
@@ -143,7 +143,7 @@ class VersioningOfFiles extends Story {
 
     if (this.will(ACTION_LOOP)) {
       return (
-        <ChapterText half>
+        <ChapterText half key={ACTION_LOOP}>
           <p>Every once in a while you add new changes to your file and create a new copy of the file as a backup.</p>
           <ChapterButton>Add Ideas and Feedback</ChapterButton>
         </ChapterText>
@@ -152,7 +152,7 @@ class VersioningOfFiles extends Story {
 
     if (this.will(ACTION_ADD_FILENAMES)) {
       return (
-        <ChapterText half>
+        <ChapterText half key={ACTION_ADD_FILENAMES}>
           <p>This goes on, and on, and on, …</p>
           <p>But how do we distinguish between all these files? Many people use the file name. Couldn’t be bad, right? Let’s do it too.</p>
           <ChapterButton>Add Filenames</ChapterButton>
@@ -162,7 +162,7 @@ class VersioningOfFiles extends Story {
 
     if (this.will(ACTION_ADD_VERSION_DATABASE)) {
       return (
-        <ChapterText half>
+        <ChapterText half key={ACTION_ADD_VERSION_DATABASE}>
           <p>Okay, now we getting ridiculous. But you get the idea, right?</p>
           <p>Of course, there are better ways to organise version of files. We could of course use proper names based on the current date of time or a simple counter. But there is an even better solution.</p>
           <ChapterButton>Use a Version Database</ChapterButton>
@@ -172,7 +172,7 @@ class VersioningOfFiles extends Story {
 
     if (this.will(ACTION_NEXT)) {
       return (
-        <ChapterText half>
+        <ChapterText half key={ACTION_NEXT}>
           <p>VCS use version databases to store versions of files. They often also store a date or the author of last made changes.</p>
           <p>Let’s take a look at the version database in Git.</p>
           <ChapterButton>Versioning in Git</ChapterButton>

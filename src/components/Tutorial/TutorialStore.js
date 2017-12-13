@@ -1,13 +1,21 @@
-import { observable, computed, extendObservable } from "mobx";
+import { observable, action, computed, extendObservable } from "mobx";
 
 class Chapter {
-  @observable storyInitialiser;
-  @observable loaded;
+  @observable story;
+  @observable resets = 0;
 
   constructor(tutorial, data) {
     this.tutorial = tutorial;
 
     extendObservable(this, data);
+  }
+
+  @action reset() {
+    this.resets++;
+  }
+
+  @computed get key() {
+    return `${this.index}-${this.resets}`;
   }
 
   @computed get index() {
@@ -31,14 +39,6 @@ class Chapter {
     }
 
     return this.tutorial.chapters[nextIndex];
-  }
-
-  @computed get story() {
-    if (this.storyInitialiser == null) {
-      return null;
-    }
-
-    return this.storyInitialiser(this.loaded);
   }
 }
 

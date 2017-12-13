@@ -3,21 +3,15 @@ import styled from 'styled-components';
 import cx from 'classnames';
 import { Link } from 'react-router-dom';
 import { observer } from 'mobx-react';
-import { runInAction } from 'mobx';
 
 @observer
 class NavigationItem extends Component {
   handleClick = (event) => {
     const { chapter } = this.props;
 
-    if (chapter.active) {
+    if (chapter.active && chapter.story.progress > 0) {
       event.preventDefault();
-
-      runInAction(() => {
-        const loaded = chapter.loaded;
-        chapter.loaded = null;
-        chapter.loaded = loaded;
-      });
+      chapter.reset();
     }
   }
 
