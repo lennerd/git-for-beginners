@@ -19,7 +19,7 @@ class Section extends THREE.Group {
   update(theme, width, height) {
     this.planeMesh.scale.set(
       theme.cellHeight * height,
-      theme.cellWidth * width,
+      theme.cellWidth * width - theme.cellWidth * 0.04,
       1
     );
 
