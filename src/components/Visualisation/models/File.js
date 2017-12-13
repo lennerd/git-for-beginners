@@ -9,8 +9,14 @@ class File extends Model {
     this.status = new FileStatus(this, STATUS_ADDED);
   }
 
-  copy() {
-    return new this.constructor(this.name);
+  clone() {
+    const clone = new this.constructor(this.name);
+
+    if (this.parent != null) {
+      this.parent.add(clone);
+    }
+
+    return clone;
   }
 }
 

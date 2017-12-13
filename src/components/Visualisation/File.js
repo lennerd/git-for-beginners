@@ -20,7 +20,7 @@ class File extends PureComponent {
     const { appear } = this.props;
 
     if (appear) {
-      TweenLite.from(this.fileObject.scale, 0.8, { y: 0 });
+      this.fileObject.appear();
     }
   }
 
@@ -35,11 +35,11 @@ class File extends PureComponent {
   }
 
   handleRaycastEnter = () => {
-
+    console.log('enter');
   };
 
-  onRaycastLeave = () => {
-
+  handleRaycastLeave = () => {
+    console.log('leave');
   };
 
   render() {

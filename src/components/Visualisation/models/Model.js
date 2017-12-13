@@ -37,6 +37,17 @@ class Model {
     this.children.remove(child);
     child.parent = null;
   }
+
+  clone() {
+    const children = this.children.map(child => child.clone());
+    const clone = new this.constructor(children);
+
+    if (this.parent != null) {
+      this.parent.add(clone);
+    }
+
+    return clone;
+  }
 }
 
 export default Model;

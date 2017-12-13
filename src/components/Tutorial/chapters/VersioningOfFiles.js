@@ -56,7 +56,7 @@ class VersioningOfFiles extends Story {
       }
     });
 
-    this.copyTimeline.add(this.copyLastFile.bind(this), '+=1.5');
+    this.copyTimeline.add(this.copyLastFile, '+=1.5');
   }
 
   @action addFirstFile() {
@@ -67,7 +67,7 @@ class VersioningOfFiles extends Story {
     this.files.push(file);
   }
 
-  @action copyLastFile() {
+  @action.bound copyLastFile() {
     if (this.useVersionDatabase) {
       this.files.forEach((file, index) => {
         file.column = 1;
@@ -80,7 +80,7 @@ class VersioningOfFiles extends Story {
       });
     }
 
-    const file = this.files[0].copy();
+    const file = this.files[0].clone();
     file.column = 0;
     file.row = 0;
     file.appear = false;

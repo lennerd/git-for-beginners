@@ -15,8 +15,6 @@ class FileLabel extends THREE.Group {
       this.textGeometry,
       new THREE.MeshBasicMaterial({
         color: theme.color.highlight,
-        side: THREE.DoubleSide,
-        transparent: true
       }),
     );
 

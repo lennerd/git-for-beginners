@@ -1,16 +1,11 @@
+import { TweenLite } from 'gsap';
+
 import theme from '../../../theme';
-/*import createChangesTexture from '../helpers/createChangesTexture';
-import createAddTexture from '../helpers/createAddTexture';
-import { STATUS_MODIFIED, STATUS_ADDED, STATUS_DELETED } from '../models/FileStatus';
-import createDeleteTexture from '../helpers/createDeleteTexture';*/
 
 export const FILE_SIZE_RATIO = 1 / Math.sqrt(2);
 export const FILE_HEIGHT = theme.vis.levelHeight / 2;
 export const FILE_WIDTH = FILE_HEIGHT * 10;
 export const FILE_DEPTH = FILE_WIDTH * FILE_SIZE_RATIO;
-//const TEXTURE_WIDTH = 4096;
-//const TEXTURE_HEIGHT = 512;
-//const TEXTURE_HORIZONTAL_SCALE = (FILE_WIDTH / FILE_HEIGHT) / (TEXTURE_WIDTH / TEXTURE_HEIGHT);
 
 class File extends THREE.Object3D {
   constructor(status) {
@@ -21,8 +16,10 @@ class File extends THREE.Object3D {
       new THREE.MeshLambertMaterial({ color: theme.color.fileDefault }),
     );
 
+    const outline = 0.015;
+
     this.hoverMesh = new THREE.Mesh(
-      new THREE.BoxBufferGeometry(FILE_WIDTH + 0.015, FILE_HEIGHT + 0.015, FILE_DEPTH + 0.015),
+      new THREE.BoxBufferGeometry(FILE_WIDTH + outline, FILE_HEIGHT + outline, FILE_DEPTH + outline),
       new THREE.MeshBasicMaterial({ opacity: 1, transparent: true, depthWrite: false, color: theme.color.highlight, side: THREE.BackSide }),
     );
 
@@ -31,8 +28,13 @@ class File extends THREE.Object3D {
       new THREE.ShadowMaterial({ depthWrite: false }),
     );
 
+
     this.fileMesh.position.y = FILE_HEIGHT / 2;
-    this.hoverMesh.position.y = FILE_HEIGHT / 2;
+
+    // Shift a little to the back by outline to have no border between moving clones.
+    this.hoverMesh.position.y = FILE_HEIGHT / 2 - outline;
+    this.hoverMesh.position.x = outline;
+    this.hoverMesh.position.z = outline;
 
     this.shadowMash.castShadow = true;
     this.shadowMash.position.y = 0.1;
@@ -40,6 +42,11 @@ class File extends THREE.Object3D {
     this.add(this.shadowMash);
     this.add(this.hoverMesh);
     this.add(this.fileMesh);
+  }
+
+  appear(duration = 0.8) {
+    TweenLite.from(this.fileMesh.scale, duration, { y: 0 });
+    TweenLite.from(this.hoverMesh.scale, duration, { y: 0 });
   }
 }
 

@@ -12,7 +12,6 @@ import theme from './theme';
 import './injectGlobal';
 
 TweenLite.defaultEase = Power1.easeInOut;
-TweenLite.defaultOverwrite = 'concurrent';
 useStrict(true);
 
 const app = new AppStore();

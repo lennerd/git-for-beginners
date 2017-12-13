@@ -50,8 +50,6 @@ class Chapter extends Component {
     delete props.loaded;
     delete props.tutorial;
 
-    console.log(this.story.options.half);
-
     return (
       <Provider chapter={chapter} story={this.story}>
         <ChapterWrapper {...props}>

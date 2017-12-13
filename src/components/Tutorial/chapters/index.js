@@ -28,8 +28,9 @@ const VersioningInGit = LoadableChapter(() => (
   Promise.all([
     import('./VersioningInGit'),
     fontLoader.load(SourceCodeProRegular),
+    fetch('https://uinames.com/api/?amount=10&region=united%20states&maxlen=10').then(response => response.json()),
   ])
-), ([VersioningInGit, font]) => new VersioningInGit.default(font));
+), ([VersioningInGit, font, randomAuthors]) => new VersioningInGit.default(font, randomAuthors));
 
 export default [
   {
