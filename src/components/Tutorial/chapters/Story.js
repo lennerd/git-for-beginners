@@ -6,6 +6,11 @@ class Story {
   @observable actions = [];
   @observable nextActionIndex = 0;
   @observable nextChapter = false;
+  @observable options = { half: false };
+
+  constructor(options) {
+    Object.assign(this.options, options);
+  }
 
   @action add(name, handler) {
     if (name === ACTION_NEXT && handler == null) {

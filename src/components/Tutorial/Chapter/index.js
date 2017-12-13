@@ -6,6 +6,7 @@ import { runInAction } from 'mobx';
 import TransitionGroup from 'react-transition-group/TransitionGroup';
 
 import ChapterWrapper from './ChapterWrapper';
+import ChapterText from './ChapterText';
 
 @inject('tutorial')
 @observer
@@ -49,6 +50,8 @@ class Chapter extends Component {
     delete props.loaded;
     delete props.tutorial;
 
+    console.log(this.story.options.half);
+
     return (
       <Provider chapter={chapter} story={this.story}>
         <ChapterWrapper {...props}>
@@ -57,7 +60,9 @@ class Chapter extends Component {
             <title>{chapter.title}</title>
           </Helmet>
           <TransitionGroup>
-            {this.story.write({ chapter, ...props })}
+            <ChapterText key={this.story.nextAction.name} half={this.story.options.half}>
+              {this.story.write({ chapter, ...props })}
+            </ChapterText>
           </TransitionGroup>
           {this.story.visualise({ chapter, ...props })}
         </ChapterWrapper>

@@ -58,7 +58,7 @@ class ChapterText extends PureComponent {
 
     return (
       <Container>
-        <ContentTransition {...props}>
+        <ContentTransition duration={0.2} {...props}>
           <ChapterTextWrapper half={half}>
             <ChapterIndicator>Chapter {chapter.index} of {tutorial.chapters.length - 1}</ChapterIndicator>
             <ChapterHeadline>{chapter.title}</ChapterHeadline>

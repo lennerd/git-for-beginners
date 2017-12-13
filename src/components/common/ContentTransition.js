@@ -6,8 +6,13 @@ export const FORWARD = Symbol('forward');
 export const BACK = Symbol('back');
 
 class ContentTransition extends PureComponent {
+  static defaultProps = {
+    duration: 1,
+  };
+
   handleEnter = (node) => {
-    const { direction } = this.props;
+    const { direction, duration } = this.props;
+
     const origin = {
       opacity: 0,
     };
@@ -16,11 +21,12 @@ class ContentTransition extends PureComponent {
       origin.x = direction === BACK ? '-50%' : '50%';
     }
 
-    this.tween = TweenLite.from(node, 1, origin);
+    this.tween = TweenLite.from(node, duration, origin);
   };
 
   handleExit = (node) => {
-    const { direction } = this.props;
+    const { direction, duration } = this.props;
+
     const target = {
       opacity: 0,
     };
@@ -29,7 +35,7 @@ class ContentTransition extends PureComponent {
       target.x = direction === BACK ? '50%' : '-50%';
     }
 
-    this.tween = TweenLite.to(node, 1, target);
+    this.tween = TweenLite.to(node, duration, target);
   };
 
   addEndListener = (node, done) => {
@@ -40,6 +46,7 @@ class ContentTransition extends PureComponent {
     const { ...props } = this.props;
 
     delete props.direction;
+    delete props.duration;
 
     return (
       <Transition
