@@ -1,7 +1,7 @@
 import { TweenLite } from 'gsap';
 
 import theme from '../../../theme';
-import { STATUS_ADDED, STATUS_DELETED } from '../models/FileStatus';
+import { STATUS_ADDED, STATUS_DELETED, STATUS_MODIFIED } from '../models/FileStatus';
 
 export const FILE_SIZE_RATIO = 1 / Math.sqrt(2);
 export const FILE_HEIGHT = theme.vis.levelHeight / 2;
@@ -56,6 +56,12 @@ class File extends THREE.Object3D {
     }
 
     this.fileMesh.material.color = color;
+
+    // Add small offset when for not new or deleted files so no artefacts appear between colors.
+    this.fileMesh.material.polygonOffset = true;
+    this.fileMesh.material.polygonOffsetFactor = statusType !== STATUS_MODIFIED ? -0.01 : 0;
+
+    this.fileMesh.material.needsUpdate = true;
   }
 
   appear(duration = 0.8) {
