@@ -95,6 +95,7 @@ class VersioningOfFiles extends Story {
     file.column = 0;
     file.row = 0;
     file.appear = false;
+    file.reset();
 
     if (this.useFileNames) {
       file.name = 'file';
@@ -219,6 +220,7 @@ class VersioningOfFiles extends Story {
           type={file.status.type}
           insertions={file.status.insertions}
           deletions={file.status.deletions}
+          disappear
         />
       </File>
     ));

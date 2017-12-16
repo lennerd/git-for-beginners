@@ -14,6 +14,10 @@ class FileStatus {
   }
 
   @computed get changes() {
+    if (this.type !== STATUS_MODIFIED) {
+      return 0;
+    }
+
     return this.insertions + this.deletions;
   }
 

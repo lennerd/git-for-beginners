@@ -12,7 +12,7 @@ class File extends PureComponent {
     level: 0,
     row: 0,
     appear: false,
-    status: null,
+    statusType: null,
   };
 
   fileObject = new FileObject();
@@ -36,11 +36,13 @@ class File extends PureComponent {
   }
 
   render() {
-    const { children, column, row, level, theme } = this.props;
+    const { children, column, row, level, theme, statusType } = this.props;
 
     this.fileObject.position.x = theme.vis.cellHeight * row;
     this.fileObject.position.z = theme.vis.cellWidth * column;
     this.fileObject.position.y = theme.vis.levelHeight * level;
+
+    this.fileObject.update(statusType);
 
     return (
       <Object3D object3D={this.fileObject}>

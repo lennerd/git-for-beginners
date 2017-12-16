@@ -24,7 +24,7 @@ class FileStatus extends THREE.Object3D {
     this.add(this.textMesh);
   }
 
-  update(font, type, insertions, deletions) {
+  update(font, type, insertions, deletions, maxChanges) {
     let geometry;
 
     if (type === STATUS_ADDED) {
@@ -42,9 +42,18 @@ class FileStatus extends THREE.Object3D {
         face.color = new THREE.Color(0xFFFFFFF);
       }
     } else {
-      const changes = insertions + deletions;
-      const plus = Math.floor((insertions / changes) * CHANGE_SIGNS);
-      const minus = Math.floor((deletions / changes) * CHANGE_SIGNS);
+      maxChanges = Math.max(maxChanges, 100);
+
+      let plus = Math.round((insertions / maxChanges) * CHANGE_SIGNS);
+      let minus = Math.round((deletions / maxChanges) * CHANGE_SIGNS);
+
+      if (plus === 0 && insertions > 0) {
+        plus = 1;
+      }
+
+      if (minus === 0 && deletions > 0) {
+        minus = 1;
+      }
 
       const shapes = font.generateShapes(
         `${'+'.repeat(plus)}${'-'.repeat(minus)}`,
