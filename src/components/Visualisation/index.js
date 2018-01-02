@@ -10,8 +10,8 @@ const FRUSTRUM = 200;
 @observer
 class Visualisation extends Component {
   static defaultProps = {
-    offsetX: 2,
-    offsetZ: -2,
+    offsetX: 3,
+    offsetZ: 0,
   };
 
   intersections = new Set();

@@ -235,12 +235,12 @@ class VersioningInGit extends Story {
         row={commit.row}
         key={commit.id}
       >
-        {commit.column > 0 && <Popup
+        {/*commit.column > 0 && <Popup
           appear
           font={this.fontRegular}
           label={`Date: ${commit.date}\nAuthor: ${commit.author}`}
           level={commit.children.length}
-        />}
+        />*/}
         {commit.children.map((file, fileIndex) => (
           <File
             key={file.id}
@@ -264,9 +264,6 @@ class VersioningInGit extends Story {
     return (
       <Visualisation>
         {commits}
-        <Section height="10" column="1">
-          <SectionLabel font={this.sectionLabelFont} label="REPOSITORY" appear />
-        </Section>
       </Visualisation>
     );
   }
