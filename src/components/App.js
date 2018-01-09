@@ -3,25 +3,28 @@ import { Helmet } from 'react-helmet';
 import styled from 'styled-components';
 
 import Tutorial from './Tutorial';
-import Header from './Header';
 import NavigationContainer from './NavigationContainer';
 import Main from './Main';
+import ChapterContainer from './ChapterContainer';
+import HeaderContainer from './HeaderContainer';
 
 const AppWrapper = styled.div`
   height: 100%;
 `;
 
-function AppContainer() {
+function App() {
   return (
     <AppWrapper>
       <Helmet titleTemplate="%s — Git for Beginners" defaultTitle="Git for Beginners" />
       <Tutorial>
-        <Header pageTitle="Test" />
-        <NavigationContainer progress={0} chapters={[{ title: 'Introduction' }, {}, {}, {}, {}, {}, {}, {}, {}, {}]} />
-        <Main>Main</Main>
+        <HeaderContainer />
+        <NavigationContainer />
+        <Main>
+          <ChapterContainer />
+        </Main>
       </Tutorial>
     </AppWrapper>
   );
 }
 
-export default AppContainer;
+export default App;

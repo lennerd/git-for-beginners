@@ -3,14 +3,14 @@ import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
 
-import AppContainer from './AppContainer';
+import App from './App';
 
 function Root({ store, theme }) {
   return (
     <Provider store={store}>
       <ThemeProvider theme={theme}>
         <BrowserRouter>
-          <AppContainer />
+          <App />
         </BrowserRouter>
       </ThemeProvider>
     </Provider>
