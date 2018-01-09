@@ -1,0 +1,242 @@
+import React, { Fragment } from 'react';
+import { observable, action } from 'mobx';
+import { TweenLite, TimelineLite } from 'gsap';
+
+import Story, { ACTION_NEXT } from './Story';
+import ChapterButton from '../Chapter/ChapterButton';
+import Visualisation from '../../Visualisation';
+import File from '../../Visualisation/File';
+import FileStatus from '../../Visualisation/FileStatus';
+import Section from '../../Visualisation/Section';
+import FileLabel from '../../Visualisation/FileLabel';
+import SectionLabel from '../../Visualisation/SectionLabel';
+import FileModel from '../../Visualisation/models/File';
+import letterSpacing from '../../../fonts/letterSpacing';
+import { STATUS_MODIFIED } from '../../Visualisation/models/FileStatus';
+
+const ACTION_ADD_FIRST_FILE = 'ADD_FIRST_FILE';
+const ACTION_COPY_LAST_FILE = 'COPY_LAST_FILE';
+const ACTION_LOOP = 'LOOP';
+const ACTION_ADD_FILENAMES = 'ADD_FILENAMES';
+const ACTION_ADD_VERSION_DATABASE = 'USE_VERSION_DATABASE';
+
+const FILE_NAME_VARIANTS = [
+  '_final',
+  '_final_final',
+  '_final_v2_final',
+  '_final_forreal',
+  '_finaaal',
+  '_finalalal',
+  '_final_hahaha',
+  '_final_ineedhelp',
+  '_final_itsatrap',
+];
+
+class VersioningOfFiles extends Story {
+  @observable files = [];
+  @observable useFileNames = false;
+  @observable useVersionDatabase = false;
+  @observable versions = 0;
+
+  constructor(font, fontBold) {
+    super({ half: true });
+
+    this.add(ACTION_ADD_FIRST_FILE, this.addFirstFile);
+    this.add(ACTION_COPY_LAST_FILE, this.copyLastFile);
+    this.add(ACTION_LOOP, this.loop);
+    this.add(ACTION_ADD_FILENAMES, this.addFileNames);
+    this.add(ACTION_ADD_VERSION_DATABASE, this.addVersionDatabase);
+    this.add(ACTION_NEXT);
+
+    this.fileLabelFont = font;
+    this.fontBold = letterSpacing(fontBold, 1.2);
+    this.sectionLabelFont = letterSpacing(font, 1.2);
+
+    this.copyTimeline = new TimelineLite({
+      paused: true,
+      onComplete() {
+        this.restart();
+      }
+    });
+
+    this.copyTimeline.add(this.copyLastFile, '+=1.5');
+  }
+
+  @action addFirstFile() {
+    const file = new FileModel();
+    file.column = 0;
+    file.appear = true;
+
+    this.files.push(file);
+    this.addChangesToLastFile();
+  }
+
+  @action.bound addChangesToLastFile() {
+    console.log('addChanges');
+
+    const file = this.files[0];
+    file.modify();
+  }
+
+  @action.bound copyLastFile() {
+    if (this.useVersionDatabase) {
+      this.files.forEach((file, index) => {
+        file.column = 1;
+        file.row = index;
+        file.name = 'file';
+      });
+    } else {
+      this.files.forEach((file) => {
+        file.column++;
+      });
+    }
+
+    const file = this.files[0].clone();
+    file.column = 0;
+    file.row = 0;
+    file.appear = false;
+    file.reset();
+
+    if (this.useFileNames) {
+      file.name = 'file';
+
+      if (!this.useVersionDatabase) {
+        const version = ++this.versions;
+
+        const variantVersion = version - 2;
+
+        if (variantVersion >= 0) {
+          const variant = FILE_NAME_VARIANTS[variantVersion % FILE_NAME_VARIANTS.length];
+
+          file.name += variant;
+        }
+      }
+    }
+
+    this.files.unshift(file);
+    this.files.splice(10);
+
+    TweenLite.delayedCall(0.8, this.addChangesToLastFile);
+  }
+
+  @action loop() {
+    this.copyTimeline.seek(2);
+    this.copyTimeline.play();
+  }
+
+  @action addFileNames() {
+    this.useFileNames = true;
+  }
+
+  @action addVersionDatabase() {
+    this.useVersionDatabase = true;
+  }
+
+  unmount() {
+    this.copyTimeline.kill();
+  }
+
+  write() {
+    if (this.will(ACTION_ADD_FIRST_FILE)) {
+      return (
+        <Fragment>
+          <p>As a VCS Git is able to store version of my files. Okay, nice. But what is a version after all?</p>
+          <p>Let’s take a step back and a look at a typical way versions are created on many computers out there.</p>
+          <p>Everything starts with a file. Maybe a small text file we put together to review the last project meeting. Or a draft for a new exciting project.</p>
+          <ChapterButton>Create a New File and Add Content</ChapterButton>
+        </Fragment>
+      );
+    }
+
+    if (this.will(ACTION_COPY_LAST_FILE)) {
+      return (
+        <Fragment>
+          <p>After a while we come back. We got some new ideas, a chapter of the text we want to try to make better this time.</p>
+          <p>We could of course make the changes directly in our file. But that would mean we would lose the last version of the text. So we create a copy of the file as a backup.</p>
+          <ChapterButton>Create a Copy</ChapterButton>
+        </Fragment>
+      );
+    }
+
+    if (this.will(ACTION_LOOP)) {
+      return (
+        <Fragment>
+          <p>Every once in a while you add new changes to your file and create a new copy of the file as a backup.</p>
+          <ChapterButton>Add Ideas and Feedback</ChapterButton>
+        </Fragment>
+      );
+    }
+
+    if (this.will(ACTION_ADD_FILENAMES)) {
+      return (
+        <Fragment>
+          <p>This goes on, and on, and on, …</p>
+          <p>But how do we distinguish between all these files? Many people use the file name. Couldn’t be bad, right? Let’s do it too.</p>
+          <ChapterButton>Add Filenames</ChapterButton>
+        </Fragment>
+      );
+    }
+
+    if (this.will(ACTION_ADD_VERSION_DATABASE)) {
+      return (
+        <Fragment>
+          <p>Okay, now we getting ridiculous. But you get the idea, right?</p>
+          <p>Of course, there are better ways to organise version of files. We could of course use proper names based on the current date of time or a simple counter. But there is an even better solution.</p>
+          <ChapterButton>Use a Version Database</ChapterButton>
+        </Fragment>
+      );
+    }
+
+    if (this.will(ACTION_NEXT)) {
+      return (
+        <Fragment>
+          <p>VCS use version databases to store versions of files. They often also store a date or the author of last made changes.</p>
+          <p>Let’s take a look at the version database in Git.</p>
+          <ChapterButton>Versioning in Git</ChapterButton>
+        </Fragment>
+      );
+    }
+  }
+
+  visualise() {
+    const files = this.files.map(file => (
+      <File
+        column={file.column}
+        row={file.row}
+        appear={file.appear}
+        key={file.id}
+        statusType={file.status.type}
+      >
+        {
+          file.name &&
+          <FileLabel
+            font={this.fileLabelFont}
+            label={file.name}
+            appear
+          />
+        }
+        <FileStatus
+          font={this.fontBold}
+          type={file.status.type}
+          insertions={file.status.insertions}
+          deletions={file.status.deletions}
+          disappear
+        />
+      </File>
+    ));
+
+    return (
+      <Visualisation>
+        {
+          this.useVersionDatabase &&
+          <Section height="10" column="1" appear>
+            <SectionLabel font={this.sectionLabelFont} label="VERSION DATABASE" appear />
+          </Section>
+        }
+        {files}
+      </Visualisation>
+    );
+  }
+}
+
+export default VersioningOfFiles;

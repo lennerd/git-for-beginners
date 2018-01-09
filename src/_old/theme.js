@@ -27,9 +27,9 @@ export default {
   spacing,
 
   vis: {
-    cellWidth: 3 * 3,
-    cellHeight: 3.5 * 3,
-    levelHeight: 0.3 * 2,
+    cellWidth: 3,
+    cellHeight: 3.5,
+    levelHeight: 0.3,
   },
 
   color: {

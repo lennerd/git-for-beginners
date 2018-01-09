@@ -17,7 +17,7 @@ class File extends THREE.Object3D {
       new THREE.MeshLambertMaterial(),
     );
 
-    const outline = 0.03;
+    const outline = 0.015;
 
     this.hoverMesh = new THREE.Mesh(
       new THREE.BoxBufferGeometry(FILE_WIDTH + outline, FILE_HEIGHT + outline, FILE_DEPTH + outline),
@@ -46,7 +46,7 @@ class File extends THREE.Object3D {
     this.add(this.fileMesh);
   }
 
-  update(statusType, hover = false) {
+  update(statusType) {
     let color = theme.color.fileDefault;
 
     if (statusType === STATUS_ADDED) {
@@ -62,8 +62,6 @@ class File extends THREE.Object3D {
     this.fileMesh.material.polygonOffsetFactor = statusType !== STATUS_MODIFIED ? -0.01 : 0;
 
     this.fileMesh.material.needsUpdate = true;
-
-    this.hoverMesh.material.visible = hover;
   }
 
   appear(duration = 0.8) {

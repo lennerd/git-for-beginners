@@ -248,7 +248,6 @@ class VersioningInGit extends Story {
             statusType={file.status.type}
             appear={commitIndex === 0 && file.status.type === STATUS_ADDED}
             changes={file.status.changes}
-            hover={true}
           >
             <FileStatus
               font={this.fontBold}
