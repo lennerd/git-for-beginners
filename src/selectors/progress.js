@@ -2,8 +2,8 @@ import { createSelector } from 'reselect';
 
 import { selectChapters } from './chapters';
 
-export const selectCurrentChapterIndex = state => state.progress.chapter;
-export const selectCurrentSectionIndex = state => state.progress.section;
+export const selectCurrentChapterIndex = state => state.progress.chapterIndex;
+export const selectCurrentSectionIndex = state => state.progress.sectionIndex;
 
 export const selectCurrentChapter = createSelector(
   selectChapters,

@@ -1,6 +1,6 @@
 const DEFAULT_STATE = {
-  chapter: 0,
-  section: 0,
+  chapterIndex: 0,
+  sectionIndex: 0,
 };
 
 export default function(state = DEFAULT_STATE, action) {
