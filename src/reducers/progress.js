@@ -1,5 +1,5 @@
 const DEFAULT_STATE = {
-  chapterIndex: 0,
+  chapterIndex: 1,
   sectionIndex: 0,
 };
 

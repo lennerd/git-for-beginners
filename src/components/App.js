@@ -1,10 +1,10 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import styled from 'styled-components';
+import { Switch, Route, Redirect } from 'react-router-dom';
 
-import Tutorial from './Tutorial';
+import Tutorial, { Main } from './Tutorial';
 import NavigationContainer from './NavigationContainer';
-import Main from './Main';
 import ChapterContainer from './ChapterContainer';
 import HeaderContainer from './HeaderContainer';
 
@@ -20,7 +20,10 @@ function App() {
         <HeaderContainer />
         <NavigationContainer />
         <Main>
-          <ChapterContainer />
+          <Switch>
+            <Route path={`/chapters/:chapterId`} component={ChapterContainer} />
+            <Redirect to={`/chapters/1`} />
+          </Switch>
         </Main>
       </Tutorial>
     </AppWrapper>

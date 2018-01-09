@@ -3,8 +3,8 @@ import styled from 'styled-components';
 const Tutorial = styled.div`
   height: 100%;
   display: grid;
-  grid-template-columns: 90px repeat(12, auto) 90px;
-  grid-template-rows: 90px auto 90px;
+  grid-template-columns: 95px repeat(12, 1fr) 95px;
+  grid-template-rows: 95px auto 95px;
   grid-template-areas:
     ". header header header header header header header header header header header header ."
     "navigation . . main main main main . . . . . . .";
@@ -12,3 +12,9 @@ const Tutorial = styled.div`
 `;
 
 export default Tutorial;
+
+export const Main = styled.div`
+  justify-self: stretch;
+  align-self: center;
+  grid-area: main;
+`;

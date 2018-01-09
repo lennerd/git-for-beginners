@@ -14,7 +14,7 @@ function NavigationContainer({ chapters, tutorialProgress }) {
       <NavigationList>
         {chapters.map((chapter, index) => (
           <NavigationItem key={index}>
-            <NavigationLink to={`/chapter/${index + 1}`}>
+            <NavigationLink to={`/chapters/${index + 1}`}>
               <NavigationIndicator active={(index / (chapters.length - 1)) <= tutorialProgress} />
               <NavigationLabel>
                 {chapter.title}<br />
