@@ -2,6 +2,10 @@ import { createSelector } from 'reselect';
 
 import { selectChapters } from './chapters';
 
+function map(value, low1, high1, low2, high2) {
+  return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
+}
+
 export const selectCurrentChapterIndex = state => state.progress.chapterIndex;
 export const selectCurrentSectionIndex = state => state.progress.sectionIndex;
 
@@ -17,14 +21,10 @@ export const selectTutorialProgress = createSelector(
   selectCurrentChapterIndex,
   selectCurrentSectionIndex,
   (chapters, currentChapter, chapterIndex, sectionIndex) => {
-    if (chapters.length < 2) {
-      return 0;
-    }
+    const chapterStep = chapters.length > 1 ? 1 / (chapters.length - 1) : 1;
 
-    const chapterStep = 1 / (chapters.length - 1);
-    const sectionStep = chapterStep * (1 / (currentChapter.sections.length - 1));
-
-    return chapterStep * chapterIndex + sectionStep * sectionIndex;
+    return map(chapterIndex, 0, chapters.length - 1, 0, 1) +
+      map(sectionIndex, 0, currentChapter.sections.length, 0, chapterStep);
   },
 );
 
