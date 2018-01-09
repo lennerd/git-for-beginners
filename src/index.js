@@ -1,5 +1,13 @@
-import store from './store';
-import { selectTutorialProgress } from './selectors/progress';
+import React from 'react';
+import { render } from 'react-dom';
 
-console.log(selectTutorialProgress(store.getState()));
+import Root from './components/Root';
+import store from './store';
+import theme from './theme';
+import './injectGlobal';
+
+render(
+  <Root store={store} theme={theme} />,
+  document.getElementById('root'),
+);
 
