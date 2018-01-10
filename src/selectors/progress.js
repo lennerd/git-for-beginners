@@ -6,8 +6,9 @@ function map(value, low1, high1, low2, high2) {
   return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
 }
 
-export const selectCurrentChapterIndex = state => state.progress.chapterIndex;
-export const selectCurrentSectionIndex = state => state.progress.sectionIndex;
+export const selectProgress = state => state.progress;
+export const selectCurrentChapterIndex = state => selectProgress(state).chapterIndex;
+export const selectCurrentSectionIndex = state => selectProgress(state).sectionIndex;
 
 export const selectCurrentChapter = createSelector(
   selectChapters,
@@ -28,7 +29,7 @@ export const selectTutorialProgress = createSelector(
   },
 );
 
-export const selectPreviousChapter = createSelector(
+/*export const selectPreviousChapter = createSelector(
   selectChapters,
   selectCurrentChapterIndex,
   (chapters, chapterIndex) => (
@@ -58,4 +59,4 @@ export const isLastSection = createSelector(
   (currentChapters, sectionIndex) => (
     sectionIndex === (currentChapters.sections.length - 1)
   ),
-);
+);*/

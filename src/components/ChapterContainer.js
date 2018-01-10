@@ -1,39 +1,54 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import { Redirect } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
-import { selectChapters } from '../selectors/chapters';
-import { selectCurrentChapterIndex } from '../selectors/progress';
-import Chapter, { ChapterTitle, ChapterHeader, ChapterProgress } from './Chapter';
+import Chapter, {
+  ChapterTitle,
+  ChapterHeader,
+  ChapterProgress,
+  ChapterBody,
+  ChapterText,
+  ChapterTextNext
+} from './Chapter';
 import Title from './Title';
+import { selectCurrentSectionIndex } from '../selectors/progress';
+import { readOn } from '../reducers/progress';
 
-function ChapterContainer({ match, chapters, currentChapterIndex }) {
-  const chapterIndex = match.params.chapterId - 1;
-
-  if (chapterIndex >= chapters.length) {
-    return <Redirect to="/chapters/1" />;
-  }
-
-  if (chapterIndex > currentChapterIndex) {
-    return <Redirect to={`/chapters/${currentChapterIndex + 1}`} />;
-  }
-
-  const chapter = chapters[chapterIndex];
+function ChapterContainer({ chapterIndex, chapters, chapter, currentSectionIndex, onClickReadOn }) {
+  // @TODO Move to a selector.
+  const sections = chapter.sections
+    .filter((section, index) => index <= currentSectionIndex)
+    .map((section, index) => (
+      <ChapterText key={index}>
+        {section.text}
+        {
+          index === currentSectionIndex && index < (chapter.sections.length - 1) &&
+          <ChapterTextNext onClick={onClickReadOn}>Read On</ChapterTextNext>
+        }
+      </ChapterText>
+    ));
 
   return (
     <Chapter>
       <ChapterHeader>
-        <ChapterProgress><Title minor>{chapterIndex + 1} / {chapters.length}</Title></ChapterProgress>
+        <ChapterProgress>
+          <Title minor>{chapterIndex + 1} / {chapters.length}</Title>
+        </ChapterProgress>
         <ChapterTitle>{chapter.title}</ChapterTitle>
       </ChapterHeader>
+      <ChapterBody>
+        {sections}
+      </ChapterBody>
     </Chapter>
   );
 }
 
 export default connect(
   createStructuredSelector({
-    chapters: selectChapters,
-    currentChapterIndex: selectCurrentChapterIndex,
+    currentSectionIndex: selectCurrentSectionIndex,
   }),
+  dispatch => bindActionCreators({
+    onClickReadOn: readOn,
+  }, dispatch),
 )(ChapterContainer);

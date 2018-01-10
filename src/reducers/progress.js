@@ -1,8 +1,17 @@
+import { createAction, handleActions } from 'redux-actions';
+
 const DEFAULT_STATE = {
-  chapterIndex: 1,
+  chapterIndex: 0,
   sectionIndex: 0,
 };
 
-export default function(state = DEFAULT_STATE, action) {
-  return state;
-}
+export const readOn = createAction('PROGRESS/READ_ON');
+
+export default handleActions({
+  [readOn](state) {
+    return {
+      ...state,
+      sectionIndex: state.sectionIndex + 1,
+    }
+  }
+}, DEFAULT_STATE);

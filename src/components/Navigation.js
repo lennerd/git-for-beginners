@@ -61,6 +61,7 @@ export const NavigationLabel = styled.div`
   padding-left: ${props => props.theme.spacing()};
   line-height: ${props => props.theme.baseSpacing / props.theme.baseFontSize};
   color: ${props => props.theme.color.highlight};
+  white-space: nowrap;
 `;
 
 export const NavigationLink = styled(Link)`

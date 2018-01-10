@@ -7,7 +7,6 @@ const Title = styled.span`
   letter-spacing: 1.5px;
   opacity: ${props => props.minor ? 0.5 : 1};
   color: ${props => props.theme.color.highlight};
-  white-space: nowrap;
 `;
 
 export default Title;
