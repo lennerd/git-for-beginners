@@ -52,6 +52,7 @@
     "react-dev-utils": "^4.2.1",
     "react-dom": "^16.2.0",
     "react-helmet": "^5.2.0",
+    "react-hot-loader": "^4.0.0-beta.13",
     "react-loadable": "^5.3.1",
     "react-transition-group": "^2.2.1",
     "redux-thunk": "^2.2.0",
@@ -119,7 +120,8 @@
       "transform-class-properties",
       "transform-react-jsx",
       "transform-object-rest-spread",
-      "syntax-dynamic-import"
+      "syntax-dynamic-import",
+      "react-hot-loader/babel"
     ]
   },
   "eslintConfig": {

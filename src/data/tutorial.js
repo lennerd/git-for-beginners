@@ -10,3 +10,9 @@ const tutorial = new Tutorial({
 });
 
 export default tutorial;
+
+if (module.hot) {
+  module.hot.accept('./chapters', () => {
+    tutorial.reload({ chapters });
+  });
+}

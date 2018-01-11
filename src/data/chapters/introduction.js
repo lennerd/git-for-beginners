@@ -6,7 +6,7 @@ export default {
   sections: [
     {
       type: SECTION_TEXT,
-      text: 'In the passed few decades computer in different shape and sizes changed our daily life enormously. Together we create huge amount of data in form of files everyday to store everything from invoices to love letters, from code to illustrations and designs.',
+      text: 'Over the passed decades computer in different shape and sizes changed our daily life enormously. Together we create huge amount of data in form of files everyday to store everything from invoices to love letters, from code to illustrations and designs.',
     },
     {
       type: SECTION_TEXT,

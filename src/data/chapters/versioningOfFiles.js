@@ -5,7 +5,7 @@ export default {
   sections: [
     {
       type: SECTION_TASK,
-      content: 'Create a file.',
+      text: 'Create a file.',
       done: (state) => {
         return false;
       }

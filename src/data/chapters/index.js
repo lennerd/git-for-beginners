@@ -9,8 +9,6 @@ let nextSectionId = 1;
 const chapters = [
   introduction,
   versioningOfFiles,
-  introduction,
-  versioningOfFiles,
 ].map(chapter => new Chapter({
   ...chapter,
   id: nextChapterId++,
