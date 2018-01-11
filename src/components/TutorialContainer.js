@@ -1,46 +1,48 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { createStructuredSelector } from 'reselect';
-import { Redirect } from 'react-router-dom';
+import React, { Component } from 'react';
+import { inject, observer } from 'mobx-react';
 
-import Tutorial, { Main } from './Tutorial';
+import Tutorial, { Main, NextChapterButton } from './Tutorial';
 import NavigationContainer from './NavigationContainer';
 import ChapterContainer from './ChapterContainer';
 import HeaderContainer from './HeaderContainer';
-import { selectChapters } from '../selectors/chapters';
-import { selectCurrentChapterIndex } from '../selectors/progress';
 
-function TutorialContainer({ match, chapters, currentChapterIndex }) {
-  const chapterIndex = match.params.chapterId - 1;
+@inject('tutorial')
+@observer
+class TutorialContainer extends Component {
+  handleNextChapterButtonClick = () => {
+    const { tutorial } = this.props;
 
-  if (chapterIndex >= chapters.length) {
-    return <Redirect to="/chapters/1" />;
+    tutorial.readOn();
   }
 
-  if (chapterIndex > currentChapterIndex) {
-    return <Redirect to={`/chapters/${currentChapterIndex + 1}`} />;
+  render() {
+    const { tutorial } = this.props;
+    const { currentChapter } = tutorial;
+
+    const nextChapter = tutorial.getNextChapter(currentChapter);
+
+    return (
+      <Tutorial>
+        <HeaderContainer />
+        <NavigationContainer />
+        <Main>
+          <ChapterContainer />
+        </Main>
+        {
+          !currentChapter.hasUnreachedSections() && nextChapter &&
+          <NextChapterButton onClick={() => {
+            if (!currentChapter.completed) {
+              tutorial.readOn();
+            }
+
+            tutorial.activateChapter(nextChapter);
+          }}>
+            {nextChapter.title}
+          </NextChapterButton>
+        }
+      </Tutorial>
+    );
   }
-
-  const chapter = chapters[chapterIndex];
-
-  return (
-    <Tutorial>
-      <HeaderContainer chapter={chapter} />
-      <NavigationContainer />
-      <Main>
-        <ChapterContainer
-          chapterIndex={chapterIndex}
-          chapter={chapter}
-          chapters={chapters}
-        />
-      </Main>
-    </Tutorial>
-  );
 }
 
-export default connect(
-  createStructuredSelector({
-    chapters: selectChapters,
-    currentChapterIndex: selectCurrentChapterIndex,
-  }),
-)(TutorialContainer);
+export default TutorialContainer;

@@ -6,6 +6,10 @@ injectGlobal`
   @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro');
   @import url('https://fonts.googleapis.com/css?family=Source+Code+Pro:400,900');
 
+  * {
+    box-sizing: border-box;
+  }
+
   body {
     margin: 0;
   }
@@ -28,8 +32,14 @@ injectGlobal`
   }
 
   button {
+    appearance: none;
+    border: 0;
+    background: none;
+    padding: 0;
     font-family: inherit;
     color: inherit;
+    cursor: pointer;
+    text-align: inherit;
     cursor: pointer;
   }
 

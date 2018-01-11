@@ -1,5 +1,4 @@
 import { SECTION_TASK } from './sectionTypes';
-import { selectCurrentTree } from '../../selectors/trees';
 
 export default {
   title: 'Versioning of Files',
@@ -8,9 +7,7 @@ export default {
       type: SECTION_TASK,
       content: 'Create a file.',
       done: (state) => {
-        const currentTree = selectCurrentTree(state);
-
-        return currentTree.files.length > 0;
+        return false;
       }
     }
   ],

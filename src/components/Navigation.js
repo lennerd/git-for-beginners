@@ -1,5 +1,6 @@
 import styled, { css } from 'styled-components';
-import { Link } from 'react-router-dom';
+
+import Link from './Link';
 
 export const NavigationProgressBar = styled.div`
   transition: height 400ms;
@@ -58,20 +59,20 @@ export const NavigationLabel = styled.div`
   opacity: 0;
   top: ${props => props.theme.spacing(-0.25)};
   left: ${props => props.theme.spacing(0.75)};
-  padding-left: ${props => props.theme.spacing()};
+  padding-left: ${props => props.theme.spacing(2)};
   line-height: ${props => props.theme.baseSpacing / props.theme.baseFontSize};
   color: ${props => props.theme.color.highlight};
   white-space: nowrap;
 `;
 
-export const NavigationLink = styled(Link)`
+export const NavigationLink = Link.extend`
   display: block;
   padding: ${props => props.theme.spacing()};
   cursor: pointer;
 
   &:hover {
     ${NavigationLabel} {
-      transform: translateX(0);
+      transform: translateX(${props => props.theme.spacing(-1)});
       opacity: 1;
     }
 

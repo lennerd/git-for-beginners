@@ -1,17 +1,14 @@
 import React from 'react';
-import { Provider } from 'react-redux';
-import { BrowserRouter } from 'react-router-dom';
+import { Provider } from 'mobx-react';
 import { ThemeProvider } from 'styled-components';
 
 import App from './App';
 
-function Root({ store, theme }) {
+function Root({ tutorial, theme }) {
   return (
-    <Provider store={store}>
+    <Provider tutorial={tutorial}>
       <ThemeProvider theme={theme}>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
+        <App />
       </ThemeProvider>
     </Provider>
   );

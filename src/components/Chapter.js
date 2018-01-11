@@ -1,10 +1,7 @@
 import styled from 'styled-components';
 
-import Title from './Title';
-
-function inlineSVG(svg) {
-  return `url(data:image/svg+xml;base64,${btoa(svg)})`;
-}
+import arrowDownSmall from '../images/arrowDownSmall.svg';
+import Button from './Button';
 
 const Chapter = styled.div``;
 
@@ -27,32 +24,28 @@ export const ChapterTitle = styled.div`
 `;
 
 export const ChapterBody = styled.div`
+  position: relative;
+
   ${ChapterHeader} + & {
     margin-top: ${props => props.theme.spacing()};
   }
 `;
 
 export const ChapterText = styled.p`
-  position: relative;
-
   & + & {
     margin-top: ${props => props.theme.spacing(0.75)};
   }
 `;
 
-export const ChapterTextNext = Title.extend`
-  display: block;
-  transform: translateX(-50%) rotate(-90deg) translateY(${props => props.theme.spacing(-1)});
-  transform-origin: 50% 100%;
+export const ChapterReadOn = Button.extend`
+  transform:  rotate(-90deg) translateY(${props => props.theme.spacing(-1)}) translateX(${props => props.theme.spacing(-1.5)});
+  transform-origin: 0 100%;
   position: absolute;
-  bottom: ${props => props.theme.spacing()};
+  bottom: 0;
   left: 0;
-  background-image: ${inlineSVG('<svg width="10" height="20" xmlns="http://www.w3.org/2000/svg"><path d="m9,1l-8,8l8,8" stroke-width="1" stroke="#F25944" fill="none" /></svg>')};
-  background-repeat: no-repeat;
-  background-position: 0 100%;
+  background-image: url(${arrowDownSmall});
+  background-position: 0 70%;
   padding-left: ${props => props.theme.spacing()};
-  color: ${props => props.theme.color.interactive};
-  cursor: pointer;
 `;
 
 export default Chapter;

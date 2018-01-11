@@ -1,20 +1,22 @@
-import React from 'react';
+import React, { Component } from 'react';
+import { inject, observer } from 'mobx-react';
 
 import Title from './Title';
-import Link from './Link';
-import Header from './Header';
+import Header, { HeaderTitle } from './Header';
 
-const TutorialTitle = Title.withComponent('h1');
+@inject('tutorial')
+@observer
+class HeaderContainer extends Component {
+  render() {
+    const { currentChapter } = this.props.tutorial;
 
-function HeaderContainer({ chapter }) {
-  return (
-    <Header>
-      <TutorialTitle>
-        <Link to="/">Git for Beginners</Link>
-      </TutorialTitle>
-      <Title minor>{chapter.title}</Title>
-    </Header>
-  )
+    return (
+      <Header>
+        <HeaderTitle>Git for Beginners</HeaderTitle>
+        <Title minor>{currentChapter.title}</Title>
+      </Header>
+    );
+  }
 }
 
 export default HeaderContainer;

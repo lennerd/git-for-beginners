@@ -1,7 +1,6 @@
 import styled from 'styled-components';
-import { Link as BaseLink } from 'react-router-dom';
 
-const Link = styled(BaseLink)`
+const Link = styled.a`
   color: ${props => props.theme.color.interactive};
   text-decoration: none;
 `;

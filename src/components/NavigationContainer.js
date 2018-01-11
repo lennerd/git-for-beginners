@@ -1,36 +1,44 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { createStructuredSelector } from 'reselect';
+import React, { Component } from 'react';
+import { inject, observer } from 'mobx-react';
 
-import Navigation, { NavigationProgressBar, NavigationList, NavigationItem, NavigationLink, NavigationIndicator, NavigationLabel } from './Navigation';
+import Navigation, {
+  NavigationProgressBar,
+  NavigationList,
+  NavigationItem,
+  NavigationLink,
+  NavigationIndicator,
+  NavigationLabel
+} from './Navigation';
 import Title from './Title';
-import { selectChapters } from '../selectors/chapters';
-import { selectTutorialProgress } from '../selectors/progress';
 
-function NavigationContainer({ chapters, tutorialProgress }) {
-  return (
-    <Navigation>
-      <NavigationProgressBar progress={tutorialProgress} />
-      <NavigationList>
-        {chapters.map((chapter, index) => (
-          <NavigationItem key={index}>
-            <NavigationLink to={`/chapters/${index + 1}`}>
-              <NavigationIndicator active={(index / (chapters.length - 1)) <= tutorialProgress} />
-              <NavigationLabel>
-                {chapter.title}<br />
-                <Title minor>{index + 1} / {chapters.length}</Title>
-              </NavigationLabel>
-            </NavigationLink>
-          </NavigationItem>
-        ))}
-      </NavigationList>
-    </Navigation>
-  );
+@inject('tutorial')
+@observer
+class NavigationContainer extends Component {
+  render() {
+    const { tutorial } = this.props;
+    const { progress, chapters } = tutorial;
+
+    return (
+      <Navigation>
+        <NavigationProgressBar progress={progress} />
+        <NavigationList>
+          {chapters.map((chapter, index) => (
+            <NavigationItem key={index}>
+              <NavigationLink onClick={() => {
+                tutorial.activateChapter(chapter)
+              }}>
+                <NavigationIndicator active={(index / (chapters.length - 1)) <= progress} />
+                <NavigationLabel>
+                  {chapter.title}<br />
+                  <Title minor>{index + 1} / {chapters.length}</Title>
+                </NavigationLabel>
+              </NavigationLink>
+            </NavigationItem>
+          ))}
+        </NavigationList>
+      </Navigation>
+    );
+  }
 }
 
-export default connect(
-  createStructuredSelector({
-    chapters: selectChapters,
-    tutorialProgress: selectTutorialProgress,
-  }),
-)(NavigationContainer);
+export default NavigationContainer;
