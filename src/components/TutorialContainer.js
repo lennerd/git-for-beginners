@@ -6,6 +6,7 @@ import NavigationContainer from './NavigationContainer';
 import ChapterContainer from './ChapterContainer';
 import HeaderContainer from './HeaderContainer';
 import { ACTION_READ_ON } from '../constants';
+import ConsoleContainer from './ConsoleContainer';
 
 @inject('tutorial')
 @observer
@@ -38,6 +39,7 @@ class TutorialContainer extends Component {
             {nextChapter.title}
           </NextChapterButton>
         }
+        <ConsoleContainer />
       </Tutorial>
     );
   }

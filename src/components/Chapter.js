@@ -34,6 +34,19 @@ export const ChapterBody = styled.div`
   & > * + * {
     margin-top: ${props => props.theme.spacing(0.75)};
   }
+
+  strong {
+    font-weight: 600;
+  }
+
+  code {
+    ${props => props.theme.mixins.monospaced};
+    white-space: nowrap;
+    background-color: white;
+    padding: ${props => props.theme.spacing(0.1)} ${props => props.theme.spacing(0.3)};
+    margin: 0 ${props => props.theme.spacing(-0.25)};
+    border-radius: ${props => props.theme.border.radiusLarge};
+  }
 `;
 
 export const ChapterText = styled.p``;

@@ -10,7 +10,6 @@ class Color extends THREE.Color {
   }
 }
 
-
 function rem(size) {
   return css`${props => size / props.theme.baseFontSize}rem`;
 }
@@ -33,6 +32,19 @@ export default {
     highlight: new Color('#1126B4'),
   },
 
-  borderRadius: css`${props => props.theme.spacing(0.15)}`,
-  borderRadiusBig: css`${props => props.theme.spacing(0.25)}`,
+  border: {
+    radius: css`${props => props.theme.spacing(0.15)}`,
+    radiusLarge: css`${props => props.theme.spacing(0.25)}`,
+  },
+
+  text: {
+    sizeMono: css`${props => props.theme.spacing(0.75)}`,
+  },
+
+  mixins: {
+    monospaced: css`
+      font-family: 'Source Code Pro', monospaced;
+      font-size: ${props => props.theme.text.sizeMono};
+    `,
+  }
 };

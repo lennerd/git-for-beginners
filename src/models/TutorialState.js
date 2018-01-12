@@ -9,9 +9,15 @@ var Action = createSimpleSchema({
   ),
 });
 
+var Milestone = createSimpleSchema({
+  chapterId: primitive(),
+  index: primitive(),
+});
+
 class TutorialState {
   @serializable @observable currentChapterId;
-  @serializable(list(object(Action))) @observable.shallow actions = [];
+  @serializable(list(object(Action))) @observable actions = [];
+  @serializable(list(object(Milestone))) @observable milestones = [];
 
   static create({ chapters }) {
     const state = new TutorialState();

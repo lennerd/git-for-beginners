@@ -15,13 +15,13 @@ const Checkmark = styled.div`
     content: '';
     position: absolute;
     left: 0;
-    top: 0;
+    top: 2px;
     width: 100%;
     height: 100%;
   }
 
   &:before {
-    border-radius: ${props => props.theme.borderRadius};
+    border-radius: ${props => props.theme.border.radius};
   }
 
   &:after {
@@ -45,14 +45,14 @@ Checkbox.defaultProps = { checked: false, onChange: () => {} };
 
 export default styled(Checkbox)`
   padding-left: ${props => props.theme.spacing(1.75)};
-  line-height: ${props => props.theme.spacing()};
+  //line-height: ${props => props.theme.spacing()};
   display: inline-block;
   position: relative;
 
   & > input {
     position: absolute;
     left: 0;
-    top: 0;
+    top: 2px;
     opacity: 0;
     width: ${props => props.theme.spacing()};
     height: ${props => props.theme.spacing()};

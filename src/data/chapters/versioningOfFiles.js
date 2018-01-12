@@ -1,3 +1,5 @@
+import React, { Fragment } from 'react';
+
 import { SECTION_TASK, ACTION_ADD_FILE } from "../../constants";
 
 export default {
@@ -5,7 +7,7 @@ export default {
   sections: [
     {
       type: SECTION_TASK,
-      text: 'Create a file.',
+      text: 'Create a new file.',
       action: ACTION_ADD_FILE,
     }
   ],

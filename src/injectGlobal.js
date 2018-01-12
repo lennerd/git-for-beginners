@@ -3,8 +3,7 @@ import theme from './theme';
 import 'normalize.css';
 
 injectGlobal`
-  @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro');
-  @import url('https://fonts.googleapis.com/css?family=Source+Code+Pro:400,900');
+  @import url('https://fonts.googleapis.com/css?family=Source+Code+Pro:400,700|Source+Sans+Pro:400,400i,600');
 
   * {
     box-sizing: border-box;
@@ -29,6 +28,20 @@ injectGlobal`
 
   h1, p {
     margin: 0;
+  }
+
+  textarea,
+  input {
+    font: inherit;
+    line-height: inherit;
+    border: 0;
+    outline: 0;
+    padding: 0;
+  }
+
+  textarea {
+    display: block;
+    resize: none;
   }
 
   button {
