@@ -1,74 +1,94 @@
-import { extendObservable, computed, observable, action } from 'mobx';
+import { computed, action } from 'mobx';
+import { serializable, object } from 'serializr';
+import takeWhile from 'lodash/takeWhile';
+
+import Chapter from './Chapter';
+import TutorialState from './TutorialState';
 
 class Tutorial {
-  @observable currentChapter;
+  @serializable(object(TutorialState)) state;
+  chapters = [];
 
-  constructor(data) {
-    extendObservable(this, data);
+  static create({ chapters, ...data }) {
+    const tutorial = new this({
+      ...data,
+      state: TutorialState.create({ chapters }),
+    });
+
+    tutorial.chapters = chapters.map(chapter => Chapter.create(tutorial, chapter));
+
+    return tutorial;
   }
 
-  @computed get reachedChapters() {
-    return this.chapters.filter(chapter => chapter.reached);
+  constructor(data) {
+    Object.assign(this, data);
+  }
+
+  @computed get currentChapter() {
+    return this.chapters.find(chapter => chapter.id === this.state.currentChapterId);
+  }
+
+  set currentChapter(currentChapter) {
+    this.state.currentChapterId = currentChapter.id;
+  }
+
+  @computed get nextChapter() {
+    const currentIndex = this.chapters.indexOf(this.currentChapter);
+
+    return this.chapters[currentIndex + 1];
+  }
+
+  @computed get sections() {
+    return [].concat(
+      ...this.chapters.map(chapter => chapter.sections),
+    );
   }
 
   @computed get completedChapters() {
-    return this.chapters.filter(chapter => chapter.completed);
+    return takeWhile(this.chapters, 'completed');
+  }
+
+  @computed get visibleChapters() {
+    return this.chapters.slice(0, this.completedChapters.length + 1);
+  }
+
+  @computed get completedSections() {
+    const { actions } = this.state;
+
+    const actionsRest = actions.slice();
+
+    return takeWhile(this.sections, section => {
+      const actionType = section.action.toString();
+      let action;
+
+      while((action = actionsRest.shift()) != null) { // eslint-disable-line no-cond-assign
+        if (actionType === action.type) {
+          return true;
+        }
+      }
+
+      return false;
+    });
   }
 
   @computed get progress() {
-    const lastReachedChapter = this.reachedChapters[this.reachedChapters.length - 1];
-    const { sections, reachedSections } = lastReachedChapter;
-
     const chapterStep = this.chapters.length === 1 ? 1 : 1 / (this.chapters.length - 1);
-    const sectionStep = sections.length === 1 ? chapterStep : chapterStep / (sections.length);
 
-    return chapterStep * this.completedChapters.length + sectionStep * (reachedSections.length - 1);
+    return this.chapters.reduce((progress, chapter) => {
+      return progress + chapterStep * chapter.progress;
+    }, 0);
   }
 
-  getNextChapter(chapter) {
-    const index = this.chapters.indexOf(chapter);
-
-    return this.chapters[index + 1];
+  @action do(action) {
+    this.state.actions.push(action);
   }
 
-  getPrevChapter(chapter) {
-    const index = this.chapters.indexOf(chapter);
-
-    return this.chapters[index - 1];
-  }
-
-  @action activateChapter(chapter) {
-    const prevChapter = this.getPrevChapter(chapter);
-
-    if (prevChapter != null && !prevChapter.completed) {
-      return false;
+  @action navigateToChapter(chapter) {
+    if (!this.visibleChapters.includes(chapter)) {
+      return;
     }
 
     this.currentChapter = chapter;
-
-    return true;
-  }
-
-  @action readOn() {
-    const { nextSection, currentSection } = this.currentChapter;
-
-    if (currentSection != null) {
-      currentSection.completed = true;
-    }
-
-    if (nextSection == null) {
-      const nextChapter = this.getNextChapter(this.currentChapter);
-
-      if (nextChapter == null) {
-        return false;
-      }
-
-      this.activateChapter(nextChapter);
-      return this.readOn();
-    }
-
-    nextSection.reached = true;
-    return true;
   }
 }
 

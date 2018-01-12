@@ -10,27 +10,32 @@ import Chapter, {
   ChapterReadOn
 } from './Chapter';
 import Title from './Title';
+import { ACTION_READ_ON } from '../constants';
 
 @inject('tutorial')
 @observer
 class ChapterContainer extends Component {
-  handleReadOnClick = () => {
+  handleClickReadOn = () => {
     const { tutorial } = this.props;
 
-    tutorial.readOn();
+    tutorial.do(ACTION_READ_ON());
   }
 
   render() {
     const { tutorial } = this.props;
     const { currentChapter, chapters } = tutorial;
 
-    const sections = currentChapter.reachedSections.map((section, index) => (
+    if (currentChapter == null) {
+      return null;
+    }
+
+    const sections = currentChapter.visibleSections.map((section, index) => (
       <ChapterText key={index}>
         {section.text}
         {
-          currentChapter.hasUnreachedSections() &&
-          currentChapter.currentSection === section &&
-          <ChapterReadOn onClick={this.handleReadOnClick}>Read On</ChapterReadOn>
+          !currentChapter.allowsNextChapter &&
+          index === (currentChapter.visibleSections.length - 1) &&
+          <ChapterReadOn onClick={this.handleClickReadOn}>Read On</ChapterReadOn>
         }
       </ChapterText>
     ));

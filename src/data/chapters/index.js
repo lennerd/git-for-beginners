@@ -1,7 +1,5 @@
 import introduction from "./introduction";
 import versioningOfFiles from "./versioningOfFiles";
-import Chapter from "../../models/Chapter";
-import Section from "../../models/Section";
 
 let nextChapterId = 1;
 let nextSectionId = 1;
@@ -9,10 +7,10 @@ let nextSectionId = 1;
 const chapters = [
   introduction,
   versioningOfFiles,
-].map(chapter => new Chapter({
+].map(chapter => ({
   ...chapter,
   id: nextChapterId++,
-  sections: chapter.sections.map(section => new Section({
+  sections: chapter.sections.map(section => ({
     ...section,
     id: nextSectionId++,
   }))

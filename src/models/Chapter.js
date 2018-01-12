@@ -1,33 +1,53 @@
-import { extendObservable, computed } from 'mobx';
+import { computed } from 'mobx';
+import takeWhile from 'lodash/takeWhile';
+
+import Section from './Section';
 
 class Chapter {
-  constructor(data) {
-    extendObservable(this, data);
+  sections = [];
+
+  static create(tutorial, { sections, ...data }) {
+    return new this(tutorial, {
+      ...data,
+      sections: sections.map(section => Section.create(tutorial, section)),
+    });
   }
 
-  @computed get reached() {
-    return this.sections.some(section => section.reached);
+  constructor(tutorial, data) {
+    this.tutorial = tutorial;
+
+    Object.assign(this, data);
   }
 
   @computed get completed() {
     return this.sections.every(section => section.completed);
   }
 
-  @computed get reachedSections() {
-    return this.sections.filter(section => section.reached);
+  @computed get completedSections() {
+    return takeWhile(this.sections, 'completed');
   }
 
-  @computed get currentSection() {
-    return this.reachedSections[this.reachedSections.length - 1];
+  @computed get allowsNextChapter() {
+    return this.sections.length === this.visibleSections.length;
   }
 
-  @computed get nextSection() {
-    return this.sections.find(section => !section.reached)
+  @computed get progress() {
+    return this.completedSections.length / this.sections.length;
   }
 
-  hasUnreachedSections() {
-    return this.reachedSections.length < this.sections.length;
+  @computed get visibleSections() {
+    return this.sections.slice(0, this.completedSections.length + 1);
   }
+
+  /*findNextSection(section) {
+    const sectionIndex = this.sections.indexOf(section);
+
+    if (sectionIndex < 0) {
+      return null;
+    }
+
+    return this.sections[sectionIndex + 1];
+  }*/
 }
 
 export default Chapter;

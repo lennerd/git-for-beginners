@@ -5,21 +5,25 @@ import Tutorial, { Main, NextChapterButton } from './Tutorial';
 import NavigationContainer from './NavigationContainer';
 import ChapterContainer from './ChapterContainer';
 import HeaderContainer from './HeaderContainer';
+import { ACTION_READ_ON } from '../constants';
 
 @inject('tutorial')
 @observer
 class TutorialContainer extends Component {
-  handleNextChapterButtonClick = () => {
+  handleClickNextChapterButton = () => {
     const { tutorial } = this.props;
+    const { currentChapter, nextChapter } = tutorial;
 
-    tutorial.readOn();
-  }
+    if (!currentChapter.completed) {
+      tutorial.do(ACTION_READ_ON());
+    }
+
+    tutorial.navigateToChapter(nextChapter);
+  };
 
   render() {
     const { tutorial } = this.props;
-    const { currentChapter } = tutorial;
-
-    const nextChapter = tutorial.getNextChapter(currentChapter);
+    const { currentChapter, nextChapter } = tutorial;
 
     return (
       <Tutorial>
@@ -29,14 +33,8 @@ class TutorialContainer extends Component {
           <ChapterContainer />
         </Main>
         {
-          !currentChapter.hasUnreachedSections() && nextChapter &&
-          <NextChapterButton onClick={() => {
-            if (!currentChapter.completed) {
-              tutorial.readOn();
-            }
-
-            tutorial.activateChapter(nextChapter);
-          }}>
+          currentChapter && currentChapter.allowsNextChapter && nextChapter &&
+          <NextChapterButton onClick={this.handleClickNextChapterButton}>
             {nextChapter.title}
           </NextChapterButton>
         }

@@ -1,4 +1,4 @@
-import { SECTION_TASK } from './sectionTypes';
+import { SECTION_TASK, ACTION_ADD_FILE } from "../../constants";
 
 export default {
   title: 'Versioning of Files',
@@ -6,9 +6,7 @@ export default {
     {
       type: SECTION_TASK,
       text: 'Create a file.',
-      done: (state) => {
-        return false;
-      }
+      action: ACTION_ADD_FILE,
     }
   ],
 };

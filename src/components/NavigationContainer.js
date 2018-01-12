@@ -14,9 +14,18 @@ import Title from './Title';
 @inject('tutorial')
 @observer
 class NavigationContainer extends Component {
+  handleClickNavigationLink(chapter) {
+    const { tutorial } = this.props;
+
+    tutorial.navigateToChapter(chapter);
+  }
   render() {
     const { tutorial } = this.props;
-    const { progress, chapters } = tutorial;
+    const { progress, chapters, currentChapter } = tutorial;
+
+    if (currentChapter == null) {
+      return null;
+    }
 
     return (
       <Navigation>
@@ -24,9 +33,7 @@ class NavigationContainer extends Component {
         <NavigationList>
           {chapters.map((chapter, index) => (
             <NavigationItem key={index}>
-              <NavigationLink onClick={() => {
-                tutorial.activateChapter(chapter)
-              }}>
+              <NavigationLink onClick={() => this.handleClickNavigationLink(chapter)}>
                 <NavigationIndicator active={(index / (chapters.length - 1)) <= progress} />
                 <NavigationLabel>
                   {chapter.title}<br />

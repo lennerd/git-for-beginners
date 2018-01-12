@@ -1,16 +1,18 @@
-import { extendObservable, observable, action } from 'mobx';
+import { computed } from 'mobx';
 
 class Section {
-  @observable reached = false;
-  @observable completed = false;
-  @observable.ref text;
-
-  constructor(data) {
-    extendObservable(this, data);
+  static create(tutorial, data) {
+    return new this(tutorial, data);
   }
 
-  @action reach() {
-    this.reached = true;
+  constructor(tutorial, data) {
+    this.tutorial = tutorial;
+
+    Object.assign(this, data);
+  }
+
+  @computed get completed() {
+    return this.tutorial.completedSections.indexOf(this) > -1;
   }
 }
 
