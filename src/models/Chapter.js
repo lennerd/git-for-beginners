@@ -7,10 +7,10 @@ class Chapter {
   sections = [];
 
   static create(tutorial, { sections, ...data }) {
-    return new this(tutorial, {
-      ...data,
-      sections: sections.map(section => Section.create(tutorial, section)),
-    });
+    const chapter = new this(tutorial, data);
+    chapter.sections = sections.map(section => Section.create(tutorial, chapter, section));
+
+    return chapter;
   }
 
   constructor(tutorial, data) {

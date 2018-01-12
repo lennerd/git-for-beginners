@@ -6,11 +6,10 @@ import Chapter, {
   ChapterHeader,
   ChapterProgress,
   ChapterBody,
-  ChapterText,
-  ChapterReadOn
 } from './Chapter';
 import Title from './Title';
 import { ACTION_READ_ON } from '../constants';
+import ChapterSectionContainer from './ChapterSectionContainer';
 
 @inject('tutorial')
 @observer
@@ -30,14 +29,11 @@ class ChapterContainer extends Component {
     }
 
     const sections = currentChapter.visibleSections.map((section, index) => (
-      <ChapterText key={index}>
-        {section.text}
-        {
-          !currentChapter.allowsNextChapter &&
-          index === (currentChapter.visibleSections.length - 1) &&
-          <ChapterReadOn onClick={this.handleClickReadOn}>Read On</ChapterReadOn>
-        }
-      </ChapterText>
+      <ChapterSectionContainer
+        key={section.id}
+        section={section}
+        onClickReadOn={this.handleClickReadOn}
+      />
     ));
 
     return (

@@ -1,5 +1,16 @@
 import { css } from 'styled-components';
 
+class Color extends THREE.Color {
+  toString() {
+    return this.getStyle();
+  }
+
+  alpha(alpha) {
+    return `rgba(${(this.r * 255) | 0}, ${(this.g * 255) | 0}, ${(this.b * 255) | 0}, ${alpha})`;
+  }
+}
+
+
 function rem(size) {
   return css`${props => size / props.theme.baseFontSize}rem`;
 }
@@ -17,8 +28,11 @@ export default {
   spacing,
 
   color: {
-    text: '#333336',
-    interactive: '#F25944',
-    highlight: '#1126B4',
+    text: new Color('#333336'),
+    interactive: new Color('#F25944'),
+    highlight: new Color('#1126B4'),
   },
+
+  borderRadius: css`${props => props.theme.spacing(0.15)}`,
+  borderRadiusBig: css`${props => props.theme.spacing(0.25)}`,
 };

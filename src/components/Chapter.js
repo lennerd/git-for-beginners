@@ -2,6 +2,7 @@ import styled from 'styled-components';
 
 import arrowDownSmall from '../images/arrowDownSmall.svg';
 import Button from './Button';
+import Checkbox from './Checkbox';
 
 const Chapter = styled.div``;
 
@@ -29,13 +30,13 @@ export const ChapterBody = styled.div`
   ${ChapterHeader} + & {
     margin-top: ${props => props.theme.spacing()};
   }
-`;
 
-export const ChapterText = styled.p`
-  & + & {
+  & > * + * {
     margin-top: ${props => props.theme.spacing(0.75)};
   }
 `;
+
+export const ChapterText = styled.p``;
 
 export const ChapterReadOn = Button.extend`
   transform:  rotate(-90deg) translateY(${props => props.theme.spacing(-1)}) translateX(${props => props.theme.spacing(-1.5)});
@@ -46,6 +47,12 @@ export const ChapterReadOn = Button.extend`
   background-image: url(${arrowDownSmall});
   background-position: 0 70%;
   padding-left: ${props => props.theme.spacing()};
+`;
+
+export const ChapterTask = styled.div``;
+
+export const ChapterCheckbox = Checkbox.extend`
+  color: ${props => props.checked ? 'inherit' : props.theme.color.highlight};
 `;
 
 export default Chapter;
