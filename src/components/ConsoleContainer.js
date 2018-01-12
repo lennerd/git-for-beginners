@@ -3,47 +3,76 @@ import { inject, observer } from 'mobx-react';
 
 import Console, {
   ConsoleSection,
-  ConsoleCommandName,
-  ConsoleCommandMessage,
-  ConsoleInput
+  ConsoleInput,
+  ConsoleCommand,
 } from './Console';
 
 @inject('tutorial')
 @observer
 class ConsoleContainer extends Component {
   state = {
-    input: '',
+    history: [{ prompt: '' }],
+    currentIndex: 0,
   };
 
   handleConsoleInputChange = (event) => {
+    const { history } = this.state;
     const { value } = event.target;
 
     this.setState({
-      input: value.substring(2),
+      history: [
+        ...history.slice(0, -1),
+        { prompt: value.substring(2) },
+      ],
+      currentIndex: history.length - 1,
     });
   }
 
   handleConsoleInputKeyDown = (event) => {
+    const { history, currentIndex } = this.state;
+
     if(event.key === 'ArrowUp' || event.key === 'ArrowDown' || event.key === 'Enter') {
       event.preventDefault();
     }
 
     if (event.key === 'ArrowUp') {
-      console.log('prev');
+      const newIndex = currentIndex - 1;
+
+      if (newIndex > -1) {
+        this.setState({
+          currentIndex: newIndex,
+        });
+      }
+
+      return;
     }
 
     if (event.key === 'ArrowDown') {
-      console.log('next');
+      const newIndex = currentIndex + 1;
+
+      if (newIndex < history.length) {
+        this.setState({
+          currentIndex: newIndex,
+        });
+      }
+
+      return;
     }
 
     if (event.key === 'Enter') {
-      console.log('send');
-    }
-  }
+      const newHistory = [
+        ...history.slice(0, -1),
+        history[currentIndex],
+        { prompt: '' },
+      ];
 
-  handleConsoleInputSelect = (event) => {
-    event.preventDefault();
-    console.log('Select', event);
+      this.setState({
+        history: newHistory,
+        currentIndex: newHistory.length - 1,
+      });
+
+      return;
+    }
   }
 
   componentDidMount() {
@@ -59,17 +88,21 @@ class ConsoleContainer extends Component {
   }
 
   render() {
-    const { input } = this.state;
+    const { history, currentIndex } = this.state;
+    const current = history[currentIndex];
 
     return (
       <Console innerRef={(ref) => { this.console = ref; }}>
-        <ConsoleSection>
-          <ConsoleCommandName>$ git checkout master</ConsoleCommandName>
-          <ConsoleCommandMessage>Switched to branch 'master'<br />Your branch is ahead of 'origin/master' by 2 commits.</ConsoleCommandMessage>
-        </ConsoleSection>
+        {history.slice(0, -1).map((command, index) => {
+          return (
+            <ConsoleSection key={index}>
+              <ConsoleCommand>$ {command.prompt}</ConsoleCommand>
+            </ConsoleSection>
+          );
+        })}
         <ConsoleSection>
           <ConsoleInput
-            value={`$ ${input}`}
+            value={`$ ${current.prompt}`}
             onChange={this.handleConsoleInputChange}
             onKeyDown={this.handleConsoleInputKeyDown} />
         </ConsoleSection>

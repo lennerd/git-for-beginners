@@ -11,6 +11,7 @@ const Console = styled.div`
   margin-bottom: ${props => props.theme.spacing(2)};
   max-height: ${props => props.theme.spacing(8)};
   overflow: auto;
+  overflow-x: hidden;
   line-height: ${props => props.theme.spacing(1.1)};
 
   > * + * {
@@ -19,22 +20,20 @@ const Console = styled.div`
 `;
 
 export const ConsoleSection = styled.div`
-  padding: ${props => props.theme.spacing(0.45)} ${props => props.theme.spacing(0.75)};
+  padding: ${props => props.theme.spacing(0.25)} ${props => props.theme.spacing(0.5)};
 `;
 
-export const ConsoleCommandName = styled.div`
+export const ConsoleCommand = styled.div`
   color: ${props => props.theme.color.highlight};
-`;
-
-export const ConsoleCommandMessage = styled.div`
-  ${ConsoleCommandName} + & {
-    margin-top: ${props => props.theme.spacing(0.25)};
-  }
+  padding: ${props => props.theme.spacing(0.25)} ${props => props.theme.spacing(0.25)};
+  white-space: nowrap;
 `;
 
 export const ConsoleInput = styled(Textarea)`
   width: 100%;
   color: ${props => props.theme.color.interactive};
+  padding: ${props => props.theme.spacing(0.25)} ${props => props.theme.spacing(0.25)};
+  white-space: nowrap;
 `;
 
 export default Console;
