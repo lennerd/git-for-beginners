@@ -15,7 +15,7 @@ class ChapterSectionContainer extends Component {
           <ChapterText>
             {section.text}
             {
-              section.last && !section.completed &&
+              !section.last && !section.completed &&
               <ChapterReadOn onClick={onClickReadOn}>Read On</ChapterReadOn>
             }
           </ChapterText>
