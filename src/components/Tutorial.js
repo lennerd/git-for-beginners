@@ -20,8 +20,8 @@ const Tutorial = styled.div`
     ${props => props.theme.spacing(spacing - 1)};
   grid-template-areas:
     ". header header header header header header header header header header header header ."
-    "navigation . . main main main main . console console console console console ."
-    "navigation . . main main main main . . . next-chapter next-chapter next-chapter ."
+    "navigation . . main main main . console console console console . . ."
+    "navigation . . main main main . . . . next-chapter next-chapter next-chapter ."
     ". . . . . . . . . . next-chapter next-chapter next-chapter .";
   background-image: linear-gradient(135deg, #FEF6F5 0%, #C5CDF6 100%);
 `;
