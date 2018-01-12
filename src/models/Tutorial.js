@@ -1,21 +1,27 @@
-import { computed, action } from 'mobx';
-import { serializable, object } from 'serializr';
+import { computed, action, observable, toJS } from 'mobx';
+import { serializable, list, createSimpleSchema, primitive, object, custom, SKIP } from 'serializr';
 import takeWhile from 'lodash/takeWhile';
 
 import Chapter from './Chapter';
-import TutorialState from './TutorialState';
+
+var Action = createSimpleSchema({
+  type: primitive(),
+  payload: custom(
+    (value) => value === undefined ? SKIP : toJS(value),
+    (value) => value
+  ),
+});
 
 class Tutorial {
-  @serializable(object(TutorialState)) state;
+  @serializable @observable currentChapterId;
+  @serializable(list(object(Action))) @observable actions = [];
   chapters = [];
 
   static create({ chapters, ...data }) {
-    const tutorial = new this({
-      ...data,
-      state: TutorialState.create({ chapters }),
-    });
+    const tutorial = new this(data);
 
     tutorial.chapters = chapters.map(chapter => Chapter.create(tutorial, chapter));
+    tutorial.currentChapterId = chapters[0].id;
 
     return tutorial;
   }
@@ -25,11 +31,11 @@ class Tutorial {
   }
 
   @computed get currentChapter() {
-    return this.chapters.find(chapter => chapter.id === this.state.currentChapterId);
+    return this.chapters.find(chapter => chapter.id === this.currentChapterId);
   }
 
   set currentChapter(currentChapter) {
-    this.state.currentChapterId = currentChapter.id;
+    this.currentChapterId = currentChapter.id;
   }
 
   @computed get nextChapter() {
@@ -53,9 +59,7 @@ class Tutorial {
   }
 
   @computed get completedSections() {
-    const { actions } = this.state;
-
-    const actionsRest = actions.slice();
+    const actionsRest = this.actions.slice();
 
     return takeWhile(this.sections, section => {
       const actionType = section.action.toString();
@@ -80,7 +84,7 @@ class Tutorial {
   }
 
   @action do(action) {
-    this.state.actions.push(action);
+    this.actions.push(action);
   }
 
   @action navigateToChapter(chapter) {
