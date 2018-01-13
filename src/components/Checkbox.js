@@ -21,7 +21,7 @@ const Checkmark = styled.div`
   }
 
   &:before {
-    border-radius: ${props => props.theme.border.radius};
+    border-radius: ${props => props.theme.borderRadius.normal};
   }
 
   &:after {

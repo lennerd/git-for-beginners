@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+/*import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 
 import Console, {
@@ -9,7 +9,7 @@ import Console, {
 
 @inject('tutorial')
 @observer
-class ConsoleContainer extends Component {
+class ChapterConsole extends Component {
   state = {
     history: [{ prompt: '' }],
     currentIndex: 0,
@@ -111,4 +111,41 @@ class ConsoleContainer extends Component {
   }
 }
 
-export default ConsoleContainer;
+export default ChapterConsole;*/
+
+import React, { Component } from 'react';
+import { observer } from 'mobx-react';
+import styled from 'styled-components';
+
+import Console from './Console';
+
+@observer
+class ChapterConsole extends Component {
+  componentDidMount() {
+    this.scrollToBottom();
+  }
+
+  componentDidUpdate() {
+    this.scrollToBottom();
+  }
+
+  scrollToBottom() {
+    this.console.scrollTop = this.console.scrollHeight;
+  }
+
+  render() {
+    const { children, className } = this.props;
+
+    return (
+      <Console className={className} innerRef={(ref) => { this.console = ref; }}>
+        {children}
+      </Console>
+    );
+  }
+}
+
+export default styled(ChapterConsole)`
+  justify-self: stretch;
+  align-self: end;
+  grid-area: console;
+`;

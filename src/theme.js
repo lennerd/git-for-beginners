@@ -34,9 +34,9 @@ export default {
     highlight: new Color('#1126B4'),
   },
 
-  border: {
-    radius: css`${props => props.theme.spacing(0.15)}`,
-    radiusLarge: css`${props => props.theme.spacing(0.25)}`,
+  borderRadius: {
+    normal: css`${props => props.theme.spacing(0.15)}`,
+    large: css`${props => props.theme.spacing(0.25)}`,
   },
 
   text: {

@@ -9,10 +9,11 @@ class Section {
 export class TextSection extends Section {
   type = SECTION_TEXT;
 
-  constructor(text, ) {
+  constructor(text, skip) {
     super();
 
     this.text = text;
+    this.skip = skip;
   }
 }
 

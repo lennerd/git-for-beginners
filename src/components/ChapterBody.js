@@ -29,11 +29,16 @@ class ChapterBody extends Component {
 
     return takeWhile(sections, (section) => {
       if (section.is(SECTION_TEXT)) {
+        if (section.skip) {
+          return true;
+        }
+
         if (amountOfVisibleTextSections === 0) {
           return false;
         }
 
         amountOfVisibleTextSections--;
+        prevTaskSectionDone = false;
 
         return true;
       }
@@ -139,6 +144,6 @@ export default styled(ChapterBody)`
     background-color: white;
     padding: ${props => props.theme.spacing(0.1)} ${props => props.theme.spacing(0.3)};
     margin: 0 ${props => props.theme.spacing(-0.25)};
-    border-radius: ${props => props.theme.border.radiusLarge};
+    border-radius: ${props => props.theme.borderRadius.large};
   }
 `;
