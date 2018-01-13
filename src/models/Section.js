@@ -1,4 +1,4 @@
-import { computed } from 'mobx';
+/*import { computed } from 'mobx';
 
 class Section {
   static create(tutorial, chapter, data) {
@@ -21,4 +21,4 @@ class Section {
   }
 }
 
-export default Section;
+export default Section;*/

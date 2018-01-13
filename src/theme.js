@@ -26,6 +26,8 @@ export default {
   rem,
   spacing,
 
+  largeSpacing: (multiply = 1) => css`${props => props.theme.spacing(4.75 * multiply)}`,
+
   color: {
     text: new Color('#333336'),
     interactive: new Color('#F25944'),

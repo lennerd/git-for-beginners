@@ -1,45 +1,49 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 
-import Tutorial, { Main, NextChapterButton } from './Tutorial';
-import NavigationContainer from './NavigationContainer';
-import ChapterContainer from './ChapterContainer';
-import HeaderContainer from './HeaderContainer';
-import { ACTION_READ_ON } from '../constants';
-import ConsoleContainer from './ConsoleContainer';
+import Tutorial from './Tutorial';
+import TutorialNavigation from './TutorialNavigation';
+import TutorialHeader from './TutorialHeader';
+import IntroductionChapter from './IntroductionChapter';
+
+const CHAPTER_COMPONENTS = [
+  IntroductionChapter,
+];
 
 @inject('tutorial')
 @observer
 class TutorialContainer extends Component {
-  handleClickNextChapterButton = () => {
-    const { tutorial } = this.props;
-    const { currentChapter, nextChapter } = tutorial;
-
-    if (!currentChapter.completed) {
-      tutorial.do(ACTION_READ_ON());
-    }
-
-    tutorial.navigateToChapter(nextChapter);
-  };
-
   render() {
     const { tutorial } = this.props;
-    const { currentChapter, nextChapter } = tutorial;
+
+    const chapterComponentIndex = CHAPTER_COMPONENTS.findIndex(Component => (
+      tutorial.currentChapter.is(Component.chapter)
+    ));
+
+    let ChapterComponent = CHAPTER_COMPONENTS[chapterComponentIndex];
 
     return (
       <Tutorial>
-        <HeaderContainer />
-        <NavigationContainer />
-        <Main>
+        <TutorialHeader tutorial={tutorial} />
+        <TutorialNavigation tutorial={tutorial} />
+        {
+          ChapterComponent &&
+          <ChapterComponent
+            index={chapterComponentIndex}
+            chapter={tutorial.currentChapter}
+            tutorial={tutorial}
+          />
+        }
+        {/*<Main>
           <ChapterContainer />
         </Main>
         {
-          currentChapter && currentChapter.allowsNextChapter && nextChapter &&
-          <NextChapterButton onClick={this.handleClickNextChapterButton}>
-            {nextChapter.title}
+          tutorial.currentChapter.completed && tutorial.nextChapter &&
+          <NextChapterButton onClick={tutorial.turnOver}>
+            {tutorial.nextChapter.title}
           </NextChapterButton>
         }
-        <ConsoleContainer />
+        <ConsoleContainer />*/}
       </Tutorial>
     );
   }

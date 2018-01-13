@@ -1,4 +1,4 @@
-import { computed } from 'mobx';
+/*import { computed } from 'mobx';
 import takeWhile from 'lodash/takeWhile';
 
 import Section from './Section';
@@ -38,16 +38,24 @@ class Chapter {
   @computed get visibleSections() {
     return this.sections.slice(0, this.completedSections.length + 1);
   }
+}*/
+import { observable, toJS } from 'mobx';
+import { serializable, identifier, custom } from 'serializr';
 
-  /*findNextSection(section) {
-    const sectionIndex = this.sections.indexOf(section);
+class Chapter {
+  @serializable(identifier()) title;
+  @serializable(custom((state) => toJS(state), (state) => state)) @observable state = {};
+  @serializable @observable progress = 0;
+  @serializable @observable completed = false;
 
-    if (sectionIndex < 0) {
-      return null;
-    }
+  constructor(title, state = {}) {
+    this.title = title;
+    this.state = state;
+  }
 
-    return this.sections[sectionIndex + 1];
-  }*/
+  is(title) {
+    return this.title === title;
+  }
 }
 
 export default Chapter;

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { inject, observer } from 'mobx-react';
+import { observer } from 'mobx-react';
 
 import Navigation, {
   NavigationProgressBar,
@@ -11,17 +11,16 @@ import Navigation, {
 } from './Navigation';
 import Title from './Title';
 
-@inject('tutorial')
 @observer
-class NavigationContainer extends Component {
-  handleClickNavigationLink(chapter) {
+class TutorialNavigation extends Component {
+  handleNavigationLinkClick(chapter) {
     const { tutorial } = this.props;
 
-    tutorial.navigateToChapter(chapter);
+    tutorial.turnOver(chapter);
   }
+
   render() {
-    const { tutorial } = this.props;
-    const { progress, chapters, currentChapter } = tutorial;
+    const { progress, chapters, currentChapter } = this.props.tutorial;
 
     if (currentChapter == null) {
       return null;
@@ -33,7 +32,7 @@ class NavigationContainer extends Component {
         <NavigationList>
           {chapters.map((chapter, index) => (
             <NavigationItem key={index}>
-              <NavigationLink onClick={() => this.handleClickNavigationLink(chapter)}>
+              <NavigationLink onClick={() => this.handleNavigationLinkClick(chapter)}>
                 <NavigationIndicator active={(index / (chapters.length - 1)) <= progress} />
                 <NavigationLabel>
                   {chapter.title}<br />
@@ -48,4 +47,4 @@ class NavigationContainer extends Component {
   }
 }
 
-export default NavigationContainer;
+export default TutorialNavigation;

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+/*import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 
 import Chapter, {
@@ -52,4 +52,38 @@ class ChapterContainer extends Component {
   }
 }
 
-export default ChapterContainer;
+export default ChapterContainer;*/
+import React, { Component } from 'react';
+import { observer } from 'mobx-react';
+
+@observer
+class TutorialChapter extends Component {
+  render() {
+    const { tutorial } = this.props;
+
+    if (!tutorial.currentChapter.is(CHAPTER_INTRODUCTION)) {
+      return null;
+    }
+
+    return (
+      <Chapter>
+        <ChapterMain>
+          <ChapterHeader>
+            <ChapterProgress>
+              <Title minor>{currentChapter.id} / {chapters.length}</Title>
+            </ChapterProgress>
+            <ChapterTitle>{currentChapter.title}</ChapterTitle>
+          </ChapterHeader>
+        </ChapterMain>
+        {
+          tutorial.nextChapter &&
+          <ChapterNext onClick={tutorial.turnOver}>
+            {tutorial.nextChapter.title}
+          </ChapterNext>
+        }
+      </Chapter>
+    );
+  }
+}
+
+export default TutorialChapter;

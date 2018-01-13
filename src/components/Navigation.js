@@ -82,9 +82,12 @@ export const NavigationLink = Link.extend`
   }
 `;
 
-export default styled.nav`
+const Navigation = styled.nav`
   position: relative;
   justify-self: center;
   align-self: stretch;
   grid-area: navigation;
+  margin: ${props => props.theme.spacing(-0.375)} 0 ;
 `;
+
+export default Navigation;

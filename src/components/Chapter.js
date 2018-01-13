@@ -1,21 +1,45 @@
 import styled from 'styled-components';
 
 import arrowDownSmall from '../images/arrowDownSmall.svg';
+import arrowRightLarge from '../images/arrowRightLarge.svg';
 import Button from './Button';
 import Checkbox from './Checkbox';
+import ChapterHeader from './ChapterHeader';
 
-const Chapter = styled.div``;
-
-export const ChapterHeader = styled.div`
-  position: relative;
+const Chapter = styled.div`
+  display: grid;
+  grid-area: chapter;
+  grid-template-columns:
+    2fr
+    4fr
+    1fr
+    4fr
+    1fr;
+  grid-template-rows:
+    1fr
+    ${props => props.theme.spacing(1)}
+    ${props => props.theme.spacing(1)}
+    ${props => props.theme.spacing(3.75)};
+  grid-template-areas:
+    ". main . console ."
+    ". main . next next"
+    ". main . next next";
 `;
 
-export const ChapterProgress = styled.div`
-  position: absolute;
-  bottom: 50%;
-  left: 0;
-  transform: translateX(-50%) rotate(-90deg) translateY(${props => props.theme.spacing(-1)});
-  transform-origin: 50% 100%;
+export const ChapterMain = styled.div`
+  grid-area: main;
+  justify-self: stretch;
+  align-self: center;
+`;
+
+export const ChapterNext = Button.extend`
+  grid-area: next;
+  justify-self: right;
+  align-self: center;
+  background-image: url(${arrowRightLarge});
+  background-position: 100% 0;
+  padding-right: ${props => props.theme.spacing(1.5)};
+  height: ${props => props.theme.spacing(2)};
 `;
 
 export const ChapterTitle = styled.div`

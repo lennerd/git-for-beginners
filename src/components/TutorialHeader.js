@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-import { inject, observer } from 'mobx-react';
+import { observer } from 'mobx-react';
 
 import Title from './Title';
 import Header, { HeaderTitle } from './Header';
 
-@inject('tutorial')
 @observer
-class HeaderContainer extends Component {
+class TutorialHeader extends Component {
   render() {
     const { currentChapter } = this.props.tutorial;
 
@@ -19,4 +18,4 @@ class HeaderContainer extends Component {
   }
 }
 
-export default HeaderContainer;
+export default TutorialHeader;
