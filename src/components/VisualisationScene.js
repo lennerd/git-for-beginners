@@ -18,10 +18,10 @@ class VisualisationScene extends PureComponent {
   }
 
   render() {
-    const { children } = this.props;
+    const { children, vis } = this.props;
 
     return (
-      <VisualisationWorld>
+      <VisualisationWorld vis={vis}>
         <VisualisationFloor>
           {children}
         </VisualisationFloor>

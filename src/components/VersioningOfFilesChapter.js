@@ -80,11 +80,11 @@ class VersioningOfFilesChapter extends Component {
     let file;
 
     if (chapter.vis.files.length === 1) {
-      file = <VisualisationFile />;
+      file = <VisualisationFile file={chapter.vis.files[0]} />;
     }
 
     return (
-      <Visualisation>
+      <Visualisation vis={chapter.vis}>
         {file}
       </Visualisation>
     );

@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import { action } from 'mobx';
 
 import VisualisationObject3D from './VisualisationObject3D';
 
@@ -25,11 +26,19 @@ class VisualisationWorld extends PureComponent {
     this.worldObject.add(ambientLight);
   }
 
+  @action.bound handleClick() {
+    const { vis } = this.props;
+
+    vis.files.forEach((file) => {
+      file.active = false;
+    });
+  }
+
   render() {
     const { children } = this.props;
 
     return (
-      <VisualisationObject3D object3D={this.worldObject}>
+      <VisualisationObject3D object3D={this.worldObject} onClick={this.handleClick}>
         {children}
       </VisualisationObject3D>
     );

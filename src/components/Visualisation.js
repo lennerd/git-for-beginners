@@ -1,13 +1,15 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import styled from 'styled-components';
-import { inject } from 'mobx-react';
+import { inject, observer } from 'mobx-react';
+import { observable } from 'mobx';
 
 import VisualisationScene from './VisualisationScene';
 
 const FRUSTRUM = 200;
 
 @inject('ticker')
-class Visualisation extends PureComponent {
+@observer
+class Visualisation extends Component {
   static defaultProps = {
     offsetX: 2,
     offsetZ: -1,
@@ -18,8 +20,10 @@ class Visualisation extends PureComponent {
   scene = new THREE.Scene();
   camera = new THREE.OrthographicCamera();
   raycaster = new THREE.Raycaster();
-  mouse = new THREE.Vector2();
+  mouse = new THREE.Vector2(0, 0);
   rect = new THREE.Vector2();
+
+  @observable hovering = 0;
 
   handleTick = () => {
     /*const { tick } = this.props.tutorial;
@@ -47,24 +51,24 @@ class Visualisation extends PureComponent {
       });
     }
 
-    const enterEvent = { type: 'raycast-enter' };
+    const mouseEnterEvent = { type: 'mouseenter' };
 
     for (let intersection of this.intersections.values()) {
       if (this.prevIntersections.has(intersection)) {
         continue;
       }
 
-      intersection.dispatchEvent(enterEvent);
+      intersection.dispatchEvent(mouseEnterEvent);
     }
 
-    const leaveEvent = { type: 'raycast-leave' };
+    const mouseLeaveEvent = { type: 'mouseleave' };
 
     for (let prevIntersection of this.prevIntersections.values()) {
       if (this.intersections.has(prevIntersection)) {
         continue;
       }
 
-      prevIntersection.dispatchEvent(leaveEvent);
+      prevIntersection.dispatchEvent(mouseLeaveEvent);
     }
 
     this.renderer.render(this.scene, this.camera);
@@ -75,14 +79,34 @@ class Visualisation extends PureComponent {
 
     this.rect.set(rect.width, rect.height);
     this.resize();
-  }
+  };
 
   handleMouseMove = (event) => {
     this.mouse.set(
       (event.clientX / this.rect.x) * 2 - 1,
       -(event.clientY / this.rect.y) * 2 + 1,
     );
-  }
+  };
+
+  handleClick = (event) => {
+    event.preventDefault();
+
+    const clickEvent = {
+      type: 'click',
+      propagationStopped: false,
+      stopPropagation() {
+        this.propagationStopped = true;
+      },
+    };
+
+    for (let intersection of this.intersections.values()) {
+      intersection.dispatchEvent(clickEvent);
+
+      if (clickEvent.propagationStopped) {
+        break;
+      }
+    }
+  };
 
   componentDidMount() {
     const { offsetX, offsetZ } = this.props;
@@ -155,16 +179,18 @@ class Visualisation extends PureComponent {
   }
 
   render() {
-    const { className, children } = this.props;
+    const { className, children, vis } = this.props;
 
     return (
       <div
         className={className}
+        style={{ cursor: vis.hover ? 'pointer' : 'auto' }}
         ref={(ref) => { this.container = ref; }}
         onMouseMove={this.handleMouseMove}
+        onClick={this.handleClick}
       >
         <canvas ref={(ref) => { this.canvas = ref; }} />
-        <VisualisationScene scene={this.scene}>
+        <VisualisationScene vis={vis} scene={this.scene}>
           {children}
         </VisualisationScene>
       </div>

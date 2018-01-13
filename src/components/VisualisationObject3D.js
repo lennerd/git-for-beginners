@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 
 class VisualisationObject3D extends PureComponent {
   static defaultProps = {
-    onRaycastEnter: () => {},
-    onRaycastLeave: () => {},
+    onMouseEnter: () => {},
+    onMouseLeave: () => {},
+    onClick: () => {},
   };
 
   static childContextTypes = {
@@ -30,8 +31,9 @@ class VisualisationObject3D extends PureComponent {
     object3D.component = true;
     parentObject3D.add(object3D);
 
-    object3D.addEventListener('raycast-enter', this.handleRaycastEnter);
-    object3D.addEventListener('raycast-leave', this.handleRaycastLeave);
+    object3D.addEventListener('mouseenter', this.handleMouseEnter);
+    object3D.addEventListener('mouseleave', this.handleMouseLeave);
+    object3D.addEventListener('click', this.handleClick);
   }
 
   componentWillUnmount() {
@@ -41,8 +43,9 @@ class VisualisationObject3D extends PureComponent {
     object3D.component = false;
     parentObject3D.remove(object3D);
 
-    object3D.removeEventListener('raycast-enter', this.handleRaycastEnter);
-    object3D.removeEventListener('raycast-leave', this.handleRaycastLeave);
+    object3D.removeEventListener('mouseenter', this.handleMouseEnter);
+    object3D.removeEventListener('mouseleave', this.handleMouseLeave);
+    object3D.removeEventListener('click', this.handleClick);
 
     object3D.traverse((child) => {
       if (child.geometry != null) {
@@ -79,12 +82,16 @@ class VisualisationObject3D extends PureComponent {
     });
   }
 
-  handleRaycastEnter = (event) => {
-    this.props.onRaycastEnter(event);
+  handleMouseEnter = (event) => {
+    this.props.onMouseEnter(event);
   };
 
-  handleRaycastLeave = (event) => {
-    this.props.onRaycastLeave(event);
+  handleMouseLeave = (event) => {
+    this.props.onMouseLeave(event);
+  };
+
+  handleClick = (event) => {
+    this.props.onClick(event);
   };
 
   render() {
