@@ -10,7 +10,6 @@ const Chapter = styled.div`
   grid-template-columns:
     2fr
     4fr
-    1fr
     4fr
     1fr;
   grid-template-rows:
@@ -19,15 +18,17 @@ const Chapter = styled.div`
     ${props => props.theme.spacing(1)}
     ${props => props.theme.spacing(3.75)};
   grid-template-areas:
-    ". main . console ."
-    ". main . next next"
-    ". main . next next";
+    ". main console ."
+    ". main next next"
+    ". main next next";
 `;
 
 export const ChapterMain = styled.div`
   grid-area: main;
   justify-self: stretch;
   align-self: center;
+  position: relative;
+  z-index: 1;
 `;
 
 export const ChapterTitle = styled.div`

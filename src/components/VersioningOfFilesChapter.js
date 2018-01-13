@@ -13,6 +13,8 @@ import { TaskSection, TextSection } from '../models/Section';
 import ChapterConsole from './ChapterConsole';
 import { ConsoleCommand, ConsoleSection, ConsoleIcon, ConsoleMessage, ConsoleTitle, ConsoleLog } from './Console';
 import File from '../models/File';
+import Visualisation from './Visualisation';
+import VisualisationFile from './VisualisationFile';
 
 const SECTIONS = [
   new TextSection('So let’s start by asking: what is a version?', true),
@@ -72,6 +74,22 @@ class VersioningOfFilesChapter extends Component {
     );
   }
 
+  renderVisualisation() {
+    const { chapter } = this.props;
+
+    let file;
+
+    if (chapter.vis.files.length === 1) {
+      file = <VisualisationFile />;
+    }
+
+    return (
+      <Visualisation>
+        {file}
+      </Visualisation>
+    );
+  }
+
   render() {
     const { index, chapter, tutorial } = this.props;
 
@@ -82,6 +100,7 @@ class VersioningOfFilesChapter extends Component {
           <ChapterBody chapter={chapter} sections={SECTIONS} />
         </ChapterMain>
         {this.renderConsole()}
+        {this.renderVisualisation()}
         <ChapterNext tutorial={tutorial} chapter={chapter} />
       </Chapter>
     );

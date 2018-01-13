@@ -5,9 +5,9 @@ import { ThemeProvider } from 'styled-components';
 
 import App from './App';
 
-function Root({ tutorial, theme }) {
+function Root({ tutorial, theme, ticker }) {
   return (
-    <Provider tutorial={tutorial}>
+    <Provider tutorial={tutorial} ticker={ticker}>
       <ThemeProvider theme={theme}>
         <App />
       </ThemeProvider>

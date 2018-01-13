@@ -148,4 +148,6 @@ export default styled(ChapterConsole)`
   justify-self: stretch;
   align-self: end;
   grid-area: console;
+  position: relative;
+  z-index: 1;
 `;
