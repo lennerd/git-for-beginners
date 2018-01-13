@@ -5,9 +5,11 @@ import Tutorial from './Tutorial';
 import TutorialNavigation from './TutorialNavigation';
 import TutorialHeader from './TutorialHeader';
 import IntroductionChapter from './IntroductionChapter';
+import VersioningOfFilesChapter from './VersioningOfFilesChapter';
 
 const CHAPTER_COMPONENTS = [
   IntroductionChapter,
+  VersioningOfFilesChapter
 ];
 
 @inject('tutorial')

@@ -23,9 +23,6 @@ autorun(() => {
   const state = JSON.stringify(serialize(tutorial));
 
   localStorage.setItem('tutorial', state);
-  console.log('Stored new state.');
 });
-
-console.log(serialize(tutorial));
 
 export default tutorial;

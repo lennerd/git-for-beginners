@@ -52,6 +52,7 @@ export const ChapterReadOn = Button.extend`
 export const ChapterTask = styled.div``;
 
 export const ChapterCheckbox = Checkbox.extend`
+  display: block;
   color: ${props => props.checked ? 'inherit' : props.theme.color.highlight};
 `;
 
