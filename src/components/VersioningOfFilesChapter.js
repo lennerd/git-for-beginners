@@ -12,13 +12,12 @@ import ChapterBody from './ChapterBody';
 import { TaskSection, TextSection } from '../models/Section';
 import ChapterConsole from './ChapterConsole';
 import { ConsoleCommand, ConsoleSection, ConsoleIcon, ConsoleMessage, ConsoleTitle, ConsoleLog } from './Console';
+import File from '../models/File';
 
 const SECTIONS = [
   new TextSection('So let’s start by asking: what is a version?', true),
-  new TaskSection('Create a new file.', (state) => {
-    const files = state.get('files');
-
-    return files && files.length > 0;
+  new TaskSection('Create a new file.', (chapter) => {
+    return chapter.vis.files.length > 0;
   }),
 ];
 
@@ -29,28 +28,20 @@ class VersioningOfFilesChapter extends Component {
   @action.bound addFile() {
     const { chapter } = this.props;
 
-    let files = chapter.state.get('files');
-
-    if (files != null && files.length > 0) {
+    if (chapter.vis.files.length > 0) {
       return;
     }
 
-    if (files == null) {
-      files = [];
-    }
-
-    files.push('test');
-    chapter.state.set('files', files);
+    chapter.vis.files.push(new File());
   }
 
   renderConsole() {
     const { chapter } = this.props;
 
-    const files = chapter.state.get('files');
     let command = <ConsoleMessage>No file is selected.</ConsoleMessage>;
     let history;
 
-    if (files == null || files.length === 0) {
+    if (chapter.vis.files.length === 0) {
       command = (
         <ConsoleCommand onClick={this.addFile}>
           <ConsoleIcon>+</ConsoleIcon> Add new file.

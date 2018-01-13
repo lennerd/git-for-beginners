@@ -1,18 +1,23 @@
-import { observable, toJS } from 'mobx';
-import { serializable, identifier, custom } from 'serializr';
+import { observable } from 'mobx';
+import {
+  serializable,
+  identifier,
+  object,
+} from 'serializr';
+
+import Visualisation from './Visualisation';
 
 class Chapter {
   @serializable(identifier()) title;
-  @serializable(custom(
-    state => toJS(state),
-    state => observable.map(state)
-  )) @observable state = new Map();
   @serializable @observable progress = 0;
   @serializable @observable completed = false;
+  @serializable @observable visibleTextSections = 1;
+  @serializable(object(Visualisation)) @observable vis = new Visualisation();
 
-  constructor(title, state = {}) {
+  constructor(title, data) {
     this.title = title;
-    this.state.merge(state);
+
+    Object.assign(this, data);
   }
 
   is(title) {

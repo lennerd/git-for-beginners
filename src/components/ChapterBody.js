@@ -10,21 +10,9 @@ import { SECTION_TEXT, SECTION_TASK } from '../constants';
 
 @observer
 class ChapterBody extends Component {
-  @computed get amountOfVisibleTextSections() {
-    const { chapter } = this.props;
-
-    return chapter.state.get('visibleTextSections') || 1;
-  }
-
-  set amountOfVisibleTextSections(amount) {
-    const { chapter } = this.props;
-
-    chapter.state.set('visibleTextSections', amount);
-  }
-
   @computed get visibleSections() {
     const { sections, chapter } = this.props;
-    let amountOfVisibleTextSections = this.amountOfVisibleTextSections;
+    let amountOfVisibleTextSections = chapter.visibleTextSections;
     let prevTaskSectionDone = true;
 
     return takeWhile(sections, (section) => {
@@ -48,7 +36,7 @@ class ChapterBody extends Component {
           return false;
         }
 
-        prevTaskSectionDone = section.optional || section.done(chapter.state);
+        prevTaskSectionDone = section.optional || section.done(chapter);
 
         return true;
       }
@@ -65,9 +53,9 @@ class ChapterBody extends Component {
     const { chapter, sections } = this.props;
     const progress = this.visibleSections.length / sections.length;
 
-    this.amountOfVisibleTextSections++;
+    chapter.visibleTextSections++;
 
-    if (this.amountOfVisibleTextSections === sections.length) {
+    if (chapter.visibleTextSections === sections.length) {
       chapter.completed = true;
     }
 
@@ -90,7 +78,7 @@ class ChapterBody extends Component {
         return (
           <ChapterCheckbox
             key={index}
-            checked={section.done(chapter.state)}
+            checked={section.done(chapter)}
           >
             {section.text}{section.optional ? ' (optional)' : ''}
           </ChapterCheckbox>
