@@ -3,10 +3,10 @@ import styled from 'styled-components';
 
 import Title from './Title';
 
-function ChapterProgress({ className, index, of }) {
+function ChapterProgress({ className, index, tutorial }) {
   return (
     <div className={className}>
-      <Title minor>{index + 1} / {of}</Title>
+      <Title minor>{index + 1} / {tutorial.chapters.length}</Title>
     </div>
   )
 }

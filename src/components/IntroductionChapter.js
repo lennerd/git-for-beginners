@@ -1,16 +1,13 @@
 import React, { Component, Fragment } from 'react';
 import { observer } from 'mobx-react';
-import { computed, action } from 'mobx';
 
 import Chapter, {
   ChapterMain,
-  ChapterNext,
-  ChapterBody,
-  ChapterText,
-  ChapterReadOn
 } from './Chapter';
 import { CHAPTER_INTRODUCTION } from '../constants';
 import ChapterHeader from './ChapterHeader';
+import ChapterNext from './ChapterNext';
+import ChapterBody from './ChapterBody';
 
 const SECTIONS = [
   'Over the passed decades computer in different shape and sizes changed our daily life enormously. Together we create huge amount of data in form of files everyday to store everything from invoices to love letters, from code to illustrations and designs.',
@@ -26,60 +23,16 @@ const SECTIONS = [
 class IntroductionChapter extends Component {
   static chapter = CHAPTER_INTRODUCTION;
 
-  @computed get sections() {
-    const { chapter } = this.props;
-
-    return SECTIONS.slice(0, chapter.state.visibleSections);
-  }
-
-  @action.bound readOn() {
-    const { chapter } = this.props;
-    const visibleSections = chapter.state.visibleSections + 1;
-
-    if (visibleSections === SECTIONS.length) {
-      chapter.completed = true;
-    }
-
-    chapter.progress = this.sections.length / SECTIONS.length;
-    chapter.state.visibleSections = visibleSections;
-  }
-
-  @action.bound turnOver() {
-    const { tutorial } = this.props;
-
-    tutorial.currentChapter.progress = 1;
-    tutorial.turnOver();
-  }
-
   render() {
     const { index, chapter, tutorial } = this.props;
 
     return (
       <Chapter>
         <ChapterMain>
-          <ChapterHeader
-            index={index}
-            of={tutorial.chapters.length}
-            chapter={chapter}
-          />
-          <ChapterBody>
-            {this.sections.map(section => (
-              <ChapterText>
-                {section}
-              </ChapterText>
-            ))}
-            {
-              !chapter.completed &&
-              <ChapterReadOn onClick={this.readOn}>Read On</ChapterReadOn>
-            }
-          </ChapterBody>
+          <ChapterHeader index={index} tutorial={tutorial} chapter={chapter} />
+          <ChapterBody chapter={chapter} sections={SECTIONS} />
         </ChapterMain>
-        {
-          chapter.completed && tutorial.nextChapter &&
-          <ChapterNext onClick={this.turnOver}>
-            {tutorial.nextChapter.title}
-          </ChapterNext>
-        }
+        <ChapterNext tutorial={tutorial} chapter={chapter} />
       </Chapter>
     );
   }

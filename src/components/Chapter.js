@@ -1,10 +1,8 @@
 import styled from 'styled-components';
 
 import arrowDownSmall from '../images/arrowDownSmall.svg';
-import arrowRightLarge from '../images/arrowRightLarge.svg';
 import Button from './Button';
 import Checkbox from './Checkbox';
-import ChapterHeader from './ChapterHeader';
 
 const Chapter = styled.div`
   display: grid;
@@ -32,45 +30,10 @@ export const ChapterMain = styled.div`
   align-self: center;
 `;
 
-export const ChapterNext = Button.extend`
-  grid-area: next;
-  justify-self: right;
-  align-self: center;
-  background-image: url(${arrowRightLarge});
-  background-position: 100% 0;
-  padding-right: ${props => props.theme.spacing(1.5)};
-  height: ${props => props.theme.spacing(2)};
-`;
-
 export const ChapterTitle = styled.div`
   font-size: ${props => props.theme.spacing(1.8)};
   color: ${props => props.theme.color.highlight};
   line-height: ${props => props.theme.spacing(2.25)};
-`;
-
-export const ChapterBody = styled.div`
-  position: relative;
-
-  ${ChapterHeader} + & {
-    margin-top: ${props => props.theme.spacing()};
-  }
-
-  & > * + * {
-    margin-top: ${props => props.theme.spacing(0.75)};
-  }
-
-  strong {
-    font-weight: 600;
-  }
-
-  code {
-    ${props => props.theme.mixins.monospaced};
-    white-space: nowrap;
-    background-color: white;
-    padding: ${props => props.theme.spacing(0.1)} ${props => props.theme.spacing(0.3)};
-    margin: 0 ${props => props.theme.spacing(-0.25)};
-    border-radius: ${props => props.theme.border.radiusLarge};
-  }
 `;
 
 export const ChapterText = styled.p``;

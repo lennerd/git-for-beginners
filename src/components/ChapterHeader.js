@@ -4,10 +4,10 @@ import styled from 'styled-components';
 import ChapterProgress from './ChapterProgress';
 import { ChapterTitle } from './Chapter';
 
-function ChapterHeader({ className, index, of, chapter }) {
+function ChapterHeader({ className, index, tutorial, chapter }) {
   return (
     <div className={className}>
-      <ChapterProgress index={index} of={of} />
+      <ChapterProgress index={index} tutorial={tutorial} />
       <ChapterTitle>{chapter.title}</ChapterTitle>
     </div>
   )
