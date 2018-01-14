@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import styled from 'styled-components';
 import { observer } from 'mobx-react';
 import { action, computed } from 'mobx';
@@ -7,6 +7,7 @@ import takeWhile from 'lodash/takeWhile';
 import ChapterHeader from './ChapterHeader';
 import { ChapterText, ChapterReadOn, ChapterCheckbox } from './Chapter';
 import { SECTION_TEXT, SECTION_TASK } from '../constants';
+import ChapterTip from './ChapterTip';
 
 @observer
 class ChapterBody extends Component {
@@ -17,6 +18,10 @@ class ChapterBody extends Component {
 
     return takeWhile(sections, (section) => {
       if (section.is(SECTION_TEXT)) {
+        if (!prevTaskSectionDone) {
+          return false;
+        }
+
         if (section.skip) {
           return true;
         }
@@ -26,7 +31,6 @@ class ChapterBody extends Component {
         }
 
         amountOfVisibleTextSections--;
-        prevTaskSectionDone = false;
 
         return true;
       }
@@ -75,14 +79,16 @@ class ChapterBody extends Component {
       }
 
       if (section.is(SECTION_TASK)) {
+        const done = section.done(chapter);
+
         return (
-          <ChapterCheckbox
-            key={index}
-            checked={section.done(chapter)}
-          >
-            {section.text}{section.optional ? ' (optional)' : ''}
-          </ChapterCheckbox>
-        )
+          <Fragment key={index}>
+            <ChapterCheckbox checked={done}>
+              {section.text}{section.optional ? ' (optional)' : ''}
+            </ChapterCheckbox>
+            {!done && section.tip != null && <ChapterTip>{section.tip}</ChapterTip>}
+          </Fragment>
+        );
       }
 
       throw new Error('Unknown section type.');
