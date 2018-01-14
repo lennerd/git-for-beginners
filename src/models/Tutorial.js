@@ -37,6 +37,12 @@ class Tutorial {
 
     this.currentChapter = chapter;
   };
+
+  @action.bound reset() {
+    const index = this.chapters.indexOf(this.currentChapter);
+
+    this.chapters.slice(index).forEach(chapter => chapter.reset());
+  }
 }
 
 export default Tutorial;

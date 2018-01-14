@@ -1,4 +1,4 @@
-import { observable } from 'mobx';
+import { observable, action } from 'mobx';
 import {
   serializable,
   identifier,
@@ -22,6 +22,13 @@ class Chapter {
 
   is(title) {
     return this.title === title;
+  }
+
+  @action reset() {
+    this.progress = 0;
+    this.completed = false;
+    this.visibleTextSections = 1;
+    this.vis = new Visualisation();
   }
 }
 
