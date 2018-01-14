@@ -4,7 +4,7 @@ import { withTheme } from 'styled-components';
 import VisualisationObject3D from './VisualisationObject3D';
 import { FILE_WIDTH } from './VisualisationFile';
 
-const FILE_LABEL_SIZE = 0.13;
+const FILE_LABEL_SIZE = 0.12;
 
 @withTheme
 class VisualisationFileName extends PureComponent {

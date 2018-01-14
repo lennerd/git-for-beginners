@@ -1,12 +1,12 @@
 import { SECTION_TEXT, SECTION_TASK } from "../constants";
 
-class Section {
+class ChapterSection {
   is(type) {
     return this.type === type;
   }
 }
 
-export class Text extends Section {
+export class ChapterText extends ChapterSection {
   type = SECTION_TEXT;
   skip = false;
 
@@ -20,7 +20,7 @@ export class Text extends Section {
   }
 }
 
-export class Task extends Section {
+export class ChapterTask extends ChapterSection {
   type = SECTION_TASK;
   optional = false;
 
@@ -34,5 +34,3 @@ export class Task extends Section {
     });
   }
 }
-
-export default Section;

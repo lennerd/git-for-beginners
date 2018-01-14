@@ -4,13 +4,13 @@ import { observable, computed, action } from 'mobx';
 
 import { STATUS_ADDED } from '../constants';
 
-class File {
+class VisualisationFile {
   @serializable(identifier()) id = uuid();
   @serializable @observable insertions = 0;
   @serializable @observable deletions = 0;
   @serializable @observable status = STATUS_ADDED;
   @observable hover = false;
-  @observable active = false;
+  @serializable @observable active = false;
 
   @computed get modified() {
     return this.insertions > 0 || this.deletions > 0;
@@ -35,4 +35,4 @@ class File {
   }
 }
 
-export default File;
+export default VisualisationFile;

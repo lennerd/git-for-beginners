@@ -1,10 +1,10 @@
 import { observable, computed, action } from "mobx";
 import { serializable, list, object } from "serializr";
 
-import File from "./File";
+import VisualisationFile from "./VisualisationFile";
 
 class Visualisation {
-  @observable @serializable(list(object(File))) files = [];
+  @observable @serializable(list(object(VisualisationFile))) files = [];
 
   @computed get hover() {
     return this.files.some(file => file.hover);
@@ -31,7 +31,7 @@ class Visualisation {
   }
 
   @action addFile(file) {
-    this.files.unshift(file);
+    this.files.push(file);
   }
 }
 

@@ -17,7 +17,10 @@ const FontLoader = Loadable.Map({
     fontBlack: () => fetchFont(fontBlack).then(fontBlack => letterSpacing(fontBlack, 1.2)),
   },
   loading: LoadingSpinner,
-  render: (fonts, { children }) => children(fonts),
+  render: (fonts, { children }) => children({
+    ...fonts,
+    fontRegularCaps: letterSpacing(fonts.fontRegular, 1.2),
+  }),
 });
 
 export default FontLoader;

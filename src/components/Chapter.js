@@ -7,20 +7,16 @@ import Checkbox from './Checkbox';
 const Chapter = styled.div`
   display: grid;
   grid-area: chapter;
-  grid-template-columns:
-    2fr
-    4fr
-    1fr
-    4fr;
+  grid-template-columns: 2fr 4fr 2fr 4fr 2fr;
   grid-template-rows:
     1fr
     ${props => props.theme.spacing(1)}
     ${props => props.theme.spacing(1)}
     ${props => props.theme.spacing(3.75)};
   grid-template-areas:
-    ". main . console"
-    ". main next next"
-    ". main next next";
+    ". main . console ."
+    ". main . next next"
+    ". main . next next";
 `;
 
 export const ChapterMain = styled.div`

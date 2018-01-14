@@ -54,6 +54,7 @@ injectGlobal`
     cursor: pointer;
     text-align: inherit;
     cursor: pointer;
+    line-height: inherit;
   }
 
   ul {
