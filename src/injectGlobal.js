@@ -3,7 +3,7 @@ import theme from './theme';
 import 'normalize.css';
 
 injectGlobal`
-  @import url('https://fonts.googleapis.com/css?family=Source+Code+Pro:400,700|Source+Sans+Pro:400,400i,600');
+  @import url("https://use.typekit.net/ldn8onu.css");
 
   * {
     box-sizing: border-box;
