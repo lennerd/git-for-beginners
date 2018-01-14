@@ -5,7 +5,7 @@ import { observer } from 'mobx-react';
 import Chapter, {
   ChapterMain,
 } from './Chapter';
-import { CHAPTER_VERSIONING_OF_FILES } from '../constants';
+import { CHAPTER_VERSIONING_OF_FILES, STATUS_MODIFIED } from '../constants';
 import ChapterHeader from './ChapterHeader';
 import ChapterNext from './ChapterNext';
 import ChapterBody from './ChapterBody';
@@ -16,6 +16,7 @@ import File from '../models/File';
 import Visualisation from './Visualisation';
 import VisualisationFile from './VisualisationFile';
 import VisualisationFileName from './VisualisationFileName';
+import VisualisationFileStatus from './VisualisationFileStatus';
 
 const SECTIONS = [
   new Text('So let’s start by asking: what is a version?', { skip: true }),
@@ -38,7 +39,10 @@ class VersioningOfFilesChapter extends Component {
       throw new Error('There is already a file.');
     }
 
-    chapter.vis.addFile(new File());
+    const file = new File();
+    file.status = STATUS_MODIFIED;
+
+    chapter.vis.addFile(file);
   }
 
   @action.bound modifyFile() {
@@ -59,6 +63,8 @@ class VersioningOfFilesChapter extends Component {
     }
 
     const copy = chapter.vis.activeFile.copy();
+    copy.status = STATUS_MODIFIED;
+
     chapter.vis.addFile(copy);
   }
 
@@ -123,7 +129,7 @@ class VersioningOfFilesChapter extends Component {
   }
 
   renderVisualisation() {
-    const { chapter, fontRegular } = this.props;
+    const { chapter, fontRegular, fontBlack } = this.props;
 
     return (
       <Visualisation vis={chapter.vis}>
@@ -135,6 +141,7 @@ class VersioningOfFilesChapter extends Component {
             file={file}
           >
             <VisualisationFileName font={fontRegular} name="Test" />
+            <VisualisationFileStatus font={fontBlack} file={file} />
           </VisualisationFile>
         ))}
       </Visualisation>

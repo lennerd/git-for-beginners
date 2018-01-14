@@ -36,6 +36,8 @@ export default {
     text: new Color('#333336'),
     interactive: new Color('#F25944'),
     highlight: new Color('#1126B4'),
+    added: new Color('#348900'),
+    deleted: new Color('#C40000'),
   },
 
   borderRadius: {

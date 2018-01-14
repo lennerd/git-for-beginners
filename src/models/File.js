@@ -1,11 +1,14 @@
 import uuid from 'uuid/v4';
-import { serializable, identifier, primitive } from 'serializr';
+import { serializable, identifier } from 'serializr';
 import { observable, computed, action } from 'mobx';
+
+import { STATUS_ADDED } from '../constants';
 
 class File {
   @serializable(identifier()) id = uuid();
   @serializable @observable insertions = 0;
   @serializable @observable deletions = 0;
+  @serializable @observable status = STATUS_ADDED;
   @observable hover = false;
   @observable active = false;
 
