@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 
-import Tutorial from './Tutorial';
+import Tutorial, { TutorialReset } from './Tutorial';
 import TutorialNavigation from './TutorialNavigation';
 import TutorialHeader from './TutorialHeader';
 import IntroductionChapter from './IntroductionChapter';
@@ -46,6 +46,7 @@ class TutorialContainer extends Component {
           </NextChapterButton>
         }
         <ConsoleContainer />*/}
+        <TutorialReset onClick={tutorial.reset}>Reset</TutorialReset>
       </Tutorial>
     );
   }

@@ -6,26 +6,32 @@ class Section {
   }
 }
 
-export class TextSection extends Section {
+export class Text extends Section {
   type = SECTION_TEXT;
+  skip = false;
 
-  constructor(text, skip) {
+  constructor(text, data) {
     super();
 
-    this.text = text;
-    this.skip = skip;
+    Object.assign(this, {
+      ...data,
+      text,
+    });
   }
 }
 
-export class TaskSection extends Section {
+export class Task extends Section {
   type = SECTION_TASK;
+  optional = false;
 
-  constructor(text, done, optional = false) {
+  constructor(text, done, data) {
     super();
 
-    this.text = text;
-    this.done = done;
-    this.optional = optional;
+    Object.assign(this, {
+      ...data,
+      text,
+      done,
+    });
   }
 }
 

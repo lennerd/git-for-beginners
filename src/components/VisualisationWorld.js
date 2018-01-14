@@ -29,9 +29,7 @@ class VisualisationWorld extends PureComponent {
   @action.bound handleClick() {
     const { vis } = this.props;
 
-    vis.files.forEach((file) => {
-      file.active = false;
-    });
+    vis.deactivateAll();
   }
 
   render() {
