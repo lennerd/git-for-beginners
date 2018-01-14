@@ -21,6 +21,7 @@ const Console = styled.div`
 export const ConsoleSection = styled.div`
   display: flex;
   padding: ${props => props.theme.spacing(0.45)} 0;
+  flex-shrink: 0;
   align-items: baseline;
 
   &:before,
@@ -33,12 +34,14 @@ export const ConsoleSection = styled.div`
 export const ConsoleLog = styled.div`
   display: flex;
   flex-direction: column;
+  width: 100%;
 `;
 
 export const ConsoleTitle = styled.div`
   display: flex;
   color: ${props => props.theme.color.highlight};
   white-space: nowrap;
+  padding: ${props => props.theme.spacing(0.25)} 0;
 
   &:before,
   &:after {
@@ -48,19 +51,18 @@ export const ConsoleTitle = styled.div`
 
 export const ConsoleMessage = styled.div`
   display: flex;
+  padding: ${props => props.theme.spacing(0.25)} 0;
 
   &:before,
   &:after {
     content: '\00a0';
   }
-
-  ${ConsoleTitle} + & {
-    margin-top: ${props => props.theme.spacing(0.45)};
-  }
 `;
 
 export const ConsoleLabel = styled.div`
   display: flex;
+  padding: ${props => props.theme.spacing(0.25)} 0;
+  flex-shrink: 0;
 
   &:before,
   &:after {
@@ -83,6 +85,12 @@ export const ConsoleCommand = styled.button`
   &:after {
     content: '\00a0';
   }
+`;
+
+export const ConsoleCommandList = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 `;
 
 export const ConsoleIcon = styled.strong`
