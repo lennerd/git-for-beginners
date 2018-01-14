@@ -1,4 +1,4 @@
-import { autorun } from 'mobx';
+import { transaction, autorun } from 'mobx';
 import { update, serialize } from 'serializr';
 
 import Tutorial from "./models/Tutorial";
@@ -15,9 +15,11 @@ const tutorial = new Tutorial([
 
 const state = localStorage.getItem('tutorial');
 
-if (state != null) {
-  update(Tutorial, tutorial, JSON.parse(state));
-}
+transaction(() => {
+  if (state != null) {
+    update(Tutorial, tutorial, JSON.parse(state));
+  }
+});
 
 autorun(() => {
   const state = JSON.stringify(serialize(tutorial));
