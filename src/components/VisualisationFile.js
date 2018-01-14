@@ -6,15 +6,21 @@ import { action } from 'mobx';
 import VisualisationObject3D from './VisualisationObject3D';
 import { LEVEL_HEIGHT, CELL_HEIGHT, CELL_WIDTH } from '../theme';
 
-const FILE_SIZE_RATIO = 1 / Math.sqrt(2);
-const FILE_HEIGHT = LEVEL_HEIGHT / 2;
-const FILE_WIDTH = FILE_HEIGHT * 10;
-const FILE_DEPTH = FILE_WIDTH * FILE_SIZE_RATIO;
-const FILE_OUTLINE = 0.015;
+export const FILE_SIZE_RATIO = 1 / Math.sqrt(2);
+export const FILE_HEIGHT = LEVEL_HEIGHT / 2;
+export const FILE_WIDTH = FILE_HEIGHT * 10;
+export const FILE_DEPTH = FILE_WIDTH * FILE_SIZE_RATIO;
+export const FILE_OUTLINE = 0.015;
 
 @withTheme
 @observer
 class VisualisationFile extends Component {
+  static defaultProps = {
+    row: 0,
+    column: 0,
+    level: 0,
+  };
+
   constructor(props) {
     super();
 
@@ -72,11 +78,11 @@ class VisualisationFile extends Component {
   };
 
   render() {
-    const { children, file } = this.props;
+    const { children, row, column, level, file } = this.props;
 
-    this.fileObject.position.x = CELL_HEIGHT * file.row;
-    this.fileObject.position.z = CELL_WIDTH * file.column;
-    this.fileObject.position.y = LEVEL_HEIGHT * file.level;
+    this.fileObject.position.x = CELL_HEIGHT * row;
+    this.fileObject.position.z = CELL_WIDTH * column;
+    this.fileObject.position.y = LEVEL_HEIGHT * level;
 
     this.hoverMesh.material.visible = file.hover || file.active;
 

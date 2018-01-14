@@ -96,9 +96,13 @@ class ChapterBody extends Component {
   }
 
   renderReadOn() {
-    const { chapter } = this.props;
+    const { sections } = this.props;
 
-    if (this.lastVisibleSection == null || !this.lastVisibleSection.is(SECTION_TEXT) || chapter.completed) {
+    if (
+      this.lastVisibleSection == null ||
+      !this.lastVisibleSection.is(SECTION_TEXT) ||
+      this.visibleSections.length === sections.length
+    ) {
       return null;
     }
 

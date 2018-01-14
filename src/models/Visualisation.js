@@ -29,6 +29,10 @@ class Visualisation {
 
     model.active = true;
   }
+
+  @action addFile(file) {
+    this.files.unshift(file);
+  }
 }
 
 export default Visualisation;

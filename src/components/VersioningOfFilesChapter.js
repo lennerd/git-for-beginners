@@ -15,6 +15,7 @@ import { ConsoleCommand, ConsoleSection, ConsoleIcon, ConsoleMessage, ConsoleTit
 import File from '../models/File';
 import Visualisation from './Visualisation';
 import VisualisationFile from './VisualisationFile';
+import VisualisationFileName from './VisualisationFileName';
 
 const SECTIONS = [
   new Text('So let’s start by asking: what is a version?', { skip: true }),
@@ -37,7 +38,7 @@ class VersioningOfFilesChapter extends Component {
       throw new Error('There is already a file.');
     }
 
-    chapter.vis.files.push(new File());
+    chapter.vis.addFile(new File());
   }
 
   @action.bound modifyFile() {
@@ -48,6 +49,17 @@ class VersioningOfFilesChapter extends Component {
     }
 
     chapter.vis.activeFile.modify();
+  }
+
+  @action.bound copyFile() {
+    const { chapter } = this.props;
+
+    if (chapter.vis.activeFile == null) {
+      throw new Error('No active file to copy.');
+    }
+
+    const copy = chapter.vis.activeFile.copy();
+    chapter.vis.addFile(copy);
   }
 
   renderConsole() {
@@ -111,17 +123,20 @@ class VersioningOfFilesChapter extends Component {
   }
 
   renderVisualisation() {
-    const { chapter } = this.props;
-
-    let file;
-
-    if (chapter.vis.files.length === 1) {
-      file = <VisualisationFile vis={chapter.vis} file={chapter.vis.files[0]} />;
-    }
+    const { chapter, fontRegular } = this.props;
 
     return (
       <Visualisation vis={chapter.vis}>
-        {file}
+        {chapter.vis.files.map((file, index) => (
+          <VisualisationFile
+            key={file.id}
+            column={index}
+            vis={chapter.vis}
+            file={file}
+          >
+            <VisualisationFileName font={fontRegular} name="Test" />
+          </VisualisationFile>
+        ))}
       </Visualisation>
     );
   }

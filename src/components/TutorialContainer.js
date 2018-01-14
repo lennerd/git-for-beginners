@@ -6,10 +6,11 @@ import TutorialNavigation from './TutorialNavigation';
 import TutorialHeader from './TutorialHeader';
 import IntroductionChapter from './IntroductionChapter';
 import VersioningOfFilesChapter from './VersioningOfFilesChapter';
+import FontLoader from './FontLoader';
 
 const CHAPTER_COMPONENTS = [
   IntroductionChapter,
-  VersioningOfFilesChapter
+  VersioningOfFilesChapter,
 ];
 
 @inject('tutorial')
@@ -28,24 +29,17 @@ class TutorialContainer extends Component {
       <Tutorial>
         <TutorialHeader tutorial={tutorial} />
         <TutorialNavigation tutorial={tutorial} />
-        {
-          ChapterComponent &&
-          <ChapterComponent
-            index={chapterComponentIndex}
-            chapter={tutorial.currentChapter}
-            tutorial={tutorial}
-          />
-        }
-        {/*<Main>
-          <ChapterContainer />
-        </Main>
-        {
-          tutorial.currentChapter.completed && tutorial.nextChapter &&
-          <NextChapterButton onClick={tutorial.turnOver}>
-            {tutorial.nextChapter.title}
-          </NextChapterButton>
-        }
-        <ConsoleContainer />*/}
+        <FontLoader>
+          {(fonts) => (
+            ChapterComponent &&
+            <ChapterComponent
+              {...fonts}
+              index={chapterComponentIndex}
+              chapter={tutorial.currentChapter}
+              tutorial={tutorial}
+            />
+          )}
+        </FontLoader>
         <TutorialReset onClick={tutorial.reset}>Reset</TutorialReset>
       </Tutorial>
     );

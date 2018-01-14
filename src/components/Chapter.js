@@ -10,15 +10,15 @@ const Chapter = styled.div`
   grid-template-columns:
     2fr
     4fr
-    4fr
-    1fr;
+    1fr
+    4fr;
   grid-template-rows:
     1fr
     ${props => props.theme.spacing(1)}
     ${props => props.theme.spacing(1)}
     ${props => props.theme.spacing(3.75)};
   grid-template-areas:
-    ". main console ."
+    ". main . console"
     ". main next next"
     ". main next next";
 `;
