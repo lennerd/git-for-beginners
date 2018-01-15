@@ -19,15 +19,21 @@ const SECTIONS = [
     { skip: true }
   ),
   new ChapterText(() => 'Let’s take a look at the different parts of Git.'),
-  new ChapterText(
-    () => 'First, there is the Working Directory, the folder on your computer where all the files and folders of your project are stored in. Here you add, modify or delete files with other software like you are used to.'
-  ),
-  new ChapterText(
-    () => 'First, there is the Working Directory, the folder on your computer where all the files and folders of your project are stored in. Here you add, modify or delete files with other software like you are used to.'
-  ),
-  new ChapterText(
-    () => 'First, there is the Working Directory, the folder on your computer where all the files and folders of your project are stored in. Here you add, modify or delete files with other software like you are used to.'
-  ),
+  new ChapterText(() => (
+    <Fragment>
+      First, there is the <strong>Working Directory</strong>, the folder on your computer where all the files and folders of your project are stored in. Here you add, modify or delete files with other software like you are used to.
+    </Fragment>
+  )),
+  new ChapterText(() => (
+    <Fragment>
+      The second part is the <strong>Staging Area</strong>. Despite its name, it‘s not about showing something to others, but instead collect changes to your project you want to be part of your next version. This way you are able to group changes into seperate version, e.g. by feature or topic.
+    </Fragment>
+  )),
+  new ChapterText(() => (
+    <Fragment>
+      Last but not least comes the <strong>Repository</strong>. Broadly speaking, this is the version database of your project.
+    </Fragment>
+  )),
 ];
 
 @observer

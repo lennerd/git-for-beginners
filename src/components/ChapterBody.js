@@ -8,7 +8,6 @@ import ChapterHeader from './ChapterHeader';
 import { ChapterText, ChapterReadOn, ChapterCheckbox } from './Chapter';
 import { SECTION_TEXT, SECTION_TASK } from '../constants';
 import ChapterTip from './ChapterTip';
-import Tooltip from './Tooltip';
 
 @observer
 class ChapterBody extends Component {
@@ -169,7 +168,8 @@ export default styled(ChapterBody)`
   }
 
   strong {
-    font-weight: 600;
+    font-weight: 400;
+    color: ${props => props.theme.color.highlight};
   }
 
   code {
