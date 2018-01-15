@@ -7,6 +7,26 @@ import VisualisationScene from './VisualisationScene';
 
 const FRUSTRUM = 200;
 
+class Event {
+  propagationStopped = false;
+
+  constructor(type) {
+    this.type = type;
+  }
+
+  stopPropagation() {
+    this.propagationStopped = true;
+  }
+}
+
+function dispatchEvent(object, event) {
+  object.dispatchEvent(event);
+
+  if (!event.propagationStopped && object.parent != null) {
+    dispatchEvent(object.parent, event);
+  }
+}
+
 @inject('ticker')
 @observer
 class Visualisation extends Component {
@@ -15,7 +35,6 @@ class Visualisation extends Component {
     offsetZ: -1,
   };
 
-  intersections = new Set();
   ticking = false;
   scene = new THREE.Scene();
   camera = new THREE.OrthographicCamera();
@@ -34,42 +53,58 @@ class Visualisation extends Component {
 
     this.raycaster.setFromCamera(this.mouse, this.camera);
 
-    this.prevIntersections = new Set(this.intersections);
-    this.intersections.clear();
+    this.prevIntersection = this.intersection;
+    this.intersection = null;
 
-    const intersections = this.raycaster.intersectObjects(this.scene.children, true);
+    const intersection = this.raycaster.intersectObjects(this.scene.children, true)[0];
 
-    for (let intersection of intersections) {
+    if (intersection != null) {
       if (intersection.object.component) {
-        this.intersections.add(intersection.object);
+        this.intersection = intersection.object;
+      } else {
+        intersection.object.traverseAncestors((object) => {
+          if (this.intersection == null && object.component) {
+            this.intersection = object;
+          }
+        });
       }
 
-      intersection.object.traverseAncestors((object) => {
-        if (object.component) {
-          this.intersections.add(object);
+      if (this.intersection !== this.prevIntersection) {
+        if (this.prevIntersection != null) {
+          dispatchEvent(this.prevIntersection, new Event('mouseleave'));
         }
-      });
+
+        if (this.intersection != null) {
+          dispatchEvent(this.intersection, new Event('mouseenter'));
+        }
+      }
     }
 
-    const mouseEnterEvent = { type: 'mouseenter' };
-
-    for (let intersection of this.intersections.values()) {
-      if (this.prevIntersections.has(intersection)) {
+    /*for (let intersection of this.intersections.values()) {
+      if (this.prevIntersection.has(intersection)) {
         continue;
       }
 
       intersection.dispatchEvent(mouseEnterEvent);
-    }
 
-    const mouseLeaveEvent = { type: 'mouseleave' };
+      if (mouseEnterEvent.propagationStopped) {
+        break;
+      }
+    }*/
 
-    for (let prevIntersection of this.prevIntersections.values()) {
+    /*const mouseLeaveEvent = new Event('mouseleave');
+
+    for (let prevIntersection of this.prevIntersection.values()) {
       if (this.intersections.has(prevIntersection)) {
         continue;
       }
 
       prevIntersection.dispatchEvent(mouseLeaveEvent);
-    }
+
+      if (mouseLeaveEvent.propagationStopped) {
+        break;
+      }
+    }*/
 
     this.renderer.render(this.scene, this.camera);
   }
@@ -91,21 +126,11 @@ class Visualisation extends Component {
   handleClick = (event) => {
     event.preventDefault();
 
-    const clickEvent = {
-      type: 'click',
-      propagationStopped: false,
-      stopPropagation() {
-        this.propagationStopped = true;
-      },
-    };
-
-    for (let intersection of this.intersections.values()) {
-      intersection.dispatchEvent(clickEvent);
-
-      if (clickEvent.propagationStopped) {
-        break;
-      }
+    if (this.intersection == null) {
+      return;
     }
+
+    dispatchEvent(this.intersection, new Event('click'));
   };
 
   componentDidMount() {

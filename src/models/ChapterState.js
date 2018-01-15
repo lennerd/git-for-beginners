@@ -1,17 +1,12 @@
-import { observable, action, toJS } from 'mobx';
+import { observable, action } from 'mobx';
 import {
   serializable,
   identifier,
   object,
-  custom,
 } from 'serializr';
 
 import Visualisation from './Visualisation';
-
-const stateSchema = custom(
-  value => toJS(value),
-  value => observable.map(value),
-);
+import stateSchema from './stateSchema';
 
 class ChapterState {
   @serializable(identifier()) title;

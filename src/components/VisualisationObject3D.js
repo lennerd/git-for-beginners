@@ -55,27 +55,27 @@ class VisualisationObject3D extends PureComponent {
       if (child.material != null) {
         child.material.dispose();
 
-        if (child.material.map) {
+        if (child.material.map != null) {
           child.material.map.dispose();
         }
 
-        if (child.material.lightMap) {
+        if (child.material.lightMap != null) {
           child.material.lightMap.dispose();
         }
 
-        if (child.material.bumpMap) {
+        if (child.material.bumpMap != null) {
           child.material.bumpMap.dispose();
         }
 
-        if (child.material.normalMap) {
+        if (child.material.normalMap != null) {
           child.material.normalMap.dispose();
         }
 
-        if (child.material.specularMap) {
+        if (child.material.specularMap != null) {
           child.material.specularMap.dispose();
         }
 
-        if (child.material.envMap) {
+        if (child.material.envMap != null) {
           child.material.envMap.dispose();
         }
       }

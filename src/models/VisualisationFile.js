@@ -3,17 +3,23 @@ import { serializable, identifier } from 'serializr';
 import { observable, computed, action } from 'mobx';
 
 import { STATUS_ADDED } from '../constants';
+import stateSchema from './stateSchema';
 
 class VisualisationFile {
   @serializable(identifier()) id = uuid();
   @serializable @observable insertions = 0;
   @serializable @observable deletions = 0;
   @serializable @observable status = STATUS_ADDED;
-  @observable hover = false;
   @serializable @observable active = false;
+  @serializable(stateSchema) @observable state = new Map();
+  @observable hover = false;
 
   @computed get modified() {
     return this.insertions > 0 || this.deletions > 0;
+  }
+
+  @computed get changes() {
+    return this.insertions + this.deletions;
   }
 
   @action modify() {
@@ -31,7 +37,16 @@ class VisualisationFile {
   @action copy() {
     const file = new this.constructor();
 
+    file.insertions = this.insertions;
+    file.deletions = this.deletions;
+    file.status = this.status;
+
     return file;
+  }
+
+  @action reset() {
+    this.insertions = 0;
+    this.deletions = 0;
   }
 }
 

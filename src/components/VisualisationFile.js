@@ -62,6 +62,10 @@ class VisualisationFile extends Component {
   @action.bound handleClick(event) {
     const { vis, file } = this.props;
 
+    if (vis == null) {
+      return;
+    }
+
     vis.activate(file);
     event.stopPropagation();
   };
@@ -70,12 +74,14 @@ class VisualisationFile extends Component {
     const { file } = this.props;
 
     file.hover = true;
+    event.stopPropagation();
   };
 
-  @action.bound handleMouseLeave() {
+  @action.bound handleMouseLeave(event) {
     const { file } = this.props;
 
     file.hover = false;
+    event.stopPropagation();
   };
 
   render() {

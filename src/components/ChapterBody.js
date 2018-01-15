@@ -11,6 +11,10 @@ import ChapterTip from './ChapterTip';
 
 @observer
 class ChapterBody extends Component {
+  static defaultProps = {
+    onReadOn: () => {},
+  };
+
   @computed get visibleSections() {
     const { sections, chapter } = this.props;
     let amountOfVisibleTextSections = chapter.visibleTextSections;
@@ -96,9 +100,10 @@ class ChapterBody extends Component {
   }
 
   @action.bound readOn() {
-    const { chapter } = this.props;
+    const { chapter, onReadOn } = this.props;
 
     chapter.visibleTextSections++;
+    onReadOn();
   }
 
   renderVisibleSections() {
