@@ -7,6 +7,8 @@ const Header = styled.div`
   align-self: center;
   justify-content: space-between;
   grid-area: header;
+  position: relative;
+  z-index: 1;
 `;
 
 

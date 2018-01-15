@@ -3,7 +3,7 @@ import { withTheme } from 'styled-components';
 
 import VisualisationObject3D from './VisualisationObject3D';
 import { CELL_HEIGHT, CELL_WIDTH } from '../theme';
-import { AREA_VERTICAL_PADDING } from './VisualisationArea';
+import { AREA_VERTICAL_PADDING, AREA_HORIZONTAL_PADDING } from './VisualisationArea';
 
 const SECTION_LABEL_SIZE = 0.12;
 
@@ -32,7 +32,7 @@ class VisualisationAreaName extends PureComponent {
       }),
     );
 
-    this.textMesh.position.x = (CELL_HEIGHT * -0.5) - SECTION_LABEL_SIZE - 0.2;
+    this.textMesh.position.x = (CELL_HEIGHT * -0.5) - SECTION_LABEL_SIZE - 0.2 + AREA_HORIZONTAL_PADDING / 2;
     this.textMesh.position.y = 0.001;
     this.textMesh.rotation.x = Math.PI / -2;
     this.textMesh.rotation.z = Math.PI / -2;

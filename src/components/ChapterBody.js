@@ -70,7 +70,7 @@ class ChapterBody extends Component {
       }
 
       return section.optional || section.done(chapter);
-    });
+    })
   }
 
   @computed get lastVisibleSection() {
@@ -83,6 +83,10 @@ class ChapterBody extends Component {
     this.disposeProgressUpdate = autorun(() => {
       action((progress) => {
         chapter.progress = progress;
+
+        if (progress === 1) {
+          chapter.completed = true;
+        }
       })(this.doneSections.length / this.doableSections.length)
     });
   }
@@ -92,13 +96,9 @@ class ChapterBody extends Component {
   }
 
   @action.bound readOn() {
-    const { chapter, sections } = this.props;
+    const { chapter } = this.props;
 
     chapter.visibleTextSections++;
-
-    if (chapter.visibleTextSections === sections.length) {
-      chapter.completed = true;
-    }
   }
 
   renderVisibleSections() {

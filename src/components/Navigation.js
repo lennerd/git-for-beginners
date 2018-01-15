@@ -84,6 +84,7 @@ export const NavigationLink = Link.extend`
 
 const Navigation = styled.nav`
   position: relative;
+  z-index: 1;
   justify-self: center;
   align-self: stretch;
   grid-area: navigation;

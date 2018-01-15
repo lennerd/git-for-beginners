@@ -1,8 +1,12 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
+import { extendObservable } from 'mobx';
 
 import { ChapterText } from '../models/ChapterSection';
 import TutorialChapter from './TutorialChapter';
+import VisualisationArea from './VisualisationArea';
+import Visualisation from '../models/Visualisation';
+import VisualisationAreaName from './VisualisationAreaName';
 
 const SECTIONS = [
   new ChapterText(
@@ -16,11 +20,53 @@ const SECTIONS = [
 
 @observer
 class VersioningInGit extends Component {
+  constructor(props) {
+    super();
+
+    const { chapter } = props;
+
+    extendObservable(chapter, {
+      get hasWorkingDirectory() {
+        return this.visibleTextSections > 1;
+      },
+      get hasStagingArea() {
+        return this.visibleTextSections > 2;
+      },
+      get hasRepository() {
+        return this.visibleTextSections > 3;
+      },
+    });
+  }
+
+  renderVisualisation() {
+    const { chapter, fontRegularCaps } = this.props;
+
+    console.log(chapter.visibleTextSections);
+
+    return (
+      <Visualisation vis={chapter.vis}>
+        {chapter.hasWorkingDirectory && <VisualisationArea column={0} height={10}>
+          <VisualisationAreaName font={fontRegularCaps} name="Working Directory" />
+        </VisualisationArea>}
+
+        {chapter.hasStagingArea && <VisualisationArea column={1} height={10}>
+          <VisualisationAreaName font={fontRegularCaps} name="Staging Area" />
+        </VisualisationArea>}
+
+        {chapter.hasRepository && <VisualisationArea column={2} height={10}>
+          <VisualisationAreaName font={fontRegularCaps} name="Repository" />
+        </VisualisationArea>}
+      </Visualisation>
+    );
+  }
+
   render() {
     const { chapter, tutorial } = this.props;
 
     return (
-      <TutorialChapter tutorial={tutorial} chapter={chapter} sections={SECTIONS} />
+      <TutorialChapter tutorial={tutorial} chapter={chapter} sections={SECTIONS}>
+        {this.renderVisualisation()}
+      </TutorialChapter>
     );
   }
 }

@@ -176,50 +176,52 @@ class VersioningOfFilesChapter extends Component {
   renderVisualisation() {
     const { chapter, fontRegular, fontBlack, fontRegularCaps } = this.props;
 
+    const files = chapter.vis.files.map((file, index) => {
+      if (
+        file.status === STATUS_DELETED &&
+        !chapter.hasVersionDatabase
+      ) {
+        return null;
+      }
+
+      let name = 'file';
+      let column = chapter.vis.files.length - index - 1;
+      let row = 0;
+
+      if (chapter.hasVersionDatabase) {
+        if (index < (chapter.vis.files.length - 1)) {
+          name = `Version ${index + 1}`;
+
+          column = 1;
+          row = chapter.vis.files.length - index - 2;
+        }
+      } else {
+        if (index > 0) {
+          const nameIndex = (index - 1) % FILE_NAME_VARIANTS.length;
+          name += FILE_NAME_VARIANTS[nameIndex];
+        }
+      }
+
+      return (
+        <VisualisationFile
+          key={file.id}
+          column={column}
+          row={row}
+          vis={chapter.vis}
+          file={file}
+        >
+          <VisualisationFileName
+            font={fontRegular}
+            name={name}
+          />
+          <VisualisationFileStatus font={fontBlack} file={file} />
+        </VisualisationFile>
+      );
+    });
+
     return (
       <Visualisation vis={chapter.vis}>
-        {chapter.vis.files.map((file, index) => {
-          if (
-            file.status === STATUS_DELETED &&
-            !chapter.hasVersionDatabase
-          ) {
-            return null;
-          }
-
-          let name = 'file';
-          let column = chapter.vis.files.length - index - 1;
-          let row = 0;
-
-          if (chapter.hasVersionDatabase) {
-            if (index < (chapter.vis.files.length - 1)) {
-              name = `Version ${index + 1}`;
-
-              column = 1;
-              row = chapter.vis.files.length - index - 2;
-            }
-          } else {
-            if (index > 0) {
-              const nameIndex = (index - 1) % FILE_NAME_VARIANTS.length;
-              name += FILE_NAME_VARIANTS[nameIndex];
-            }
-          }
-
-          return (
-            <VisualisationFile
-              key={file.id}
-              column={column}
-              row={row}
-              vis={chapter.vis}
-              file={file}
-            >
-              <VisualisationFileName
-                font={fontRegular}
-                name={name}
-              />
-              <VisualisationFileStatus font={fontBlack} file={file} />
-            </VisualisationFile>
-          );
-        })}
+        {files}
         {chapter.hasVersionDatabase && <VisualisationArea column={1} height={10}>
           <VisualisationAreaName font={fontRegularCaps} name="Version database" />
         </VisualisationArea>}
