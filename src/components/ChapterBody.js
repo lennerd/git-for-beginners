@@ -1,8 +1,6 @@
 import React, { Component, Fragment, createElement } from 'react';
 import styled from 'styled-components';
 import { observer } from 'mobx-react';
-import { action, computed, autorun } from 'mobx';
-import takeWhile from 'lodash/takeWhile';
 
 import ChapterHeader from './ChapterHeader';
 import { ChapterText, ChapterReadOn, ChapterCheckbox } from './Chapter';
@@ -11,105 +9,10 @@ import ChapterTip from './ChapterTip';
 
 @observer
 class ChapterBody extends Component {
-  static defaultProps = {
-    onReadOn: () => {},
-  };
-
-  @computed get visibleSections() {
-    const { sections, chapter } = this.props;
-    let amountOfVisibleTextSections = chapter.visibleTextSections;
-    let prevTaskSectionDone = true;
-
-    return takeWhile(sections, (section) => {
-      if (section.is(SECTION_TEXT)) {
-        if (!prevTaskSectionDone) {
-          return false;
-        }
-
-        if (section.skip) {
-          return true;
-        }
-
-        if (amountOfVisibleTextSections === 0) {
-          return false;
-        }
-
-        amountOfVisibleTextSections--;
-
-        return true;
-      }
-
-      if (section.is(SECTION_TASK)) {
-        if (!prevTaskSectionDone) {
-          return false;
-        }
-
-        prevTaskSectionDone = section.optional || section.done(chapter);
-
-        return true;
-      }
-
-      throw new Error('Unknown section type.');
-    });
-  }
-
-  @computed get doableSections() {
+  renderSections() {
     const { sections } = this.props;
 
-    return sections.filter((section) => {
-      if (section.is(SECTION_TEXT)) {
-        return !section.skip;
-      }
-
-      return true;
-    });
-  }
-
-  @computed get doneSections() {
-    const { chapter } = this.props;
-
-    return this.visibleSections.filter((section) => {
-      if (section.is(SECTION_TEXT)) {
-        return !section.skip;
-      }
-
-      return section.optional || section.done(chapter);
-    })
-  }
-
-  @computed get lastVisibleSection() {
-    return this.visibleSections[this.visibleSections.length - 1];
-  }
-
-  componentWillMount() {
-    const { chapter } = this.props;
-
-    this.disposeProgressUpdate = autorun(() => {
-      action((progress) => {
-        chapter.progress = progress;
-
-        if (progress === 1) {
-          chapter.completed = true;
-        }
-      })(this.doneSections.length / this.doableSections.length)
-    });
-  }
-
-  componentWillUnmount() {
-    this.disposeProgressUpdate();
-  }
-
-  @action.bound readOn() {
-    const { chapter, onReadOn } = this.props;
-
-    chapter.visibleTextSections++;
-    onReadOn();
-  }
-
-  renderVisibleSections() {
-    const { chapter } = this.props;
-
-    return this.visibleSections.map((section, index) => {
+    return sections.map((section, index) => {
       if (section.is(SECTION_TEXT)) {
         return (
           <ChapterText key={index}>
@@ -119,14 +22,16 @@ class ChapterBody extends Component {
       }
 
       if (section.is(SECTION_TASK)) {
-        const done = section.done(chapter);
 
         return (
           <Fragment key={index}>
-            <ChapterCheckbox checked={done}>
+            <ChapterCheckbox checked={section.done}>
             {createElement(section.text)}
             </ChapterCheckbox>
-            {!done && section.tip != null && <ChapterTip>{section.tip}</ChapterTip>}
+            {
+              !section.done && section.tip != null &&
+              <ChapterTip>{section.tip}</ChapterTip>
+            }
           </Fragment>
         );
       }
@@ -136,17 +41,18 @@ class ChapterBody extends Component {
   }
 
   renderReadOn() {
-    const { sections } = this.props;
+    const { sections, chapter, onReadOn } = this.props;
+    const lastSection = sections[sections.length - 1]
 
     if (
-      this.lastVisibleSection == null ||
-      !this.lastVisibleSection.is(SECTION_TEXT) ||
-      this.visibleSections.length === sections.length
+      lastSection == null ||
+      !lastSection.is(SECTION_TEXT) ||
+      chapter.completed
     ) {
       return null;
     }
 
-    return <ChapterReadOn onClick={this.readOn}>Read On</ChapterReadOn>;
+    return <ChapterReadOn onClick={onReadOn}>Read On</ChapterReadOn>;
   }
 
   render() {
@@ -154,7 +60,7 @@ class ChapterBody extends Component {
 
     return (
       <div className={className}>
-        {this.renderVisibleSections()}
+        {this.renderSections()}
         {this.renderReadOn()}
       </div>
     );

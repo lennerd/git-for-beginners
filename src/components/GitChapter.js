@@ -198,7 +198,6 @@ class GitChapter extends Component {
         tutorial={tutorial}
         chapter={chapter}
         sections={SECTIONS}
-        onReadOn={this.handleReadOn}
       >
         {this.renderVisualisation()}
       </TutorialChapter>

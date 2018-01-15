@@ -1,16 +1,13 @@
 class ConsoleCommand {
   icon = '';
   commands = [];
+  available = true;
 
   constructor(name, options) {
     Object.assign(this, {
       ...options,
       name,
     });
-  }
-
-  test() {
-    return true;
   }
 
   run() {

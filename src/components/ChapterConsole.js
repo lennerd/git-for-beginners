@@ -22,15 +22,15 @@ class ChapterConsole extends Component {
   }
 
   @computed get command() {
-    const { commands, chapter } = this.props;
+    const { commands } = this.props;
 
     return commands.find((command) => {
-      if (!command.test(chapter)) {
+      if (!command.available) {
         return false;
       }
 
       if (command.commands.length > 0) {
-        return command.commands.some(command => command.test(chapter));
+        return command.commands.some(command => command.available);
       }
 
       return true;
@@ -38,15 +38,11 @@ class ChapterConsole extends Component {
   }
 
   @action runCommand(command, parentCommand = null) {
-    const { chapter } = this.props;
-
-    command.run(chapter);
+    command.run();
     this.history.push({ command, parentCommand });
   }
 
   renderVisibleCommand() {
-    const { chapter } = this.props;
-
     if (this.command == null) {
       return (
         <ConsoleSection>
@@ -75,7 +71,7 @@ class ChapterConsole extends Component {
         <ConsoleLabel>{this.command.name}</ConsoleLabel>
         <ConsoleCommandList>
           {this.command.commands.map((command, index) => (
-            command.test(chapter) &&
+            command.available &&
             <ConsoleCommand key={index} onClick={() => this.runCommand(command, this.command)}>
               <ConsoleIcon offset={iconMaxLength - command.icon.length}>{command.icon}</ConsoleIcon>
               {command.name}
