@@ -33,6 +33,9 @@ export default {
   largeSpacing: (multiply = 1) => css`${props => props.theme.spacing(4.75 * multiply)}`,
 
   color: {
+    fileDefault: new Color('#FFFCFA'),
+    fileAdded: new Color('#8ECF4F'),
+    fileDeleted: new Color('#FF6147'),
     text: new Color('#333336'),
     interactive: new Color('#F25944'),
     highlight: new Color('#1126B4'),

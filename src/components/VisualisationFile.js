@@ -5,12 +5,13 @@ import { action } from 'mobx';
 
 import VisualisationObject3D from './VisualisationObject3D';
 import { LEVEL_HEIGHT, CELL_HEIGHT, CELL_WIDTH } from '../theme';
+import { STATUS_ADDED, STATUS_DELETED, STATUS_MODIFIED } from '../constants';
 
 export const FILE_SIZE_RATIO = 1 / Math.sqrt(2);
 export const FILE_HEIGHT = LEVEL_HEIGHT / 2;
 export const FILE_WIDTH = FILE_HEIGHT * 10;
 export const FILE_DEPTH = FILE_WIDTH * FILE_SIZE_RATIO;
-export const FILE_OUTLINE = 0.015;
+export const FILE_OUTLINE = 0.03;
 
 @withTheme
 @observer
@@ -35,7 +36,7 @@ class VisualisationFile extends Component {
 
     this.hoverMesh = new THREE.Mesh(
       new THREE.BoxBufferGeometry(FILE_WIDTH + FILE_OUTLINE, FILE_HEIGHT + FILE_OUTLINE, FILE_DEPTH + FILE_OUTLINE),
-      new THREE.MeshBasicMaterial({ opacity: 1, transparent: true, depthWrite: false, color: theme.color.highlight, side: THREE.BackSide }),
+      new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, color: theme.color.highlight, side: THREE.BackSide }),
     );
 
     this.shadowMash = new THREE.Mesh(
@@ -78,13 +79,31 @@ class VisualisationFile extends Component {
   };
 
   render() {
-    const { children, row, column, level, file } = this.props;
+    const { children, row, column, level, file, theme } = this.props;
 
     this.fileObject.position.x = CELL_HEIGHT * row;
     this.fileObject.position.z = CELL_WIDTH * column;
     this.fileObject.position.y = LEVEL_HEIGHT * level;
 
     this.hoverMesh.material.visible = file.hover || file.active;
+    this.hoverMesh.material.opacity = file.active ? 1 : 0.5;
+    //this.hoverMesh.material.color = file.status !== STATUS_MODIFIED ? new THREE.Color(0xFFFFFF) : theme.color.highlight;
+
+    let color = theme.color.fileDefault;
+
+    if (file.status === STATUS_ADDED) {
+      color = theme.color.fileAdded;
+    } else if (file.status === STATUS_DELETED) {
+      color = theme.color.fileDeleted;
+    }
+
+    this.fileMesh.material.color = color;
+
+    // Add small offset when for not new or deleted files so no artefacts appear between colors.
+    this.fileMesh.material.polygonOffset = true;
+    this.fileMesh.material.polygonOffsetFactor = file.status !== STATUS_MODIFIED ? -0.01 : 0;
+
+    this.fileMesh.material.needsUpdate = true;
 
     return (
       <VisualisationObject3D
