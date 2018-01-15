@@ -10,8 +10,12 @@ class Visualisation {
     return this.files.some(file => file.hover);
   }
 
+  @computed get activeFileIndex() {
+    return this.files.findIndex(file => file.active);
+  }
+
   @computed get activeFile() {
-    return this.files.find(file => file.active);
+    return this.files[this.activeFileIndex];
   }
 
   @computed get lastFile() {

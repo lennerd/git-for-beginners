@@ -3,7 +3,7 @@ import { serializable, identifier } from 'serializr';
 import { observable, computed, action } from 'mobx';
 
 import { STATUS_ADDED } from '../constants';
-import stateSchema from './stateSchema';
+import stateMapSchema from './stateMapSchema';
 
 class VisualisationFile {
   @serializable(identifier()) id = uuid();
@@ -11,7 +11,7 @@ class VisualisationFile {
   @serializable @observable deletions = 0;
   @serializable @observable status = STATUS_ADDED;
   @serializable @observable active = false;
-  @serializable(stateSchema) @observable state = new Map();
+  @serializable(stateMapSchema) @observable state = new Map();
   @observable hover = false;
 
   @computed get modified() {

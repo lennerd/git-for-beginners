@@ -1,12 +1,8 @@
 import { observable, action } from 'mobx';
-import {
-  serializable,
-  identifier,
-  object,
-} from 'serializr';
+import { serializable, identifier, object } from 'serializr';
 
 import Visualisation from './Visualisation';
-import stateSchema from './stateSchema';
+import stateMapSchema from './stateMapSchema';
 
 class ChapterState {
   @serializable(identifier()) title;
@@ -14,7 +10,7 @@ class ChapterState {
   @serializable @observable completed = false;
   @serializable @observable visibleTextSections = 1;
   @serializable(object(Visualisation)) @observable vis = new Visualisation();
-  @serializable(stateSchema) @observable state = new Map();
+  @serializable(stateMapSchema) @observable state = new Map();
 
   constructor(title, data) {
     this.title = title;

@@ -32,6 +32,8 @@ class VersioningOfFilesChapter extends Component {
   @computed get hasVersionDatabase() {
     const { chapter } = this.props;
 
+    // return chapter.hasAction(ACTION_ADD_VERSION_DATABSE);
+
     return chapter.state.get('versionDatabase');
   }
 
@@ -44,6 +46,8 @@ class VersioningOfFilesChapter extends Component {
   @computed get hasRestoredFiles() {
     const { chapter } = this.props;
 
+    // return chapter.hasAction(ACTION_RESTORE_FILE);
+
     return chapter.state.get('restoredFiles');
   }
 
@@ -55,6 +59,8 @@ class VersioningOfFilesChapter extends Component {
 
   @computed get hasModifiedFiles() {
     const { chapter } = this.props;
+
+    // return chapter.hasAction(ACTION_MODIFY_FILE);
 
     return chapter.vis.files.some(file => file.modified);
   }
@@ -76,11 +82,15 @@ class VersioningOfFilesChapter extends Component {
   @computed get hasAddedFile() {
     const { chapter } = this.props;
 
+    // return chapter.hasAction(ACTION_ADD_FILE);
+
     return chapter.vis.files.length > 0;
   }
 
   @computed get hasCopiedFile() {
     const { chapter } = this.props;
+
+    // return chapter.hasAction(ACTION_COPY_FILE);
 
     return chapter.vis.files.length > 1;
   }
@@ -88,7 +98,88 @@ class VersioningOfFilesChapter extends Component {
   @computed get hasBackups() {
     const { chapter } = this.props;
 
+    // return chapter.actions.filter(action => ACTION_COPY_FILE).length > 3;
+
     return chapter.vis.files.length > 3;
+  }
+
+  @action.bound restoreFile() {
+    const { chapter } = this.props;
+
+    chapter.vis.lastFile.insertions += chapter.vis.activeFile.insertions;
+    chapter.vis.lastFile.deletions += chapter.vis.activeFile.deletions;
+    chapter.vis.lastFile.status = chapter.vis.activeFile.status;
+    chapter.vis.lastFile.restored = true;
+    this.hasRestoredFiles = true;
+    chapter.vis.deactivateAll();
+    chapter.completed = true;
+
+    //chapter.actions.push({ ACTION_RESTORE_FILE, payload: vis.activeFileIndex });
+    //vis.dispatch({ ACTION_RESTORE_FILE, payload: vis.activeFileIndex });
+  }
+
+  @action.bound modifyFile() {
+    const { chapter } = this.props;
+
+    chapter.vis.activeFile.modify();
+
+    //chapter.actions.push({ ACTION_MODIFY_FILE, payload: vis.activeFileIndex });
+  }
+
+  @action.bound copyFile() {
+    const { chapter } = this.props;
+
+    const copy = chapter.vis.activeFile.copy();
+    copy.status = STATUS_MODIFIED;
+    copy.reset();
+
+    chapter.vis.addFile(copy);
+    chapter.vis.deactivateAll();
+
+    //chapter.actions.push({ ACTION_COPY_FILE, payload: vis.activeFileIndex });
+  }
+
+  @action.bound backupFile() {
+    const { chapter } = this.props;
+
+    const copy = chapter.vis.activeFile.copy();
+    copy.status = chapter.vis.activeFile.status;
+
+    chapter.vis.addFile(copy);
+    chapter.vis.deactivateAll();
+
+    //chapter.actions.push({ ACTION_BACKUP_FILE });
+  }
+
+  @action.bound deleteFile() {
+    const { chapter } = this.props;
+
+    if (!this.hasVersionDatabase && chapter.vis.activeFile === chapter.vis.lastFile) {
+      chapter.vis.files.remove(chapter.vis.activeFile);
+
+      return;
+    }
+
+    chapter.vis.activeFile.status = STATUS_DELETED;
+
+    //chapter.actions.push({ ACTION_DELETE_FILE, payload: vis.activeFileIndex });
+  }
+
+  @action.bound addFile() {
+    const { chapter } = this.props;
+
+    const file = new VisualisationFileModel();
+    file.status = STATUS_MODIFIED;
+
+    chapter.vis.addFile(file);
+
+    //chapter.actions.push({ ACTION_ADD_FILE });
+  }
+
+  @action.bound addVersionDatabase() {
+    this.hasVersionDatabase = true;
+
+    //chapter.actions.push({ ACTION_ADD_VERSION_DATABASE });
   }
 
   renderVisualisation() {
@@ -145,70 +236,6 @@ class VersioningOfFilesChapter extends Component {
         </VisualisationArea>}
       </Visualisation>
     );
-  }
-
-  @action.bound restoreFile() {
-    const { chapter } = this.props;
-
-    chapter.vis.lastFile.insertions += chapter.vis.activeFile.insertions;
-    chapter.vis.lastFile.deletions += chapter.vis.activeFile.deletions;
-    chapter.vis.lastFile.status = chapter.vis.activeFile.status;
-    chapter.vis.lastFile.restored = true;
-    this.hasRestoredFiles = true;
-    chapter.vis.deactivateAll();
-    chapter.completed = true;
-  }
-
-  @action.bound modifyFile() {
-    const { chapter } = this.props;
-
-    chapter.vis.activeFile.modify()
-  }
-
-  @action.bound copyFile() {
-    const { chapter } = this.props;
-
-    const copy = chapter.vis.activeFile.copy();
-    copy.status = STATUS_MODIFIED;
-    copy.reset();
-
-    chapter.vis.addFile(copy);
-    chapter.vis.deactivateAll();
-  }
-
-  @action.bound backupFile() {
-    const { chapter } = this.props;
-
-    const copy = chapter.vis.activeFile.copy();
-    copy.status = chapter.vis.activeFile.status;
-
-    chapter.vis.addFile(copy);
-    chapter.vis.deactivateAll();
-  }
-
-  @action.bound deleteFile() {
-    const { chapter } = this.props;
-
-    if (!this.hasVersionDatabase && chapter.vis.activeFile === chapter.vis.lastFile) {
-      chapter.vis.files.remove(chapter.vis.activeFile);
-
-      return;
-    }
-
-    chapter.vis.activeFile.status = STATUS_DELETED;
-  }
-
-  @action.bound addFile() {
-    const { chapter } = this.props;
-
-    const file = new VisualisationFileModel();
-    file.status = STATUS_MODIFIED;
-
-    chapter.vis.addFile(file);
-  }
-
-  @action.bound addVersionDatabase() {
-    this.hasVersionDatabase = true;
   }
 
   render() {
