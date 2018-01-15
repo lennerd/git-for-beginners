@@ -25,6 +25,8 @@ export const TutorialReset = styled.button`
   position: absolute;
   bottom: 0;
   right: 0;
+  color: ${props => props.theme.color.highlight};
+  opacity: 0.5;
 `;
 
 export default Tutorial;

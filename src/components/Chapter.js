@@ -15,8 +15,8 @@ const Chapter = styled.div`
     ${props => props.theme.spacing(3.75)};
   grid-template-areas:
     ". main . console ."
-    ". main . next next"
-    ". main . next next";
+    ". next . console ."
+    ". next . . .";
 `;
 
 export const ChapterMain = styled.div`
@@ -41,9 +41,14 @@ export const ChapterReadOn = Button.extend`
   position: absolute;
   bottom: 0;
   left: 0;
-  background-image: url(${arrowDownSmall});
-  background-position: 0 70%;
-  padding-left: ${props => props.theme.spacing()};
+  //background-image: url(${arrowDownSmall});
+  //background-position: 0 70%;
+  //padding-left: ${props => props.theme.spacing()};
+
+  &:before {
+    content: '←';
+    margin-right: ${props => props.theme.spacing(0.5)};
+  }
 `;
 
 export const ChapterTask = styled.div``;

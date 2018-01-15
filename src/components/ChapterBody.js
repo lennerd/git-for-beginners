@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import styled from 'styled-components';
 import { observer } from 'mobx-react';
-import { action, computed } from 'mobx';
+import { action, computed, autorun } from 'mobx';
 import takeWhile from 'lodash/takeWhile';
 
 import ChapterHeader from './ChapterHeader';
@@ -49,21 +49,56 @@ class ChapterBody extends Component {
     });
   }
 
+  @computed get doableSections() {
+    const { sections } = this.props;
+
+    return sections.filter((section) => {
+      if (section.is(SECTION_TEXT)) {
+        return !section.skip;
+      }
+
+      return true;
+    });
+  }
+
+  @computed get doneSections() {
+    const { chapter } = this.props;
+
+    return this.visibleSections.filter((section) => {
+      if (section.is(SECTION_TEXT)) {
+        return !section.skip;
+      }
+
+      return section.optional || section.done(chapter);
+    });
+  }
+
   @computed get lastVisibleSection() {
     return this.visibleSections[this.visibleSections.length - 1];
   }
 
+  componentWillMount() {
+    const { chapter } = this.props;
+
+    this.disposeProgressUpdate = autorun(() => {
+      action((progress) => {
+        chapter.progress = progress;
+      })(this.doneSections.length / this.doableSections.length)
+    });
+  }
+
+  componentWillUnmount() {
+    this.disposeProgressUpdate();
+  }
+
   @action.bound readOn() {
     const { chapter, sections } = this.props;
-    const progress = this.visibleSections.length / sections.length;
 
     chapter.visibleTextSections++;
 
     if (chapter.visibleTextSections === sections.length) {
       chapter.completed = true;
     }
-
-    chapter.progress = progress;
   }
 
   renderVisibleSections() {

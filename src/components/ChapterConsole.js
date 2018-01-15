@@ -121,6 +121,7 @@ export default styled(ChapterConsole)`
   grid-area: console;
   position: relative;
   z-index: 1;
+  //margin-bottom: ${props => props.theme.spacing(2)};
 `;
 
 /*import React, { Component } from 'react';

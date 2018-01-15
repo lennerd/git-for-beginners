@@ -1,16 +1,20 @@
 import { serializable, object, list, reference } from "serializr";
 import { observable, computed, action } from 'mobx';
 
-import Chapter from "./Chapter";
+import ChapterState from "./ChapterState";
 
-class Tutorial {
-  @serializable(list(object(Chapter))) chapters = [];
-  @serializable(reference(Chapter)) @observable currentChapter;
+class TutorialState {
+  @serializable(list(object(ChapterState))) chapters = [];
+  @serializable(reference(ChapterState)) @observable currentChapter;
 
   constructor(chapters) {
     this.chapters = chapters;
 
     this.currentChapter = this.chapters[0];
+  }
+
+  @computed get currentChapterIndex() {
+    return this.chapters.indexOf(this.currentChapter);
   }
 
   @computed get nextChapter() {
@@ -45,4 +49,4 @@ class Tutorial {
   }
 }
 
-export default Tutorial;
+export default TutorialState;

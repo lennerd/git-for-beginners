@@ -13,7 +13,7 @@ const stateSchema = custom(
   value => observable.map(value),
 );
 
-class Chapter {
+class ChapterState {
   @serializable(identifier()) title;
   @serializable @observable progress = 0;
   @serializable @observable completed = false;
@@ -40,4 +40,4 @@ class Chapter {
   }
 }
 
-export default Chapter;
+export default ChapterState;

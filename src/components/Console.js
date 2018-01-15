@@ -5,7 +5,6 @@ const Console = styled.div`
   ${props => props.theme.mixins.monospaced};
   background-color: white;
   border-radius: ${props => props.theme.borderRadius.large};
-  margin-bottom: ${props => props.theme.spacing()};
   max-height: ${props => props.theme.spacing(8)};
   overflow: auto;
   overflow-x: hidden;

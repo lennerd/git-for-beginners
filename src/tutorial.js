@@ -1,23 +1,27 @@
 import { transaction, autorun } from 'mobx';
 import { update, serialize } from 'serializr';
 
-import Tutorial from "./models/Tutorial";
-import Chapter from "./models/Chapter";
+import TutorialState from "./models/TutorialState";
+import ChapterState from "./models/ChapterState";
 import {
   CHAPTER_INTRODUCTION,
-  CHAPTER_VERSIONING_OF_FILES
+  CHAPTER_VERSIONING_OF_FILES,
+  CHAPTER_VERSIONING_IN_GIT,
+  CHAPTER_GIT
 } from "./constants";
 
-const tutorial = new Tutorial([
-  new Chapter(CHAPTER_INTRODUCTION),
-  new Chapter(CHAPTER_VERSIONING_OF_FILES),
+const tutorial = new TutorialState([
+  new ChapterState(CHAPTER_INTRODUCTION),
+  new ChapterState(CHAPTER_VERSIONING_OF_FILES),
+  new ChapterState(CHAPTER_GIT),
+  new ChapterState(CHAPTER_VERSIONING_IN_GIT),
 ]);
 
 const state = localStorage.getItem('tutorial');
 
 transaction(() => {
   if (state != null) {
-    update(Tutorial, tutorial, JSON.parse(state));
+    update(TutorialState, tutorial, JSON.parse(state));
   }
 });
 

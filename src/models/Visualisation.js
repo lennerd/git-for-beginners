@@ -14,8 +14,8 @@ class Visualisation {
     return this.files.find(file => file.active);
   }
 
-  @computed get hasModifiedFiles() {
-    return this.files.some(file => file.modified);
+  @computed get lastFile() {
+    return this.files[this.files.length - 1];
   }
 
   @action deactivateAll() {

@@ -1,14 +1,8 @@
 import React, { Component, Fragment } from 'react';
 import { observer } from 'mobx-react';
 
-import Chapter, {
-  ChapterMain,
-} from './Chapter';
-import { CHAPTER_INTRODUCTION } from '../constants';
-import ChapterHeader from './ChapterHeader';
-import ChapterNext from './ChapterNext';
-import ChapterBody from './ChapterBody';
 import { ChapterText } from '../models/ChapterSection';
+import TutorialChapter from './TutorialChapter';
 
 const SECTIONS = [
   new ChapterText(
@@ -30,19 +24,13 @@ const SECTIONS = [
 
 @observer
 class IntroductionChapter extends Component {
-  static chapter = CHAPTER_INTRODUCTION;
-
   render() {
-    const { index, chapter, tutorial } = this.props;
+    const { chapter, tutorial } = this.props;
+
+    console.log(chapter);
 
     return (
-      <Chapter>
-        <ChapterMain>
-          <ChapterHeader index={index} tutorial={tutorial} chapter={chapter} />
-          <ChapterBody chapter={chapter} sections={SECTIONS} />
-        </ChapterMain>
-        <ChapterNext tutorial={tutorial} chapter={chapter} />
-      </Chapter>
+      <TutorialChapter tutorial={tutorial} chapter={chapter} sections={SECTIONS} />
     );
   }
 }

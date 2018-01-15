@@ -9,7 +9,7 @@ export const NavigationProgressBar = styled.div`
   width: ${props => props.theme.spacing(0.75)};
   min-height: ${props => props.theme.spacing(0.75)};
   max-height: 100%;
-  height: ${props => props.progress * 100}%;
+  height: calc(${props => props.progress * 100}% + ${props => props.theme.spacing(0.375)});
   left: 50%;
   margin-left: ${props => props.theme.spacing(-0.375)};
   border-radius: ${props => props.theme.spacing(0.375)};
