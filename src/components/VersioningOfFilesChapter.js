@@ -16,16 +16,16 @@ import VisualisationAreaName from './VisualisationAreaName';
 import TutorialChapter from './TutorialChapter';
 
 const SECTIONS = [
-  new ChapterText('So let’s start by asking: what is a version?', { skip: true }),
-  new ChapterTask('Create a new file.', (chapter) => chapter.hasAddedFile),
-  new ChapterTask('Modify the new file.', (chapter) => chapter.hasModifiedFiles, { tip: 'Select the new file to see more available options.', }),
-  new ChapterTask('Make a copy of the file.', (chapter) => chapter.hasCopiedFile),
-  new ChapterText('And there it is, a backup file, an older version of our file. As you can see, we can use filenames to distinguish between them.', { skip: true }),
-  new ChapterTask('Create a few more backups.', (chapter) => chapter.hasBackups),
-  new ChapterText('Do you see the problem? Data is lost easily. And the developer of this tutorial, like many people out there, was too lazy to come up with a good way of naming your files. Idiot.', { skip: true }),
-  new ChapterText('A version database might help here.', { skip: true }),
-  new ChapterTask('Add a version database.', (chapter) => chapter.hasVersionDatabase),
-  new ChapterTask('Restore a file.', (chapter) => chapter.hasRestoredFiles),
+  new ChapterText(() => 'So let’s start by asking: what is a version?', { skip: true }),
+  new ChapterTask(() => 'Create a new file.', (chapter) => chapter.hasAddedFile),
+  new ChapterTask(() => 'Modify the new file.', (chapter) => chapter.hasModifiedFiles, { tip: 'Select the new file to see more available options.', }),
+  new ChapterTask(() => 'Make a copy of the file.', (chapter) => chapter.hasCopiedFile),
+  new ChapterText(() => 'And there it is, a backup file, an older version of our file. As you can see, we can use filenames to distinguish between them.', { skip: true }),
+  new ChapterTask(() => 'Create a few more backups.', (chapter) => chapter.hasBackups),
+  new ChapterText(() => 'Do you see the problem? Data is lost easily. And the developer of this tutorial, like many people out there, was too lazy to come up with a good way of naming your files. Idiot.', { skip: true }),
+  new ChapterText(() => 'A version database might help here.', { skip: true }),
+  new ChapterTask(() => 'Add a version database.', (chapter) => chapter.hasVersionDatabase),
+  new ChapterTask(() => 'Restore a file.', (chapter) => chapter.hasRestoredFiles),
 ];
 
 const COMMANDS = [

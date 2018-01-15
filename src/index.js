@@ -4,14 +4,12 @@ import { useStrict } from 'mobx';
 import { TweenLite } from 'gsap';
 
 import Root from './components/Root';
-import tutorial from './tutorial';
-import theme from './theme';
 import './injectGlobal';
 
 useStrict(true);
 
 render(
-  <Root tutorial={tutorial} ticker={TweenLite.ticker} theme={theme} />,
+  <Root ticker={TweenLite.ticker} />,
   document.getElementById('root'),
 );
 

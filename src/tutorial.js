@@ -30,8 +30,8 @@ autorun(() => {
 
   localStorage.setItem('tutorial', state);
 
-  console.log('---');
-  console.log(state);
+  //console.log('---');
+  //console.log(state);
 });
 
 export default tutorial;

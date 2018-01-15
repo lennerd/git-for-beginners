@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component, Fragment, createElement } from 'react';
 import styled from 'styled-components';
 import { observer } from 'mobx-react';
 import { action, computed, autorun } from 'mobx';
@@ -8,6 +8,7 @@ import ChapterHeader from './ChapterHeader';
 import { ChapterText, ChapterReadOn, ChapterCheckbox } from './Chapter';
 import { SECTION_TEXT, SECTION_TASK } from '../constants';
 import ChapterTip from './ChapterTip';
+import Tooltip from './Tooltip';
 
 @observer
 class ChapterBody extends Component {
@@ -108,7 +109,7 @@ class ChapterBody extends Component {
       if (section.is(SECTION_TEXT)) {
         return (
           <ChapterText key={index}>
-            {section.text}
+            {createElement(section.text)}
           </ChapterText>
         );
       }
@@ -119,7 +120,7 @@ class ChapterBody extends Component {
         return (
           <Fragment key={index}>
             <ChapterCheckbox checked={done}>
-              {section.text}{section.optional ? ' (optional)' : ''}
+            {createElement(section.text)}
             </ChapterCheckbox>
             {!done && section.tip != null && <ChapterTip>{section.tip}</ChapterTip>}
           </Fragment>
