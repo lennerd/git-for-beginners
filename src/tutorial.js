@@ -2,36 +2,38 @@ import { transaction, autorun } from 'mobx';
 import { update, serialize } from 'serializr';
 
 import TutorialState from "./models/TutorialState";
-import ChapterState from "./models/ChapterState";
-import {
-  CHAPTER_INTRODUCTION,
-  CHAPTER_VERSIONING_OF_FILES,
-  CHAPTER_VERSIONING_IN_GIT,
-  CHAPTER_GIT
-} from "./constants";
+import Tutorial from './models/Tutorial';
+import introductionChapter from './models/introductionChapter';
+import versioningOfFilesChapter from './models/versioningOfFilesChapter';
+import gitChapter from './models/gitChapter';
 
-const tutorial = new TutorialState([
-  new ChapterState(CHAPTER_INTRODUCTION),
-  new ChapterState(CHAPTER_VERSIONING_OF_FILES),
-  new ChapterState(CHAPTER_GIT),
-  new ChapterState(CHAPTER_VERSIONING_IN_GIT),
-]);
+const STORAGE_KEY = 'tutorialState';
 
-const state = localStorage.getItem('tutorial');
+const tutorialState = new TutorialState();
+
+const serializedTutorialState = JSON.parse(localStorage.getItem(STORAGE_KEY));
 
 transaction(() => {
-  if (state != null) {
-    update(TutorialState, tutorial, JSON.parse(state));
+  if (serializedTutorialState != null) {
+    update(TutorialState, tutorialState, serializedTutorialState);
   }
 });
 
 autorun(() => {
-  const state = JSON.stringify(serialize(tutorial));
+  const deserializedTutorialState = serialize(tutorialState);
 
-  localStorage.setItem('tutorial', state);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(deserializedTutorialState));
 
-  //console.log('---');
-  //console.log(state);
+  console.log('---');
+  console.log(deserializedTutorialState);
 });
+
+const tutorial = new Tutorial(tutorialState);
+
+tutorial.register([
+  introductionChapter,
+  versioningOfFilesChapter,
+  gitChapter,
+]);
 
 export default tutorial;

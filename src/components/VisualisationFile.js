@@ -16,12 +16,6 @@ export const FILE_OUTLINE = 0.03;
 @withTheme
 @observer
 class VisualisationFile extends Component {
-  static defaultProps = {
-    row: 0,
-    column: 0,
-    level: 0,
-  };
-
   constructor(props) {
     super();
 
@@ -74,22 +68,20 @@ class VisualisationFile extends Component {
     const { file } = this.props;
 
     file.hover = true;
-    event.stopPropagation();
   };
 
   @action.bound handleMouseLeave(event) {
     const { file } = this.props;
 
     file.hover = false;
-    event.stopPropagation();
   };
 
   render() {
-    const { children, row, column, level, file, theme } = this.props;
+    const { children, file, theme } = this.props;
 
-    this.fileObject.position.x = CELL_HEIGHT * row;
-    this.fileObject.position.z = CELL_WIDTH * column;
-    this.fileObject.position.y = LEVEL_HEIGHT * level;
+    this.fileObject.position.x = CELL_HEIGHT * file.row;
+    this.fileObject.position.z = CELL_WIDTH * file.column;
+    this.fileObject.position.y = LEVEL_HEIGHT * file.level;
 
     this.hoverMesh.material.visible = file.hover || file.active;
     this.hoverMesh.material.opacity = file.active ? 1 : 0.5;

@@ -1,11 +1,10 @@
 import { observable } from 'mobx';
 
-class VisualisationCommit {
-  @observable files = [];
+import VisualisationFileList from './VisualisationFileList';
 
-  constructor(files = []) {
-    this.files = files;
-  }
+class VisualisationCommit extends VisualisationFileList {
+  @observable active = false;
+  @observable hover = false;
 }
 
 export default VisualisationCommit;

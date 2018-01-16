@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { observer } from 'mobx-react';
-import { extendObservable, action, observe, computed } from 'mobx';
+import { action, observe, computed } from 'mobx';
 
 import { ChapterText } from '../models/ChapterSection';
 import TutorialChapter from './TutorialChapter';
@@ -13,35 +13,26 @@ import VisualisationFile from './VisualisationFile';
 import VisualisationFileStatus from './VisualisationFileStatus';
 import { STATUS_MODIFIED } from '../constants';
 
-const SECTIONS = [
-  new ChapterText(
-    () => (
-      <Fragment>
-        Git is a version control system. It’s a software you can install on your computer to store <Tooltip name="version">versions</Tooltip> of your file. But instead of copying files and folders by hand, you store new snapshots of your whole project.'
-      </Fragment>
-    ),
-    { skip: true }
-  ),
-  new ChapterText(() => 'Let’s take a look at the different parts of Git.'),
-  new ChapterText(() => (
-    <Fragment>
-      First, there is the <strong>Working Directory</strong>, the folder on your computer where all the files and folders of your project are stored in. Here you add, modify or delete files with other software like you are used to.
-    </Fragment>
-  )),
-  new ChapterText(() => (
-    <Fragment>
-      The second part is the <strong>Staging Area</strong>. Despite its name, it‘s not about showing something to others, but instead collect changes to your project you want to be part of your next version. This way you are able to group changes into seperate version, e.g. by feature or topic.
-    </Fragment>
-  )),
-  new ChapterText(() => (
-    <Fragment>
-      Last but not least comes the <strong>Repository</strong>. Broadly speaking, this is the version database of your project.
-    </Fragment>
-  )),
-];
-
 @observer
 class GitChapter extends Component {
+  @computed get hasWorkingDirectory() {
+    const { chapter } = this.props;
+
+    return chapter.visibleTextSections > 1;
+  }
+
+  @computed get hasStagingArea() {
+    const { chapter } = this.props;
+
+    return chapter.visibleTextSections > 2;
+  }
+
+  @computed get hasRepository() {
+    const { chapter } = this.props;
+
+    return chapter.visibleTextSections > 3;
+  }
+
   @computed get maxChanges() {
     const { chapter } = this.props;
 
@@ -53,7 +44,9 @@ class GitChapter extends Component {
   @computed get unstagedFiles() {
     const { chapter } = this.props;
 
-    return chapter.vis.files.filter(file => !file.state.get('staged') && !file.state.get('committed'));
+    return chapter.vis.files.filter(file => (
+      !file.state.get('staged') && !file.state.get('committed')
+    ));
   }
 
   @computed get stagedFiles() {
@@ -68,42 +61,22 @@ class GitChapter extends Component {
     return chapter.vis.files.filter(file => file.state.get('committed'));
   }
 
-  constructor(props) {
-    super();
-
-    const { chapter } = props;
-
-    extendObservable(chapter, {
-      get hasWorkingDirectory() {
-        return this.visibleTextSections > 1;
-      },
-      get hasStagingArea() {
-        return this.visibleTextSections > 2;
-      },
-      get hasRepository() {
-        return this.visibleTextSections > 3;
-      },
-    });
-  }
-
   componentWillMount() {
-    const { chapter } = this.props;
-
-    this.addFilesDisposer = observe(chapter, 'hasWorkingDirectory', (change) => {
+    this.addFilesDisposer = observe(this, 'hasWorkingDirectory', (change) => {
       if (change.newValue) {
         this.addFiles();
       }
     });
 
-    this.copyFilesDisposer = observe(chapter, 'hasStagingArea', (change) => {
+    this.copyFilesDisposer = observe(this, 'hasStagingArea', (change) => {
       if (change.newValue) {
-        this.copyFiles()
+        this.copyFiles();
       }
     });
 
-    this.createCommitDisposer = observe(chapter, 'hasRepository', (change) => {
+    this.createCommitDisposer = observe(this, 'hasRepository', (change) => {
       if (change.newValue) {
-        this.createCommit()
+        this.createCommit();
       }
     });
   }
@@ -158,7 +131,7 @@ class GitChapter extends Component {
 
     return (
       <Visualisation vis={chapter.vis}>
-        {chapter.hasWorkingDirectory && <VisualisationArea column={0} height={1}>
+        {this.hasWorkingDirectory && <VisualisationArea column={0} height={1}>
           <VisualisationAreaName font={fontRegularCaps} name="Working Directory" />
           {this.unstagedFiles.map((file, index) => (
             <VisualisationFile file={file} key={file.id} level={index}>
@@ -167,7 +140,7 @@ class GitChapter extends Component {
           ))}
         </VisualisationArea>}
 
-        {chapter.hasStagingArea && <VisualisationArea column={1} height={1}>
+        {this.hasStagingArea && <VisualisationArea column={1} height={1}>
           <VisualisationAreaName font={fontRegularCaps} name="Staging Area" />
           {this.stagedFiles.map((file, index) => (
             <VisualisationFile file={file} key={file.id} level={index}>
@@ -176,7 +149,7 @@ class GitChapter extends Component {
           ))}
         </VisualisationArea>}
 
-        {chapter.hasRepository && <VisualisationArea column={2} height={10} width={4}>
+        {this.hasRepository && <VisualisationArea column={2} height={10} width={4}>
           <VisualisationAreaName font={fontRegularCaps} name="Repository" />
           {this.committedFiles.map((file, index) => (
             <VisualisationFile file={file} key={file.id} level={index}>
@@ -191,13 +164,38 @@ class GitChapter extends Component {
   render() {
     const { chapter, tutorial } = this.props;
 
-
+    const sections = [
+      new ChapterText(
+        () => (
+          <Fragment>
+            Git is a version control system. It’s a software you can install on your computer to store <Tooltip name="version">versions</Tooltip> of your file. But instead of copying files and folders by hand, you store new snapshots of your whole project.'
+          </Fragment>
+        ),
+        { skip: true }
+      ),
+      new ChapterText(() => 'Let’s take a look at the different parts of Git.'),
+      new ChapterText(() => (
+        <Fragment>
+          First, there is the <strong>Working Directory</strong>, the folder on your computer where all the files and folders of your project are stored in. Here you add, modify or delete files with other software like you are used to.
+        </Fragment>
+      )),
+      new ChapterText(() => (
+        <Fragment>
+          The second part is the <strong>Staging Area</strong>. Despite its name, it‘s not about showing something to others, but instead collect changes to your project you want to be part of your next version. This way you are able to group changes into seperate version, e.g. by feature or topic.
+        </Fragment>
+      )),
+      new ChapterText(() => (
+        <Fragment>
+          Last but not least comes the <strong>Repository</strong>. Broadly speaking, this is the version database of your project.
+        </Fragment>
+      )),
+    ];
 
     return (
       <TutorialChapter
         tutorial={tutorial}
         chapter={chapter}
-        sections={SECTIONS}
+        sections={sections}
       >
         {this.renderVisualisation()}
       </TutorialChapter>

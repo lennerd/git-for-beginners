@@ -1,96 +1,57 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { computed, action } from 'mobx';
-import takeWhile from 'lodash/takeWhile';
 
 import Chapter, { ChapterMain } from './Chapter';
 import ChapterHeader from './ChapterHeader';
 import ChapterBody from './ChapterBody';
 import ChapterNext from './ChapterNext';
-import { SECTION_TEXT, SECTION_TASK } from '../constants';
+import ChapterConsole from './ChapterConsole';
+import Visualisation from './Visualisation';
+import VisualisationFile from './VisualisationFile';
+import VisualisationFileStatus from './VisualisationFileStatus';
+import VisualisationFileName from './VisualisationFileName';
+import VisualisationArea from './VisualisationArea';
+import VisualisationAreaName from './VisualisationAreaName';
+import VisualisationFileList from './VisualisationFileList';
 
 @observer
 class TutorialChapter extends Component {
-  @computed get visibleSections() {
-    const { sections, chapter } = this.props;
+  renderVisualisation() {
+    const { chapter, fontBlack, fontRegular, fontRegularCaps } = this.props;
 
-    let amountOfVisibleTextSections = chapter.visibleTextSections;
-    let prevTaskSectionDone = true;
-
-    return takeWhile(sections, (section) => {
-      if (section.is(SECTION_TEXT)) {
-        if (!prevTaskSectionDone) {
-          return false;
-        }
-
-        if (section.skip) {
-          return true;
-        }
-
-        if (amountOfVisibleTextSections === 0) {
-          return false;
-        }
-
-        amountOfVisibleTextSections--;
-
-        return true;
-      }
-
-      if (section.is(SECTION_TASK)) {
-        if (!prevTaskSectionDone) {
-          return false;
-        }
-
-        prevTaskSectionDone = section.optional || section.done;
-
-        return true;
-      }
-
-      throw new Error('Unknown section type.');
-    });
-  }
-
-  @computed get doableSections() {
-    const { sections } = this.props;
-
-    return sections.filter((section) => {
-      if (section.is(SECTION_TEXT)) {
-        return !section.skip;
-      }
-
-      return true;
-    });
-  }
-
-  @computed get doneSections() {
-    return this.visibleSections.filter((section) => {
-      if (section.is(SECTION_TEXT)) {
-        return !section.skip;
-      }
-
-      return section.optional || section.done;
-    });
-  }
-
-  componentDidUpdate() {
-    this.updateProgress();
-  }
-
-  @action updateProgress() {
-    const { chapter } = this.props;
-    const progress = this.doneSections.length / this.doableSections.length;
-
-    chapter.progress = progress;
-
-    if (progress >= 1) {
-      chapter.completed = true;
-    }
-  }
-
-  @action.bound readOn() {
-    const { chapter } = this.props;
-
-    chapter.visibleTextSections++;
+    return (
+      <Visualisation vis={chapter.vis}>
+        {chapter.vis.fileLists.map((fileList, index) => (
+          <VisualisationFileList fileList={fileList} key={index}>
+            {fileList.files.map((file, index) => (
+              file.visible && <VisualisationFile
+                key={index}
+                vis={chapter.vis}
+                file={file}
+              >
+                <VisualisationFileStatus font={fontBlack} file={file} maxChanges={fileList.maxChanges} />
+                {file.name != null && <VisualisationFileName font={fontRegular} name={file.name} />}
+              </VisualisationFile>
+            ))}
+          </VisualisationFileList>
+        ))}
+        {chapter.vis.files.map((file, index) => (
+          file.visible && <VisualisationFile
+            key={index}
+            vis={chapter.vis}
+            file={file}
+          >
+            <VisualisationFileStatus font={fontBlack} file={file} />
+            {file.name != null && <VisualisationFileName font={fontRegular} name={file.name} />}
+          </VisualisationFile>
+        ))}
+        {chapter.vis.areas.map((area, index) => (
+          <VisualisationArea area={area} key={index}>
+            <VisualisationAreaName font={fontRegularCaps} name={area.name} />
+          </VisualisationArea>
+        ))}
+      </Visualisation>
+    );
   }
 
   render() {
@@ -102,11 +63,11 @@ class TutorialChapter extends Component {
           <ChapterHeader tutorial={tutorial} chapter={chapter} />
           <ChapterBody
             chapter={chapter}
-            sections={this.visibleSections}
-            onReadOn={this.readOn}
           />
         </ChapterMain>
         {children}
+        {chapter.commands != null && <ChapterConsole commands={chapter.commands} />}
+        {chapter.vis != null && this.renderVisualisation()}
         <ChapterNext tutorial={tutorial} chapter={chapter} />
       </Chapter>
     );

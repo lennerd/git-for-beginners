@@ -1,18 +1,18 @@
-import uuid from 'uuid/v4';
-import { serializable, identifier } from 'serializr';
 import { observable, computed, action } from 'mobx';
 
 import { STATUS_ADDED } from '../constants';
-import stateMapSchema from './stateMapSchema';
 
 class VisualisationFile {
-  @serializable(identifier()) id = uuid();
-  @serializable @observable insertions = 0;
-  @serializable @observable deletions = 0;
-  @serializable @observable status = STATUS_ADDED;
-  @serializable @observable active = false;
-  @serializable(stateMapSchema) @observable state = new Map();
+  @observable insertions = 0;
+  @observable deletions = 0;
+  @observable status = STATUS_ADDED;
+  @observable active = false;
   @observable hover = false;
+  @observable column = 0;
+  @observable row = 0;
+  @observable level = 0;
+  @observable name;
+  @observable visible = true;
 
   @computed get modified() {
     return this.insertions > 0 || this.deletions > 0;
@@ -40,6 +40,9 @@ class VisualisationFile {
     file.insertions = this.insertions;
     file.deletions = this.deletions;
     file.status = this.status;
+    file.column = this.column;
+    file.level = this.level;
+    file.row = this.row;
 
     return file;
   }

@@ -1,8 +1,3 @@
-export const CHAPTER_INTRODUCTION = 'Introduction';
-export const CHAPTER_VERSIONING_OF_FILES = 'Versioning of Files';
-export const CHAPTER_VERSIONING_IN_GIT = 'Versioning in Git';
-export const CHAPTER_GIT = 'Git';
-
 export const SECTION_TEXT = 'section_text';
 export const SECTION_TASK = 'section_task';
 

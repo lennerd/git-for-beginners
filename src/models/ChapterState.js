@@ -1,33 +1,26 @@
-import { observable, action } from 'mobx';
-import { serializable, identifier, object } from 'serializr';
+import { observable } from "mobx";
+import { serializable, identifier, list, object } from "serializr";
 
-import Visualisation from './Visualisation';
-import stateMapSchema from './stateMapSchema';
+import Action from "./Action";
 
 class ChapterState {
-  @serializable(identifier()) title;
-  @serializable @observable progress = 0;
-  @serializable @observable completed = false;
-  @serializable @observable visibleTextSections = 1;
-  @serializable(object(Visualisation)) @observable vis = new Visualisation();
-  @serializable(stateMapSchema) @observable state = new Map();
+  @serializable(identifier()) chapterId;
+  @serializable(list(object(Action))) @observable actions = [];
 
-  constructor(title, data) {
-    this.title = title;
-
-    Object.assign(this, data);
+  constructor(chapterId) {
+    this.chapterId = chapterId;
   }
 
-  is(title) {
-    return this.title === title;
+  filter(type) {
+    return this.actions.filter(action => action.is(type));
   }
 
-  @action reset() {
-    this.progress = 0;
-    this.completed = false;
-    this.visibleTextSections = 1;
-    this.vis = new Visualisation();
-    this.state = new Map();
+  find(type) {
+    return this.actions.find(action => action.is(type));
+  }
+
+  has(type) {
+    return this.find(type) != null;
   }
 }
 

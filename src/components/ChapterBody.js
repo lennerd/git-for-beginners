@@ -1,18 +1,26 @@
 import React, { Component, Fragment, createElement } from 'react';
 import styled from 'styled-components';
 import { observer } from 'mobx-react';
+import { action } from 'mobx';
 
 import ChapterHeader from './ChapterHeader';
 import { ChapterText, ChapterReadOn, ChapterCheckbox } from './Chapter';
 import { SECTION_TEXT, SECTION_TASK } from '../constants';
 import ChapterTip from './ChapterTip';
+import { readOn } from '../models/Chapter';
 
 @observer
 class ChapterBody extends Component {
-  renderSections() {
-    const { sections } = this.props;
+  @action.bound readOn() {
+    const { chapter } = this.props;
 
-    return sections.map((section, index) => {
+    chapter.dispatch(readOn());
+  }
+
+  renderSections() {
+    const { chapter } = this.props;
+
+    return chapter.visibleSections.map((section, index) => {
       if (section.is(SECTION_TEXT)) {
         return (
           <ChapterText key={index}>
@@ -41,8 +49,8 @@ class ChapterBody extends Component {
   }
 
   renderReadOn() {
-    const { sections, chapter, onReadOn } = this.props;
-    const lastSection = sections[sections.length - 1]
+    const { chapter } = this.props;
+    const lastSection = chapter.visibleSections[chapter.visibleSections.length - 1];
 
     if (
       lastSection == null ||
@@ -52,7 +60,7 @@ class ChapterBody extends Component {
       return null;
     }
 
-    return <ChapterReadOn onClick={onReadOn}>Read On</ChapterReadOn>;
+    return <ChapterReadOn onClick={this.readOn}>Read On</ChapterReadOn>;
   }
 
   render() {

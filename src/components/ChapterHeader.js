@@ -8,7 +8,7 @@ function ChapterHeader({ className, tutorial, chapter }) {
   return (
     <div className={className}>
       <ChapterProgress tutorial={tutorial} />
-      <ChapterTitle>{chapter.title}</ChapterTitle>
+      <ChapterTitle>{chapter.id}</ChapterTitle>
     </div>
   );
 }

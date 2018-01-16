@@ -1,13 +1,13 @@
 import { observable, computed, action } from "mobx";
-import { serializable, list, object } from "serializr";
-
-import VisualisationFile from "./VisualisationFile";
 
 class Visualisation {
-  @observable @serializable(list(object(VisualisationFile))) files = [];
+  @observable files = [];
+  @observable areas = [];
+  @observable fileLists = [];
 
   @computed get hover() {
-    return this.files.some(file => file.hover);
+    return this.files.some(file => file.hover) ||
+      this.fileLists.some(fileList => fileList.hover);
   }
 
   @computed get activeFileIndex() {
@@ -32,10 +32,6 @@ class Visualisation {
     this.deactivateAll();
 
     model.active = true;
-  }
-
-  @action addFile(file) {
-    this.files.push(file);
   }
 }
 

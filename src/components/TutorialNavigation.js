@@ -16,7 +16,7 @@ class TutorialNavigation extends Component {
   handleNavigationLinkClick(chapter) {
     const { tutorial } = this.props;
 
-    tutorial.turnOver(chapter);
+    tutorial.currentChapter = chapter;
   }
 
   render() {
@@ -35,7 +35,7 @@ class TutorialNavigation extends Component {
               <NavigationLink onClick={() => this.handleNavigationLinkClick(chapter)}>
                 <NavigationIndicator active={(index / (chapters.length - 1)) <= progress} />
                 <NavigationLabel>
-                  {chapter.title}<br />
+                  {chapter.id}<br />
                   <Title minor>{index + 1} / {chapters.length}</Title>
                 </NavigationLabel>
               </NavigationLink>

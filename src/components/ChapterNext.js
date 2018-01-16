@@ -15,8 +15,7 @@ class ChapterNext extends Component {
       return;
     }
 
-    chapter.progress = 1;
-    tutorial.turnOver();
+    tutorial.currentChapter = tutorial.nextChapter;
   }
 
   render() {
@@ -28,7 +27,7 @@ class ChapterNext extends Component {
 
     return (
       <Button className={className} onClick={this.turnOver}>
-        {tutorial.nextChapter.title}
+        {tutorial.nextChapter.id}
       </Button>
     );
   }

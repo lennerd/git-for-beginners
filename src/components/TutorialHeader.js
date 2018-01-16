@@ -12,7 +12,7 @@ class TutorialHeader extends Component {
     return (
       <Header>
         <HeaderTitle>Git for Beginners</HeaderTitle>
-        <Title minor>{currentChapter && currentChapter.title}</Title>
+        <Title minor>{currentChapter && currentChapter.id}</Title>
       </Header>
     );
   }

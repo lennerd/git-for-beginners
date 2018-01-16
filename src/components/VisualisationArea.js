@@ -2,21 +2,13 @@ import React, { PureComponent } from 'react';
 import { withTheme } from 'styled-components';
 
 import VisualisationObject3D from './VisualisationObject3D';
-import { CELL_HEIGHT, LEVEL_HEIGHT, CELL_WIDTH } from '../theme';
+import { CELL_HEIGHT, CELL_WIDTH } from '../theme';
 
 export const AREA_VERTICAL_PADDING = CELL_WIDTH * 0.1;
 export const AREA_HORIZONTAL_PADDING = CELL_HEIGHT * 0.1;
 
 @withTheme
-class VisualisationSection extends PureComponent {
-  static defaultProps = {
-    column: 0,
-    level: 0,
-    row: 0,
-    height: 1,
-    width: 1,
-  };
-
+class VisualisationArea extends PureComponent {
   constructor(props) {
     super();
 
@@ -35,21 +27,21 @@ class VisualisationSection extends PureComponent {
   }
 
   render() {
-    const { children, column, row, level, width, height } = this.props;
+    const { children, area } = this.props;
 
     this.planeMesh.scale.set(
-      CELL_HEIGHT * height - AREA_HORIZONTAL_PADDING,
-      CELL_WIDTH * width - AREA_VERTICAL_PADDING,
+      CELL_HEIGHT * area.height - AREA_HORIZONTAL_PADDING,
+      CELL_WIDTH * area.width - AREA_VERTICAL_PADDING,
       1
     );
 
-    this.planeMesh.position.z = CELL_WIDTH * ((width / 2) - 0.5);
-    this.planeMesh.position.x = CELL_HEIGHT * ((height / 2) - 0.5);
+    this.planeMesh.position.z = CELL_WIDTH * ((area.width / 2) - 0.5);
+    this.planeMesh.position.x = CELL_HEIGHT * ((area.height / 2) - 0.5);
 
     this.areaObject.position.set(
-      CELL_HEIGHT * row,
-      LEVEL_HEIGHT * level,
-      CELL_WIDTH * column,
+      CELL_HEIGHT * area.row,
+      0,
+      CELL_WIDTH * area.column,
     );
 
     return (
@@ -60,4 +52,4 @@ class VisualisationSection extends PureComponent {
   }
 }
 
-export default VisualisationSection;
+export default VisualisationArea;
