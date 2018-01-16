@@ -4,8 +4,9 @@ import { createPortal } from 'react-dom';
 import { Manager, Target, Popper, Arrow } from 'react-popper';
 import styled from 'styled-components';
 import { observer, inject } from 'mobx-react';
+import PropTypes from 'prop-types';
 
-const TooltipTarget = styled(Target)`
+const TooltipTarget = styled.a`
   border-bottom: 2px solid ${props => props.theme.color.interactive.alpha(0.5)};
   cursor: pointer;
 
@@ -14,7 +15,7 @@ const TooltipTarget = styled(Target)`
   }
 `;
 
-const TooltipPopper = styled(Popper).attrs({
+const TooltipPopper = styled.div.attrs({
   'aria-hidden': props => props.hidden,
 })`
   z-index: 2;
@@ -32,7 +33,7 @@ const TooltipPopper = styled(Popper).attrs({
   }
 `;
 
-const TooltipArrow = styled(Arrow)`
+const TooltipArrow = styled.div`
   width: 0;
   height: 0;
   position: absolute;
@@ -63,11 +64,23 @@ const TooltipTitle = styled.div`
   padding-bottom: ${props => props.theme.spacing(0.5)};
   font-weight: 600;
   color: ${props => props.theme.color.highlight};
+
+  & > * + * {
+    padding-left: ${props => props.theme.spacing(0.5)};
+  }
 `;
 
-const TooltipClose = styled.button`
+const TooltipTitleTerm = styled.div`
+  text-overflow: ellipsis;
+  white-space: nowrap;
+	overflow: hidden;
+`;
+
+
+const TooltipTitleLink = styled.button`
   ${props => props.theme.mixins.monospaced}
   color: ${props => props.theme.color.interactive};
+  white-space: nowrap;
 
   strong {
     font-weight: 700;
@@ -88,21 +101,53 @@ const TooltipBody = styled.div`
   }
 `;
 
+export class TooltipTerm extends Component {
+  static contextTypes = {
+    onClickTerm: PropTypes.func,
+  };
+
+  handleClickTarget = (event) => {
+    const { onClickTerm } = this.context;
+    const { name } = this.props;
+
+    onClickTerm(name);
+  }
+
+  render() {
+    const { children } = this.props;
+
+    return (
+      <TooltipTarget onClick={this.handleClickTarget}>
+        {children}
+      </TooltipTarget>
+    );
+  }
+}
+
 @inject('glossary')
 @observer
 class Tooltip extends Component {
+  static childContextTypes = {
+    onClickTerm: PropTypes.func,
+  };
+
   @observable hidden = true;
+  @observable history = [];
 
   @computed get term() {
-    const { name, glossary } = this.props;
+    const { glossary } = this.props;
+    const lastName = this.history[this.history.length - 1];
 
-    return glossary.terms[name];
+    return glossary.terms[lastName];
   }
 
-  constructor() {
+  constructor(props) {
     super();
 
+    const { name } = props;
+
     this.popperContainer = document.createElement('div');
+    this.history.push(name);
   }
 
   componentDidMount() {
@@ -117,30 +162,51 @@ class Tooltip extends Component {
     window.removeEventListener('click', this.hide);
   }
 
+  getChildContext() {
+    return {
+      onClickTerm: this.addTerm,
+    };
+  }
+
   @action.bound hide() {
     this.toggle(false);
   }
 
-  @action.bound toggle(visible = this.hidden) {
+  @action toggle(visible = this.hidden) {
     this.hidden = !visible;
   }
 
-  handleClick = (event) => {
+  @action.bound handleClickTarget(event) {
+    event.stopPropagation();
+
+    this.toggle();
+  }
+
+  @action.bound handleClickPopper(event) {
     event.stopPropagation();
   };
 
+  @action.bound addTerm(name) {
+    this.history.push(name);
+  };
+
+  @action.bound goBack() {
+    this.history.pop();
+  }
+
   renderPopper() {
     return (
-      <TooltipPopper placement="top" hidden={this.hidden}>
+      <Popper component={TooltipPopper} placement="top" hidden={this.hidden} onClick={this.handleClickPopper}>
         <TooltipTitle>
-          {this.term.name}
-          <TooltipClose onClick={this.hide}><strong>×</strong> Close</TooltipClose>
+          {this.history.length > 1 && <TooltipTitleLink onClick={this.goBack}><strong>←</strong> Back</TooltipTitleLink>}
+          <TooltipTitleTerm>{this.term.name}</TooltipTitleTerm>
+          <TooltipTitleLink onClick={this.hide}><strong>×</strong> Close</TooltipTitleLink>
         </TooltipTitle>
         <TooltipBody>
           {createElement(this.term.text)}
         </TooltipBody>
-        <TooltipArrow />
-      </TooltipPopper>
+        <Arrow component={TooltipArrow} />
+      </Popper>
     );
   }
 
@@ -148,10 +214,10 @@ class Tooltip extends Component {
     const { children } = this.props;
 
     return (
-      <Manager tag="span" onClick={this.handleClick}>
-        <TooltipTarget component="a" onClick={this.toggle}>
+      <Manager tag={false}>
+        <Target component={TooltipTarget} onClick={this.handleClickTarget}>
           {children}
-        </TooltipTarget>
+        </Target>
         {createPortal(
           this.renderPopper(),
           this.popperContainer,

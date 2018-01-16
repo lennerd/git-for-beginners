@@ -2,11 +2,14 @@ import React, { Fragment } from "react";
 
 import { createChapter } from "./Chapter";
 import { ChapterText } from "./ChapterSection";
+import Tooltip from "../components/Tooltip";
 
 const versioningInGitChapter = createChapter('Versioning in Git', {
   sections: [
     new ChapterText(() => (
-      'Over the passed decades computer in different shape and sizes changed our daily life enormously. Together we create huge amount of data in form of files everyday to store everything from invoices to love letters, from code to illustrations and designs.'
+      <Fragment>
+        Let’s take a look at how a <Tooltip name="commit">commit</Tooltip> is created.
+      </Fragment>
     )),
     new ChapterText(() => (
       <Fragment>

@@ -114,22 +114,22 @@ const introductionChapter = createChapter('Git', {
     new ChapterText(() => 'Let’s take a look at the different parts of Git.'),
     new ChapterText(() => (
       <Fragment>
-        First, there is the <strong>Working Directory</strong>, the folder on your computer where all the files and folders of your project are stored in. Here you add, modify or delete files with other software like you are used to.
+        First, there is the <strong>working directory</strong>, the folder on your computer where all the files and folders of your project are stored in. Here you add, modify or delete files with other software like you are used to.
       </Fragment>
     )),
     new ChapterText(() => (
       <Fragment>
-        The second part is the <strong>Staging Area</strong>. Despite its name, it‘s not about showing something to others, but instead collect changes to your project you want to be part of your next version. This way you are able to group changes into seperate version, e.g. by feature or topic.
+        The second part is the <strong>staging area</strong>. Despite its name, it‘s not about showing something to others, but instead collect changes to your project you want to be part of your next version. This way you are able to group changes into seperate version, e.g. by feature or topic.
       </Fragment>
     )),
     new ChapterText(() => (
       <Fragment>
-        Last but not least comes the <strong>Repository</strong>. Broadly speaking, this is the version database of your project.
+        Last but not least comes the <strong>repository</strong>. Broadly speaking, this is the version database of your project.
       </Fragment>
     )),
     new ChapterText(() => (
       <Fragment>
-        Last but not least comes the <strong>Repository</strong>. Broadly speaking, this is the version database of your project.
+        New <Tooltip name="version">versions</Tooltip> stored in the repository are called as a <strong>commit</strong>. Beside a snapshot of the project they also contain the author and date of the version, so you are able to log changes later on.
       </Fragment>
     )),
   ],
