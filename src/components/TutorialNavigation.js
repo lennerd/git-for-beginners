@@ -16,7 +16,7 @@ class TutorialNavigation extends Component {
   handleNavigationLinkClick(chapter) {
     const { tutorial } = this.props;
 
-    tutorial.currentChapter = chapter;
+    tutorial.navigate(chapter);
   }
 
   render() {

@@ -65,6 +65,14 @@ class Tutorial {
   @action.bound reset() {
     this.chapters.slice(this.currentChapterIndex).forEach(chapter => chapter.reset());
   }
+
+  @action navigate(chapter) {
+    if (!this.accessibleChapters.includes(chapter)) {
+      return;
+    }
+
+    this.currentChapter = chapter;
+  }
 }
 
 export default Tutorial;

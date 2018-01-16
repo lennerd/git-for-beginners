@@ -1,4 +1,5 @@
 import React, { Component, createElement } from 'react';
+import { Helmet } from 'react-helmet';
 import { inject, observer } from 'mobx-react';
 
 import Tutorial, { TutorialReset } from './Tutorial';
@@ -15,6 +16,9 @@ class TutorialContainer extends Component {
 
     return (
       <Tutorial>
+        <Helmet>
+          <title>{tutorial.currentChapter.id}</title>
+        </Helmet>
         <TutorialHeader tutorial={tutorial} />
         <TutorialNavigation tutorial={tutorial} />
         {<FontLoader>
