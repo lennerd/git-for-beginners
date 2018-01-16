@@ -9,6 +9,7 @@ import VisualisationArea from "./VisualisationArea";
 import VisualisationFile from "./VisualisationFile";
 import { STATUS_MODIFIED } from "../constants";
 import VisualisationFileList from "./VisualisationFileList";
+import VisualisationCommit from "./VisualisationCommit";
 
 const introductionChapter = createChapter('Git', {
   hasWorkingDirectory: hasMin(readOn, 1),
@@ -17,6 +18,7 @@ const introductionChapter = createChapter('Git', {
   get vis() {
     const fileLists = [];
     const areas = [];
+    const commits = [];
 
     if (this.hasWorkingDirectory) {
       const workingDirectory = new VisualisationArea();
@@ -67,12 +69,22 @@ const introductionChapter = createChapter('Git', {
 
       areas.push(repository);
 
-      fileLists[1].column = 2;
+      const commit = new VisualisationCommit();
+
+      commit.files.push(
+        ...fileLists[1].files,
+      );
+
+      commit.column = 2;
+      commits.push(commit);
+
+      fileLists.splice(1, 1);
     }
 
     const vis = new Visualisation();
     vis.areas = areas;
     vis.fileLists = fileLists;
+    vis.commits = commits;
 
     return vis;
   },

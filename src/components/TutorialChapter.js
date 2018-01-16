@@ -13,6 +13,7 @@ import VisualisationFileName from './VisualisationFileName';
 import VisualisationArea from './VisualisationArea';
 import VisualisationAreaName from './VisualisationAreaName';
 import VisualisationFileList from './VisualisationFileList';
+import VisualisationCommit from './VisualisationCommit';
 
 @observer
 class TutorialChapter extends Component {
@@ -34,6 +35,20 @@ class TutorialChapter extends Component {
               </VisualisationFile>
             ))}
           </VisualisationFileList>
+        ))}
+        {chapter.vis.commits.map((commit, index) => (
+          <VisualisationCommit commit={commit} key={index} vis={chapter.vis}>
+            {commit.files.map((file, index) => (
+              file.visible && <VisualisationFile
+                key={index}
+                vis={chapter.vis}
+                file={file}
+              >
+                <VisualisationFileStatus font={fontBlack} file={file} maxChanges={commit.maxChanges} />
+                {file.name != null && <VisualisationFileName font={fontRegular} name={file.name} />}
+              </VisualisationFile>
+            ))}
+          </VisualisationCommit>
         ))}
         {chapter.vis.files.map((file, index) => (
           file.visible && <VisualisationFile

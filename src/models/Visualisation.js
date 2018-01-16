@@ -4,10 +4,12 @@ class Visualisation {
   @observable files = [];
   @observable areas = [];
   @observable fileLists = [];
+  @observable commits = [];
 
   @computed get hover() {
     return this.files.some(file => file.hover) ||
-      this.fileLists.some(fileList => fileList.hover);
+      this.fileLists.some(fileList => fileList.hover) ||
+      this.commits.some(commit => commit.hover || commit.hoverCommit);
   }
 
   @computed get activeFileIndex() {
@@ -23,15 +25,18 @@ class Visualisation {
   }
 
   @action deactivateAll() {
-    this.files.forEach((file) => {
+    this.files.forEach(file => {
       file.active = false;
     });
-  }
 
-  @action activate(model) {
-    this.deactivateAll();
+    this.fileLists.forEach(fileList => {
+      fileList.active = false
+    });
 
-    model.active = true;
+    this.commits.forEach(commit => {
+      commit.commitActive = false;
+      commit.active = false
+    });
   }
 }
 

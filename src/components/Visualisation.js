@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { inject, observer } from 'mobx-react';
-import { observable } from 'mobx';
+import { observable, transaction } from 'mobx';
 
 import VisualisationScene from './VisualisationScene';
 
@@ -20,11 +20,13 @@ class Event {
 }
 
 function dispatchEvent(object, event) {
-  object.dispatchEvent(event);
+  transaction(() => {
+    object.dispatchEvent(event);
 
-  if (!event.propagationStopped && object.parent != null) {
-    dispatchEvent(object.parent, event);
-  }
+    if (!event.propagationStopped && object.parent != null) {
+      dispatchEvent(object.parent, event);
+    }
+  });
 }
 
 @inject('ticker')

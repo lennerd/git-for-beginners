@@ -54,14 +54,9 @@ class VisualisationFile extends Component {
   }
 
   @action.bound handleClick(event) {
-    const { vis, file } = this.props;
+    const { file } = this.props;
 
-    if (vis == null) {
-      return;
-    }
-
-    vis.activate(file);
-    event.stopPropagation();
+    file.active = true;
   };
 
   @action.bound handleMouseEnter(event) {

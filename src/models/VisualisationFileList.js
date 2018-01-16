@@ -15,6 +15,12 @@ class VisualisationFileList {
     return this.files.some(file => file.hover);
   }
 
+  set active(active) {
+    this.files.forEach(file => {
+      file.active = active;
+    });
+  }
+
   @action copy() {
     const fileList = new this.constructor();
     fileList.files = this.files.map(file => file.copy());
