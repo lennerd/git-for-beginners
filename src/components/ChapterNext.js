@@ -4,7 +4,6 @@ import { observer } from 'mobx-react';
 import { action } from 'mobx';
 
 import Button from './Button';
-import arrowRightLarge from '../images/arrowRightLarge.svg';
 
 @observer
 class ChapterNext extends Component {
@@ -37,9 +36,6 @@ export default styled(ChapterNext)`
   grid-area: next;
   justify-self: right;
   align-self: center;
-  //background-image: url(${arrowRightLarge});
-  //background-position: 100% 0;
-  //padding-right: ${props => props.theme.spacing(1.5)};
   height: ${props => props.theme.spacing(2)};
   position: relative;
   z-index: 1;

@@ -1,13 +1,12 @@
 import styled from 'styled-components';
 
-import arrowDownSmall from '../images/arrowDownSmall.svg';
 import Button from './Button';
 import Checkbox from './Checkbox';
 
 const Chapter = styled.div`
   display: grid;
   grid-area: chapter;
-  grid-template-columns: 2fr 4fr 2fr 4fr 2fr;
+  grid-template-columns: ${props => props.theme.spacing(1)} 4fr 2fr 4fr 0;
   grid-template-rows:
     1fr
     ${props => props.theme.spacing(1)}
@@ -17,6 +16,9 @@ const Chapter = styled.div`
     ". main . console ."
     ". next . console ."
     ". next . . .";
+
+  @media (min-width: 1440px) {
+    grid-template-columns: 2fr 4fr 2fr 4fr 2fr;
 `;
 
 export const ChapterMain = styled.div`
@@ -41,9 +43,6 @@ export const ChapterReadOn = Button.extend`
   position: absolute;
   bottom: 0;
   left: 0;
-  //background-image: url(${arrowDownSmall});
-  //background-position: 0 70%;
-  //padding-left: ${props => props.theme.spacing()};
 
   &:before {
     content: '←';
