@@ -1,4 +1,5 @@
 import { computed, action } from 'mobx';
+import takeWhile from 'lodash/takeWhile';
 
 import ChapterState from './ChapterState';
 
@@ -39,10 +40,24 @@ class Tutorial {
     return this.chapters[this.currentChapterIndex + 1];
   }
 
+  @computed get accessibleChapters() {
+    let lastCompleted = true;
+
+    return takeWhile(this.chapters, chapter => {
+      if (!lastCompleted) {
+        return false;
+      }
+
+      lastCompleted = chapter.completed;
+
+      return true;
+    });
+  }
+
   @computed get progress() {
     const chapterStep = this.chapters.length === 1 ? 1 : 1 / (this.chapters.length - 1);
 
-    return this.chapters.reduce((progress, chapter) => {
+    return this.accessibleChapters.reduce((progress, chapter) => {
       return progress + chapterStep * chapter.progress;
     }, 0);
   }

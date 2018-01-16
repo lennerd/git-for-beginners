@@ -1,10 +1,21 @@
-import { observable, computed, action } from "mobx";
+import { computed, action } from "mobx";
 
 class Visualisation {
-  @observable files = [];
-  @observable areas = [];
-  @observable fileLists = [];
-  @observable commits = [];
+  @computed get files() {
+    return [];
+  }
+
+  @computed get areas() {
+    return [];
+  }
+
+  @computed get fileLists() {
+    return [];
+  }
+
+  @computed get commits() {
+    return [];
+  }
 
   @computed get hover() {
     return this.files.some(file => file.hover) ||

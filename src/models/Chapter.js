@@ -64,15 +64,27 @@ class Chapter {
   }
 
   @computed get doableSections() {
-    return this.sections.filter((section) => (
-      !section.is(SECTION_TEXT) || !section.skip
-    ));
+    return this.sections.filter(section => {
+      if (section.is(SECTION_TEXT)) {
+        return !section.skip;
+      }
+
+      return section.is(SECTION_TASK);
+    });
   }
 
   @computed get doneSections() {
-    return this.visibleSections.filter((section) => (
-      !section.is(SECTION_TEXT) || !section.skip
-    ));
+    return this.visibleSections.filter(section => {
+      if (section.is(SECTION_TEXT)) {
+        return !section.skip;
+      }
+
+      if (section.is(SECTION_TASK)) {
+        return section.done;
+      }
+
+      return false;
+    });
   }
 
   @computed get progress() {

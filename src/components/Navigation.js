@@ -63,6 +63,7 @@ export const NavigationLabel = styled.div`
   line-height: ${props => props.theme.baseSpacing / props.theme.baseFontSize};
   color: ${props => props.theme.color.highlight};
   white-space: nowrap;
+  pointer-events: none;
 `;
 
 export const NavigationLink = Link.extend`

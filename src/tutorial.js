@@ -6,6 +6,13 @@ import Tutorial from './models/Tutorial';
 import introductionChapter from './models/introductionChapter';
 import versioningOfFilesChapter from './models/versioningOfFilesChapter';
 import gitChapter from './models/gitChapter';
+import versioningInGitChapter from './models/versioningInGitChapter';
+import commandlineChapter from './models/commandlineChapter';
+import gitInTheConsoleChapter from './models/gitInTheConsoleChapter';
+import workingInATeamChapter from './models/workingInATeamChapter';
+import gitBranchesChapter from './models/gitBranchesChapter';
+import versioningInATeamChapter from './models/versioningInATeamChapter';
+import gitInATeamChapter from './models/gitInATeamChapter';
 
 const STORAGE_KEY = 'tutorialState';
 
@@ -24,8 +31,10 @@ autorun(() => {
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(deserializedTutorialState));
 
-  console.log('---');
-  console.log(deserializedTutorialState);
+  if (process.env.NODE_ENV === 'development') {
+    console.log('---');
+    console.log(deserializedTutorialState);
+  }
 });
 
 const tutorial = new Tutorial(tutorialState);
@@ -34,6 +43,13 @@ tutorial.register([
   introductionChapter,
   versioningOfFilesChapter,
   gitChapter,
+  versioningInGitChapter,
+  commandlineChapter,
+  gitInTheConsoleChapter,
+  workingInATeamChapter,
+  versioningInATeamChapter,
+  gitInATeamChapter,
+  gitBranchesChapter,
 ]);
 
 export default tutorial;

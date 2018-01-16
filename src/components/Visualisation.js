@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { inject, observer } from 'mobx-react';
-import { observable, transaction } from 'mobx';
+import { transaction } from 'mobx';
 
 import VisualisationScene from './VisualisationScene';
 
@@ -44,8 +44,6 @@ class Visualisation extends Component {
   mouse = new THREE.Vector2(0, 0);
   rect = new THREE.Vector2();
 
-  @observable hovering = 0;
-
   handleTick = () => {
     /*const { tick } = this.props.tutorial;
 
@@ -81,32 +79,6 @@ class Visualisation extends Component {
         }
       }
     }
-
-    /*for (let intersection of this.intersections.values()) {
-      if (this.prevIntersection.has(intersection)) {
-        continue;
-      }
-
-      intersection.dispatchEvent(mouseEnterEvent);
-
-      if (mouseEnterEvent.propagationStopped) {
-        break;
-      }
-    }*/
-
-    /*const mouseLeaveEvent = new Event('mouseleave');
-
-    for (let prevIntersection of this.prevIntersection.values()) {
-      if (this.intersections.has(prevIntersection)) {
-        continue;
-      }
-
-      prevIntersection.dispatchEvent(mouseLeaveEvent);
-
-      if (mouseLeaveEvent.propagationStopped) {
-        break;
-      }
-    }*/
 
     this.renderer.render(this.scene, this.camera);
   }

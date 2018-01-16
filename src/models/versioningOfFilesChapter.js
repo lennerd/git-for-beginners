@@ -1,4 +1,4 @@
-import { action } from 'mobx';
+import { action, extendObservable, computed } from 'mobx';
 
 import { createChapter } from "./Chapter";
 import { ChapterText, ChapterTask } from "./ChapterSection";
@@ -86,7 +86,101 @@ const versioningOfFilesChapter = createChapter('Versioning of Files', {
     ];
   },
   get vis() {
-    const files = [];
+    const vis = new Visualisation();
+
+    const versionDatabase = new VisualisationArea();
+    versionDatabase.name = 'Version Database';
+    versionDatabase.column = 1;
+    versionDatabase.height = 10;
+
+    extendObservable(vis, {
+      files: computed(() => {
+        const files = [];
+
+        this.handleActions({
+          [addFile]() {
+            const file = new VisualisationFile();
+            file.status = STATUS_MODIFIED;
+
+            files.push(file);
+          },
+          [modifyFile]({ fileIndex, insertions, deletions }) {
+            files[fileIndex].insertions += insertions;
+            files[fileIndex].deletions += deletions;
+          },
+          [copyFile](fileIndex) {
+            const copy = files[fileIndex].copy();
+
+            files.splice(fileIndex + 1, 0, copy);
+          },
+          [deleteFile](fileIndex) {
+            const activeFile = files[fileIndex];
+            const lastFile = files[files.length - 1];
+
+            if (!this.hasVersionDatabase && activeFile === lastFile) {
+              files.splice(fileIndex, 1);
+            } else {
+              activeFile.status = STATUS_DELETED;
+            }
+          },
+          [backupFile](fileIndex) {
+            const copy = files[fileIndex].copy();
+            copy.reset();
+
+            files.splice(fileIndex + 1, 0, copy);
+          },
+          [restoreFile](fileIndex) {
+            const activeFile = files[fileIndex];
+            const lastFile = files[files.length - 1];
+
+            lastFile.insertions += activeFile.insertions;
+            lastFile.deletions += activeFile.deletions;
+            lastFile.status = activeFile.status;
+          },
+        });
+
+        files.forEach((file, index) => {
+          let name = 'file';
+          let column = files.length - index - 1;
+          let row = 0;
+
+          if (this.hasVersionDatabase) {
+            if (index < (files.length - 1)) {
+              name = `Version ${index + 1}`;
+
+              column = 1;
+              row = files.length - index - 2;
+            }
+          } else {
+            if (index > 0) {
+              const nameIndex = (index - 1) % FILE_NAME_VARIANTS.length;
+              name += FILE_NAME_VARIANTS[nameIndex];
+            }
+          }
+
+          file.column = column;
+          file.row = row;
+          file.name = name;
+          file.visible = this.hasVersionDatabase || file.status !== STATUS_DELETED;
+        });
+
+        return files;
+      }),
+
+      areas: computed(() => {
+        const areas = [];
+
+        if (this.hasVersionDatabase) {
+          areas.push(versionDatabase);
+        }
+
+        return areas;
+      }),
+    });
+
+    return vis;
+
+    /*const files = [];
     const areas = [];
 
     this.handleActions({
@@ -170,7 +264,7 @@ const versioningOfFilesChapter = createChapter('Versioning of Files', {
     vis.files = files;
     vis.areas = areas;
 
-    return vis;
+    return vis;*/
   },
   get commands() {
     return [

@@ -1,4 +1,5 @@
 import React, { Fragment } from "react";
+import { extendObservable, computed } from 'mobx';
 
 import { createChapter, readOn } from "./Chapter";
 import { ChapterText } from "./ChapterSection";
@@ -16,75 +17,88 @@ const introductionChapter = createChapter('Git', {
   hasStagingArea: hasMin(readOn, 2),
   hasRepository: hasMin(readOn, 3),
   get vis() {
-    const fileLists = [];
-    const areas = [];
-    const commits = [];
-
-    if (this.hasWorkingDirectory) {
-      const workingDirectory = new VisualisationArea();
-      workingDirectory.name = 'Working Directory';
-
-      areas.push(workingDirectory);
-
-      const fileList = new VisualisationFileList();
-
-      fileList.files.push(
-        new VisualisationFile(),
-        new VisualisationFile(),
-        new VisualisationFile(),
-      );
-
-      fileLists.push(fileList);
-
-      fileList.files.forEach((file, index) => {
-        file.level = index;
-        file.status = STATUS_MODIFIED;
-        file.modify();
-      });
-    }
-
-    if (this.hasStagingArea) {
-      const stagingArea = new VisualisationArea();
-      stagingArea.name = 'Staging Area';
-      stagingArea.column = 1;
-
-      areas.push(stagingArea);
-
-      const stagedFileList = fileLists[0].copy();
-      stagedFileList.column = 1;
-
-      fileLists.push(stagedFileList);
-
-      fileLists[0].files.forEach((file, index) => {
-        file.reset();
-      });
-    }
-
-    if (this.hasRepository) {
-      const repository = new VisualisationArea();
-      repository.name = 'Repository';
-      repository.column = 2;
-      repository.height = 10;
-      repository.width = 4;
-
-      areas.push(repository);
-
-      const commit = new VisualisationCommit();
-
-      commit.files.push(
-        ...fileLists[1].files,
-      );
-
-      commit.column = 2;
-      commits.push(commit);
-
-      fileLists.splice(1, 1);
-    }
-
     const vis = new Visualisation();
-    vis.areas = areas;
-    vis.fileLists = fileLists;
-    vis.commits = commits;
+
+    const workingDirectory = new VisualisationArea();
+    workingDirectory.name = 'Working Directory';
+
+    const stagingArea = new VisualisationArea();
+    stagingArea.name = 'Staging Area';
+    stagingArea.column = 1;
+
+    const repository = new VisualisationArea();
+    repository.name = 'Repository';
+    repository.column = 2;
+    repository.height = 10;
+    repository.width = 4;
+
+    const workingDirectoryFileList = new VisualisationFileList();
+
+    workingDirectoryFileList.files.push(
+      new VisualisationFile(),
+      new VisualisationFile(),
+      new VisualisationFile(),
+    );
+
+    workingDirectoryFileList.files.forEach((file, index) => {
+      file.level = index;
+      file.status = STATUS_MODIFIED;
+      file.modify();
+    });
+
+    const stagedFileList = workingDirectoryFileList.copy();
+    stagedFileList.column = 1;
+
+    const commit = new VisualisationCommit();
+    commit.column = 2;
+
+    commit.files.push(
+      ...stagedFileList.files,
+    );
+
+    extendObservable(vis, {
+      areas: computed(() => {
+        const areas = [];
+
+        if (this.hasWorkingDirectory) {
+          areas.push(workingDirectory);
+        }
+
+        if (this.hasStagingArea) {
+          areas.push(stagingArea);
+        }
+
+        if (this.hasRepository) {
+          areas.push(repository);
+        }
+
+        return areas;
+      }),
+
+      fileLists: computed(() => {
+        const fileLists = [];
+
+        if (this.hasWorkingDirectory) {
+          fileLists.push(workingDirectoryFileList);
+        }
+
+        if (this.hasStagingArea && !this.hasRepository) {
+          fileLists.push(stagedFileList);
+        }
+
+        return fileLists;
+      }),
+
+      commits: computed(() => {
+        const commits = [];
+
+        if (this.hasRepository) {
+          commits.push(commit);
+        }
+
+        return commits;
+      })
+    });
 
     return vis;
   },
@@ -106,6 +120,11 @@ const introductionChapter = createChapter('Git', {
     new ChapterText(() => (
       <Fragment>
         The second part is the <strong>Staging Area</strong>. Despite its name, it‘s not about showing something to others, but instead collect changes to your project you want to be part of your next version. This way you are able to group changes into seperate version, e.g. by feature or topic.
+      </Fragment>
+    )),
+    new ChapterText(() => (
+      <Fragment>
+        Last but not least comes the <strong>Repository</strong>. Broadly speaking, this is the version database of your project.
       </Fragment>
     )),
     new ChapterText(() => (
