@@ -1,11 +1,9 @@
 {
   "main.css": "static/css/main.653da357.css",
   "main.css.map": "static/css/main.653da357.css.map",
-  "main.js": "static/js/main.f58e6c96.js",
-  "main.js.map": "static/js/main.f58e6c96.js.map",
+  "main.js": "static/js/main.e56ca861.js",
+  "main.js.map": "static/js/main.e56ca861.js.map",
   "static/fonts/SourceCodeProBlack.json": "static/fonts/SourceCodeProBlack.a5b61f98.json",
   "static/fonts/SourceCodeProRegular.json": "static/fonts/SourceCodeProRegular.13397bda.json",
-  "static/media/arrowDownSmall.svg": "static/media/arrowDownSmall.8ea3ec29.svg",
-  "static/media/arrowRightLarge.svg": "static/media/arrowRightLarge.5c32f877.svg",
   "static/media/checkmark.svg": "static/media/checkmark.09777da4.svg"
 }
