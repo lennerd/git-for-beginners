@@ -1,9 +1,9 @@
 import React, { Fragment } from "react";
 
-import { createChapter } from "./Chapter";
-import { ChapterText } from "./ChapterSection";
+import { createChapter } from "../Chapter";
+import { ChapterText } from "../ChapterSection";
 
-const gitInTheConsoleChapter = createChapter('Git in the Console', {
+const introductionChapter = createChapter('Introduction', {
   sections: [
     new ChapterText(() => (
       'Over the passed decades computer in different shape and sizes changed our daily life enormously. Together we create huge amount of data in form of files everyday to store everything from invoices to love letters, from code to illustrations and designs.'
@@ -23,4 +23,4 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
   ],
 });
 
-export default gitInTheConsoleChapter;
+export default introductionChapter;

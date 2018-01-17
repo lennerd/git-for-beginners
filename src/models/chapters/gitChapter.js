@@ -1,14 +1,14 @@
 import React, { Fragment } from "react";
 
-import { createChapter, readOn, init } from "./Chapter";
-import { ChapterText } from "./ChapterSection";
-import Tooltip from "../components/Tooltip";
-import Visualisation from "./Visualisation";
-import VisualisationArea from "./VisualisationArea";
-import VisualisationFile from "./VisualisationFile";
-import { STATUS_MODIFIED } from "../constants";
-import VisualisationFileList from "./VisualisationFileList";
-import VisualisationCommit from "./VisualisationCommit";
+import { createChapter, readOn, init } from "../Chapter";
+import { ChapterText } from "../ChapterSection";
+import Tooltip from "../../components/Tooltip";
+import Visualisation from "../Visualisation";
+import VisualisationArea from "../VisualisationArea";
+import VisualisationFile from "../VisualisationFile";
+import { STATUS_MODIFIED } from "../../constants";
+import VisualisationFileList from "../VisualisationFileList";
+import VisualisationCommit from "../VisualisationCommit";
 
 const introductionChapter = createChapter('Git', {
   hasWorkingDirectory: false,

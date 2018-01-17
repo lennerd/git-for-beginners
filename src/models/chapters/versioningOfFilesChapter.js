@@ -1,11 +1,11 @@
-import { createChapter, init } from "./Chapter";
-import { ChapterText, ChapterTask } from "./ChapterSection";
-import { createAction } from "./Action";
-import ConsoleCommand from "./ConsoleCommand";
-import Visualisation from './Visualisation';
-import VisualisationFile from "./VisualisationFile";
-import { STATUS_MODIFIED, STATUS_DELETED } from "../constants";
-import VisualisationArea from './VisualisationArea';
+import { createChapter, init } from "../Chapter";
+import { ChapterText, ChapterTask } from "../ChapterSection";
+import { createAction } from "../Action";
+import ConsoleCommand from "../ConsoleCommand";
+import Visualisation from '../Visualisation';
+import VisualisationFile from "../VisualisationFile";
+import { STATUS_MODIFIED, STATUS_DELETED } from "../../constants";
+import VisualisationArea from '../VisualisationArea';
 
 const addVersionDatabase = createAction('ADD_VERSION_DATABASE');
 const restoreFile = createAction('RESTORE_FILE');

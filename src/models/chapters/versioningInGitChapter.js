@@ -1,19 +1,19 @@
 import React, { Fragment } from "react";
 import { computed } from 'mobx';
 
-import { createChapter, init } from "./Chapter";
-import { ChapterText, ChapterTask } from "./ChapterSection";
-import Tooltip from "../components/Tooltip";
-import Visualisation from "./Visualisation";
-import VisualisationArea from "./VisualisationArea";
-import VisualisationFileList from "./VisualisationFileList";
-import VisualisationFile from "./VisualisationFile";
-import { STATUS_MODIFIED, STATUS_DELETED } from "../constants";
-import ConsoleCommand from "./ConsoleCommand";
-import { createAction } from "./Action";
-import VisualisationCommit from "./VisualisationCommit";
-import VisualisationStagingArea from "./VisualisationStagingArea";
-import VisualisationRepository from "./VisualisationRepository";
+import { createChapter, init } from "../Chapter";
+import { ChapterText, ChapterTask } from "../ChapterSection";
+import Tooltip from "../../components/Tooltip";
+import Visualisation from "../Visualisation";
+import VisualisationArea from "../VisualisationArea";
+import VisualisationFileList from "../VisualisationFileList";
+import VisualisationFile from "../VisualisationFile";
+import { STATUS_MODIFIED, STATUS_DELETED } from "../../constants";
+import ConsoleCommand from "../ConsoleCommand";
+import { createAction } from "../Action";
+import VisualisationCommit from "../VisualisationCommit";
+import VisualisationStagingArea from "../VisualisationStagingArea";
+import VisualisationRepository from "../VisualisationRepository";
 
 const addFile = createAction('ADD_FILE');
 const stageFile = createAction('STAGE_FILE');
@@ -118,6 +118,8 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
     ];
   },
   get commands() {
+    console.log(this.workingDirectory.has(this.activeFile));
+
     return [
       new ConsoleCommand('Unstaged File', {
         available: computed(() => this.workingDirectory.has(this.activeFile)),

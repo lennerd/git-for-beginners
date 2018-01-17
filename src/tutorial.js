@@ -3,16 +3,16 @@ import { update, serialize } from 'serializr';
 
 import TutorialState from "./models/TutorialState";
 import Tutorial from './models/Tutorial';
-import introductionChapter from './models/introductionChapter';
-import versioningOfFilesChapter from './models/versioningOfFilesChapter';
-import gitChapter from './models/gitChapter';
-import versioningInGitChapter from './models/versioningInGitChapter';
-import commandlineChapter from './models/commandlineChapter';
-import gitInTheConsoleChapter from './models/gitInTheConsoleChapter';
-import workingInATeamChapter from './models/workingInATeamChapter';
-import gitBranchesChapter from './models/gitBranchesChapter';
-import versioningInATeamChapter from './models/versioningInATeamChapter';
-import gitInATeamChapter from './models/gitInATeamChapter';
+import introductionChapter from './models/chapters/introductionChapter';
+import versioningOfFilesChapter from './models/chapters/versioningOfFilesChapter';
+import gitChapter from './models/chapters/gitChapter';
+import versioningInGitChapter from './models/chapters/versioningInGitChapter';
+import commandlineChapter from './models/chapters/commandlineChapter';
+import gitInTheConsoleChapter from './models/chapters/gitInTheConsoleChapter';
+import workingInATeamChapter from './models/chapters/workingInATeamChapter';
+import gitBranchesChapter from './models/chapters/gitBranchesChapter';
+import versioningInATeamChapter from './models/chapters/versioningInATeamChapter';
+import gitInATeamChapter from './models/chapters/gitInATeamChapter';
 
 const STORAGE_KEY = 'tutorialState';
 
