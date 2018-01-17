@@ -6,6 +6,7 @@ import { createAction } from './Action';
 import TutorialChapter from '../components/TutorialChapter';
 
 export const readOn = createAction('READ_ON');
+export const init = createAction('INIT');
 
 class Chapter {
   sections = [];
@@ -97,6 +98,10 @@ class Chapter {
 
   @action dispatch(action) {
     this.state.actions.push(action);
+
+    if (this[action.type]) {
+      this[action.type](action);
+    }
   }
 
   @action reset() {

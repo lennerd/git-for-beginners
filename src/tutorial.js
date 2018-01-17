@@ -39,7 +39,7 @@ autorun(() => {
 
 const tutorial = new Tutorial(tutorialState);
 
-tutorial.register([
+tutorial.init([
   introductionChapter,
   versioningOfFilesChapter,
   gitChapter,

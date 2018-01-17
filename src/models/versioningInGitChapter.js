@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import { extendObservable, computed, action } from 'mobx';
 
-import { createChapter } from "./Chapter";
+import { createChapter, init } from "./Chapter";
 import { ChapterText, ChapterTask } from "./ChapterSection";
 import Tooltip from "../components/Tooltip";
 import Visualisation from "./Visualisation";
@@ -15,6 +15,28 @@ import { createAction } from "./Action";
 const addFile = createAction('ADD_FILE');
 
 const versioningInGitChapter = createChapter('Versioning in Git', {
+  workingDirectoryFileList: new VisualisationFileList(),
+  [init]() {
+    const files = [
+      new VisualisationFile(),
+      new VisualisationFile(),
+      new VisualisationFile()
+    ];
+
+    files.forEach((file, index) => {
+      file.level = index;
+      file.status = STATUS_MODIFIED;
+      file.modify();
+    });
+
+    this.workingDirectoryFileList.files = files;
+  },
+  [addFile]() {
+    const file = new VisualisationFile();
+    file.level = this.workingDirectoryFileList.files.length;
+
+    this.workingDirectoryFileList.files.push(file);
+  },
   get vis() {
     const vis = new Visualisation();
 
@@ -31,20 +53,6 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
     repository.height = 10;
     repository.width = 4;
 
-    const workingDirectoryFileList = new VisualisationFileList();
-
-    workingDirectoryFileList.files.push(
-      new VisualisationFile(),
-      new VisualisationFile(),
-      new VisualisationFile(),
-    );
-
-    workingDirectoryFileList.files.forEach((file, index) => {
-      file.level = index;
-      file.status = STATUS_MODIFIED;
-      file.modify();
-    });
-
     extendObservable(vis, {
       areas: computed(() => {
         return [
@@ -55,7 +63,7 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
       }),
       fileLists: computed(() => {
         const fileLists = [
-          workingDirectoryFileList
+          this.workingDirectoryFileList
         ];
 
         return fileLists;
@@ -108,7 +116,7 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
         icon: '+',
         available: this.vis.activeFile == null,
         message: 'A new file was added.',
-        run: this.addFile,
+        run: () => this.dispatch(addFile()),
       }),
     ];
   }

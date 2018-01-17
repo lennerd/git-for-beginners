@@ -1,26 +1,41 @@
-import { computed, action } from 'mobx';
+import { computed, action, observable } from 'mobx';
 import takeWhile from 'lodash/takeWhile';
 
 import ChapterState from './ChapterState';
+import { init } from './Chapter';
 
 class Tutorial {
+  @observable chapters = [];
+
   constructor(state) {
     this.state = state;
   }
 
-  @action register(chapterCreators) {
+  @action init(chapterCreators) {
+    this.chapterCreators = chapterCreators;
+
     this.chapters = chapterCreators.map(chapterCreator => {
       const chapterState = this.state.chapterStates.find(chapterState => (
         chapterState.chapterId === chapterCreator.id
-      )) || new ChapterState(chapterCreator.id);
+      ));
 
-      return chapterCreator(chapterState);
+      const chapter = chapterCreator(new ChapterState(chapterCreator.id));
+
+      if (chapterState != null) {
+        chapterState.actions.forEach(action => {
+          chapter.dispatch(action);
+        });
+      } else {
+        chapter.dispatch(init());
+      }
+
+      return chapter;
     });
 
     this.state.chapterStates = this.chapters.map(chapter => chapter.state);
 
     if (this.state.currentChapterId == null) {
-      this.state.currentChapterId = chapterCreators[0].id;
+      this.state.currentChapterId = this.chapters[0].id;
     }
   }
 
@@ -63,7 +78,18 @@ class Tutorial {
   }
 
   @action.bound reset() {
-    this.chapters.slice(this.currentChapterIndex).forEach(chapter => chapter.reset());
+    this.chapters = this.chapterCreators.map((chapterCreator, index) => {
+      if (this.currentChapterIndex > index) {
+        return this.chapters[index];
+      }
+
+      const chapter = chapterCreator(new ChapterState(chapterCreator.id));
+      chapter.dispatch(init());
+
+      return chapter;
+    });
+
+    this.state.chapterStates = this.chapters.map(chapter => chapter.state);
   }
 
   @action navigate(chapter) {
