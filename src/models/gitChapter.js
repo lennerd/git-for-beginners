@@ -1,10 +1,8 @@
 import React, { Fragment } from "react";
-import { extendObservable, computed } from 'mobx';
 
-import { createChapter, readOn } from "./Chapter";
+import { createChapter, readOn, init } from "./Chapter";
 import { ChapterText } from "./ChapterSection";
 import Tooltip from "../components/Tooltip";
-import { hasMin } from "./Action";
 import Visualisation from "./Visualisation";
 import VisualisationArea from "./VisualisationArea";
 import VisualisationFile from "./VisualisationFile";
@@ -13,94 +11,61 @@ import VisualisationFileList from "./VisualisationFileList";
 import VisualisationCommit from "./VisualisationCommit";
 
 const introductionChapter = createChapter('Git', {
-  hasWorkingDirectory: hasMin(readOn, 1),
-  hasStagingArea: hasMin(readOn, 2),
-  hasRepository: hasMin(readOn, 3),
-  get vis() {
-    const vis = new Visualisation();
+  hasWorkingDirectory: false,
+  hasStagingArea: false,
+  hasRepository: false,
+  [init]() {
+    this.vis = new Visualisation();
+  },
+  [readOn]() {
+    if (!this.hasWorkingDirectory) {
+      this.workingDirectory = new VisualisationArea('Working Directory');
 
-    const workingDirectory = new VisualisationArea();
-    workingDirectory.name = 'Working Directory';
+      this.fileList = new VisualisationFileList();
 
-    const stagingArea = new VisualisationArea();
-    stagingArea.name = 'Staging Area';
-    stagingArea.column = 1;
+      this.fileList.add(
+        new VisualisationFile(),
+        new VisualisationFile(),
+        new VisualisationFile(),
+      );
 
-    const repository = new VisualisationArea();
-    repository.name = 'Repository';
-    repository.column = 2;
-    repository.height = 10;
-    repository.width = 4;
+      this.fileList.files.forEach((file, index) => {
+        file.status = STATUS_MODIFIED;
+        file.modify();
+      });
 
-    const workingDirectoryFileList = new VisualisationFileList();
+      this.workingDirectory.add(this.fileList);
+      this.vis.add(this.workingDirectory);
 
-    workingDirectoryFileList.files.push(
-      new VisualisationFile(),
-      new VisualisationFile(),
-      new VisualisationFile(),
-    );
+      this.hasWorkingDirectory = true;
+    } else if(!this.hasStagingArea) {
+      this.stagingArea = new VisualisationArea('Staging Area');
+      this.stagingArea.column = 1;
 
-    workingDirectoryFileList.files.forEach((file, index) => {
-      file.level = index;
-      file.status = STATUS_MODIFIED;
-      file.modify();
-    });
+      this.stagedFileList = this.fileList.copy();
 
-    const stagedFileList = workingDirectoryFileList.copy();
-    stagedFileList.column = 1;
+      this.fileList.files.forEach((file, index) => {
+        file.reset();
+      });
 
-    const commit = new VisualisationCommit();
-    commit.column = 2;
+      this.stagingArea.add(this.stagedFileList);
+      this.vis.add(this.stagingArea);
 
-    commit.files.push(
-      ...stagedFileList.files,
-    );
+      this.hasStagingArea = true;
+    } else if(!this.hasRepository) {
+      this.repository = new VisualisationArea('Repository');
+      this.repository.column = 2;
+      this.repository.height = 10;
+      this.repository.width = 4;
 
-    extendObservable(vis, {
-      areas: computed(() => {
-        const areas = [];
+      this.commit = new VisualisationCommit();
+      this.commit.add(...this.stagedFileList.files);
 
-        if (this.hasWorkingDirectory) {
-          areas.push(workingDirectory);
-        }
+      this.repository.add(this.commit);
+      this.vis.add(this.repository);
 
-        if (this.hasStagingArea) {
-          areas.push(stagingArea);
-        }
-
-        if (this.hasRepository) {
-          areas.push(repository);
-        }
-
-        return areas;
-      }),
-
-      fileLists: computed(() => {
-        const fileLists = [];
-
-        if (this.hasWorkingDirectory) {
-          fileLists.push(workingDirectoryFileList);
-        }
-
-        if (this.hasStagingArea && !this.hasRepository) {
-          fileLists.push(stagedFileList);
-        }
-
-        return fileLists;
-      }),
-
-      commits: computed(() => {
-        const commits = [];
-
-        if (this.hasRepository) {
-          commits.push(commit);
-        }
-
-        return commits;
-      })
-    });
-
-    return vis;
+      this.hasRepository = true;
+    }
   },
   sections: [
     new ChapterText(

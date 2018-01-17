@@ -12,7 +12,6 @@ import VisualisationFileStatus from './VisualisationFileStatus';
 import VisualisationFileName from './VisualisationFileName';
 import VisualisationArea from './VisualisationArea';
 import VisualisationAreaName from './VisualisationAreaName';
-import VisualisationFileList from './VisualisationFileList';
 import VisualisationCommit from './VisualisationCommit';
 
 @observer
@@ -22,47 +21,18 @@ class TutorialChapter extends Component {
 
     return (
       <Visualisation vis={chapter.vis}>
-        {chapter.vis.fileLists.map((fileList, index) => (
-          <VisualisationFileList fileList={fileList} key={index}>
-            {fileList.files.map((file, index) => (
-              file.visible && <VisualisationFile
-                key={index}
-                vis={chapter.vis}
-                file={file}
-              >
-                <VisualisationFileStatus font={fontBlack} file={file} maxChanges={fileList.maxChanges} />
-                {file.name != null && <VisualisationFileName font={fontRegular} name={file.name} />}
-              </VisualisationFile>
-            ))}
-          </VisualisationFileList>
+        {chapter.vis.commits.map(commit => (
+          <VisualisationCommit commit={commit} key={commit.id} vis={chapter.vis} />
         ))}
-        {chapter.vis.commits.map((commit, index) => (
-          <VisualisationCommit commit={commit} key={index} vis={chapter.vis}>
-            {commit.files.map((file, index) => (
-              file.visible && <VisualisationFile
-                key={index}
-                vis={chapter.vis}
-                file={file}
-              >
-                <VisualisationFileStatus font={fontBlack} file={file} maxChanges={commit.maxChanges} />
-                {file.name != null && <VisualisationFileName font={fontRegular} name={file.name} />}
-              </VisualisationFile>
-            ))}
-          </VisualisationCommit>
-        ))}
-        {chapter.vis.files.map((file, index) => (
-          file.visible && <VisualisationFile
-            key={index}
-            vis={chapter.vis}
-            file={file}
-          >
+        {chapter.vis.files.map(file => (
+          <VisualisationFile key={file.id} vis={chapter.vis} file={file}>
             <VisualisationFileStatus font={fontBlack} file={file} />
             {file.name != null && <VisualisationFileName font={fontRegular} name={file.name} />}
           </VisualisationFile>
         ))}
-        {chapter.vis.areas.map((area, index) => (
-          <VisualisationArea area={area} key={index}>
-            <VisualisationAreaName font={fontRegularCaps} name={area.name} />
+        {chapter.vis.areas.map(area => (
+          <VisualisationArea area={area} key={area.id}>
+            <VisualisationAreaName font={fontRegularCaps} area={area} />
           </VisualisationArea>
         ))}
       </Visualisation>

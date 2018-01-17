@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { withTheme } from 'styled-components';
 
 import VisualisationObject3D from './VisualisationObject3D';
-import { CELL_HEIGHT, CELL_WIDTH } from '../theme';
+import { CELL_HEIGHT, CELL_WIDTH, LEVEL_HEIGHT } from '../theme';
 
 export const AREA_VERTICAL_PADDING = CELL_WIDTH * 0.1;
 export const AREA_HORIZONTAL_PADDING = CELL_HEIGHT * 0.1;
@@ -39,9 +39,9 @@ class VisualisationArea extends PureComponent {
     this.planeMesh.position.x = CELL_HEIGHT * ((area.height / 2) - 0.5);
 
     this.areaObject.position.set(
-      CELL_HEIGHT * area.row,
-      0,
-      CELL_WIDTH * area.column,
+      CELL_HEIGHT * area.position.row,
+      LEVEL_HEIGHT * area.position.level,
+      CELL_WIDTH * area.position.column,
     );
 
     return (

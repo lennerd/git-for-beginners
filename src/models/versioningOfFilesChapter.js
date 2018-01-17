@@ -1,8 +1,6 @@
-import { action, extendObservable, computed } from 'mobx';
-
-import { createChapter } from "./Chapter";
+import { createChapter, init } from "./Chapter";
 import { ChapterText, ChapterTask } from "./ChapterSection";
-import { createAction, has, hasMin, dispatch } from "./Action";
+import { createAction } from "./Action";
 import ConsoleCommand from "./ConsoleCommand";
 import Visualisation from './Visualisation';
 import VisualisationFile from "./VisualisationFile";
@@ -33,7 +31,6 @@ const modifyFile = createAction('MODIFY_FILE', fileIndex => {
 const addFile = createAction('ADD_FILE');
 const copyFile = createAction('COPY_FILE');
 const deleteFile = createAction('DELETE_FILE');
-const backupFile = createAction('BACKUP_FILE');
 
 const FILE_NAME_VARIANTS = [
   '_final',
@@ -48,33 +45,10 @@ const FILE_NAME_VARIANTS = [
 ];
 
 const versioningOfFilesChapter = createChapter('Versioning of Files', {
-  hasVersionDatabase: has(addVersionDatabase),
-  hasRestoredFiles: has(restoreFile),
-  hasModifiedFiles: has(modifyFile),
-  hasAddedFile: has(addFile),
-  hasCopiedFile: hasMin(copyFile, 1),
-  hasBackups: hasMin(copyFile, 3),
-  addFile: dispatch(addFile),
-  addVersionDatabase: dispatch(addVersionDatabase),
-  modifyFile: action.bound(function() {
-    this.dispatch(modifyFile(this.vis.activeFileIndex));
-  }),
-  copyFile: action.bound(function() {
-    this.dispatch(copyFile(this.vis.activeFileIndex));
-  }),
-  deleteFile: action.bound(function() {
-    this.dispatch(deleteFile(this.vis.activeFileIndex));
-  }),
-  backupFile: action.bound(function() {
-    this.dispatch(backupFile(this.vis.activeFileIndex));
-  }),
-  restoreFile: action.bound(function() {
-    this.dispatch(restoreFile(this.vis.activeFileIndex));
-  }),
   get sections() {
     return [
       new ChapterText(() => 'So let’s start by asking: what is a version?', { skip: true }),
-      new ChapterTask(() => 'Create a new file.', this.hasAddedFile),
+      new ChapterTask(() => 'Create a new file.', this.hasFiles),
       new ChapterTask(() => 'Modify the new file.', this.hasModifiedFiles, { tip: 'Select the new file to see more available options.', }),
       new ChapterTask(() => 'Make a copy of the file.', this.hasCopiedFile),
       new ChapterText(() => 'And there it is, a backup file, an older version of our file. As you can see, we can use filenames to distinguish between them.', { skip: true }),
@@ -85,7 +59,119 @@ const versioningOfFilesChapter = createChapter('Versioning of Files', {
       new ChapterTask(() => 'Restore a file.', this.hasRestoredFiles),
     ];
   },
-  get vis() {
+  get hasFiles() {
+    return this.vis.files.length > 0;
+  },
+  get hasCopiedFile() {
+    return this.vis.files.length > 1;
+  },
+  get hasBackups() {
+    return this.vis.files.length > 3;
+  },
+  get hasRestoredFiles() {
+    return this.state.has(restoreFile);
+  },
+  get hasModifiedFiles() {
+    return this.vis.files.some(file => file.modified);
+  },
+  get hasVersionDatabase() {
+    return this.vis.areas.includes(this.versionDatabase);
+  },
+  get activeFileIndex() {
+    return this.vis.files.findIndex(file => file.active);
+  },
+  get activeFile() {
+    return this.vis.files[this.activeFileIndex];
+  },
+  [init]() {
+    this.vis = new Visualisation();
+    this.versionDatabase = new VisualisationArea('Version Database');
+
+    this.versionDatabase.column = 1;
+    this.versionDatabase.height = 10;
+  },
+  [addFile]() {
+    const file = new VisualisationFile();
+    file.status = STATUS_MODIFIED;
+    file.name = 'file';
+
+    this.vis.add(file);
+  },
+  [modifyFile]({ fileIndex, insertions, deletions }) {
+    const file = this.vis.files[fileIndex];
+
+    file.insertions += insertions;
+    file.deletions += deletions;
+  },
+  [copyFile](fileIndex) {
+    const file = this.vis.files[fileIndex];
+
+    const copy = file.copy();
+    copy.visible = file.status !== STATUS_DELETED;
+
+    let name = 'file';
+
+    if (!this.hasVersionDatabase) {
+      const nameIndex = (fileIndex) % FILE_NAME_VARIANTS.length;
+      name += FILE_NAME_VARIANTS[nameIndex];
+    }
+
+    copy.name = name;
+
+    if (fileIndex === (this.vis.files.length - 1)) {
+      copy.reset();
+    }
+
+    this.vis.files.forEach((file, index) => {
+      if (this.hasVersionDatabase) {
+        file.row = this.vis.files.length - (index + 1);
+        file.column = 1;
+        file.visible = true;
+        file.name = `Version ${index + 1}`;
+      } else {
+        file.column = this.vis.files.length - index;
+      }
+    });
+
+    this.vis.add(copy);
+  },
+  [deleteFile](fileIndex) {
+    const file = this.vis.files[fileIndex];
+    file.status = STATUS_DELETED;
+    file.reset();
+
+    if (!this.hasVersionDatabase) {
+      if (fileIndex === (this.vis.files.length - 1)) {
+        this.vis.remove(file);
+
+        this.vis.files.forEach((file, index) => {
+          file.column = this.vis.files.length - (index + 1);
+        });
+      } else {
+        file.visible = false;
+      }
+    }
+  },
+  [addVersionDatabase]() {
+    this.vis.add(this.versionDatabase);
+
+    this.vis.files.forEach((file, index) => {
+      file.column = index < (this.vis.files.length - 1) ? 1 : 0;
+      file.row = index < (this.vis.files.length - 1) ? this.vis.files.length - (index + 2) : 0;
+      file.visible = true;
+      file.name = index === (this.vis.files.length - 1) ? 'file' : `Version ${index + 1}`;
+    });
+  },
+  [restoreFile](fileIndex) {
+    const file = this.vis.files[fileIndex];
+    const currentFile = this.vis.files[this.vis.files.length - 1];
+
+    currentFile.insertions += file.insertions;
+    currentFile.deletions += file.deletions;
+    currentFile.status = file.status;
+    currentFile.visible = file.status !== STATUS_DELETED;
+  },
+  /*get vis() {
     const vis = new Visualisation();
 
     const versionDatabase = new VisualisationArea();
@@ -179,57 +265,57 @@ const versioningOfFilesChapter = createChapter('Versioning of Files', {
     });
 
     return vis;
-  },
+  },*/
   get commands() {
     return [
       new ConsoleCommand('Version', {
-        available: this.vis.activeFile != null && this.hasVersionDatabase && this.vis.activeFile !== this.vis.lastFile,
+        available: this.activeFile != null && this.hasVersionDatabase && this.activeFileIndex < (this.vis.files.length - 1),
         commands: [
           new ConsoleCommand('Restore', {
             icon: '↙',
             message: 'Version was was restored.',
-            run: this.restoreFile,
+            run: () => this.dispatch(restoreFile(this.activeFileIndex)),
           }),
         ],
       }),
       new ConsoleCommand('File', {
-        available: this.vis.activeFile != null,
+        available: this.activeFile != null,
         commands: [
           new ConsoleCommand('Modify', {
             icon: '+-',
             message: 'File was changed.',
-            run: this.modifyFile,
+            run: () => this.dispatch(modifyFile(this.activeFileIndex)),
           }),
           new ConsoleCommand('Backup', {
             icon: '↗',
             message: 'Version was created.',
             available: this.hasVersionDatabase,
-            run: this.backupFile,
+            run: () => this.dispatch(copyFile(this.activeFileIndex)),
           }),
           new ConsoleCommand('Copy', {
             icon: '↗',
             message: 'File was copied.',
-            available: !this.hasVersionDatabase,
-            run: this.copyFile,
+            available: !this.hasVersionDatabase && this.activeFileIndex === (this.vis.files.length - 1),
+            run: () => this.dispatch(copyFile(this.activeFileIndex)),
           }),
           new ConsoleCommand('Delete', {
             icon: '×',
             message: 'File was deleted.',
-            run: this.deleteFile,
+            run: () => this.dispatch(deleteFile(this.activeFileIndex)),
           }),
         ],
       }),
       new ConsoleCommand('Add new file.', {
         icon: '+',
-        available: !this.hasAddedFile,
+        available: !this.hasFiles,
         message: 'A new file was created.',
-        run: this.addFile,
+        run: () => this.dispatch(addFile()),
       }),
       new ConsoleCommand('Add version database.', {
         icon: '+',
         available: this.hasModifiedFiles && this.hasBackups && !this.hasVersionDatabase,
         message: 'A version database was added.',
-        run: this.addVersionDatabase,
+        run: () => this.dispatch(addVersionDatabase()),
       }),
     ];
   },

@@ -33,13 +33,13 @@ class FileStatus extends Component {
   }
 
   @computed get maxChanges() {
-    const { maxChanges, file } = this.props;
+    const { file } = this.props;
 
-    if (maxChanges == null) {
+    if (file.parent == null || !file.parent.isFileList) {
       return file.changes;
     }
 
-    return maxChanges;
+    return file.parent.maxChanges;
   }
 
   render() {

@@ -41,9 +41,9 @@ class VisualisationAreaName extends PureComponent {
   }
 
   render() {
-    const { font, name, width } = this.props;
+    const { font, area, width } = this.props;
 
-    const shapes = font.generateShapes(name.toUpperCase(), SECTION_LABEL_SIZE, 2);
+    const shapes = font.generateShapes(area.name.toUpperCase(), SECTION_LABEL_SIZE, 2);
 
     const geometry = new THREE.ShapeGeometry(shapes);
 

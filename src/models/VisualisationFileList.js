@@ -1,33 +1,18 @@
-import { observable, computed, action } from 'mobx';
+import { computed } from 'mobx';
 
-class VisualisationFileList {
-  @observable files = [];
-  @observable column = 0;
-  @observable row = 0;
+import VisualisationObject from './VisualisationObject';
+
+class VisualisationFileList extends VisualisationObject {
+  isFileList = true;
+
+  @computed get files() {
+    return this.filter(object => object.isFile);
+  }
 
   @computed get maxChanges() {
     return Math.max(
       ...this.files.map(file => file.changes),
     );
-  }
-
-  @computed get hover() {
-    return this.files.some(file => file.hover);
-  }
-
-  set active(active) {
-    this.files.forEach(file => {
-      file.active = active;
-    });
-  }
-
-  @action copy() {
-    const fileList = new this.constructor();
-    fileList.files = this.files.map(file => file.copy());
-    fileList.column = this.column;
-    fileList.row = this.row;
-
-    return fileList;
   }
 }
 

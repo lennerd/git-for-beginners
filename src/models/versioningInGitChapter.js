@@ -1,5 +1,4 @@
 import React, { Fragment } from "react";
-import { extendObservable, computed, action } from 'mobx';
 
 import { createChapter, init } from "./Chapter";
 import { ChapterText, ChapterTask } from "./ChapterSection";
@@ -13,64 +12,61 @@ import ConsoleCommand from "./ConsoleCommand";
 import { createAction } from "./Action";
 
 const addFile = createAction('ADD_FILE');
+const stageFile = createAction('STAGE_FILE');
 
 const versioningInGitChapter = createChapter('Versioning in Git', {
-  workingDirectoryFileList: new VisualisationFileList(),
+  get workingDirectory() {
+    const workingDirectory = new VisualisationArea('Working Directory');
+    workingDirectory.add(this.workingDirectoryFileList);
+
+    return workingDirectory;
+  },
+  get stagingArea() {
+    const stagingArea = new VisualisationArea('Staging Area');
+    stagingArea.column = 1;
+
+    return stagingArea;
+  },
+  get repository() {
+    const repository = new VisualisationArea('Repository');
+    repository.column = 2;
+    repository.height = 10;
+    repository.width = 4;
+
+    return repository;
+  },
   [init]() {
+    this.vis = new Visualisation();
+    this.workingDirectoryFileList = new VisualisationFileList();
+
+    this.vis.add(
+      this.workingDirectory,
+      this.stagingArea,
+      this.repository,
+    );
+
     const files = [
       new VisualisationFile(),
       new VisualisationFile(),
       new VisualisationFile()
     ];
 
-    files.forEach((file, index) => {
-      file.level = index;
+    files.forEach(file => {
       file.status = STATUS_MODIFIED;
       file.modify();
     });
 
-    this.workingDirectoryFileList.files = files;
+    this.workingDirectoryFileList.add(
+      ...files
+    );
   },
   [addFile]() {
     const file = new VisualisationFile();
-    file.level = this.workingDirectoryFileList.files.length;
 
-    this.workingDirectoryFileList.files.push(file);
+    this.workingDirectoryFileList.add(file);
   },
-  get vis() {
-    const vis = new Visualisation();
-
-    const workingDirectory = new VisualisationArea();
-    workingDirectory.name = 'Working Directory';
-
-    const stagingArea = new VisualisationArea();
-    stagingArea.name = 'Staging Area';
-    stagingArea.column = 1;
-
-    const repository = new VisualisationArea();
-    repository.name = 'Repository';
-    repository.column = 2;
-    repository.height = 10;
-    repository.width = 4;
-
-    extendObservable(vis, {
-      areas: computed(() => {
-        return [
-          workingDirectory,
-          stagingArea,
-          repository,
-        ];
-      }),
-      fileLists: computed(() => {
-        const fileLists = [
-          this.workingDirectoryFileList
-        ];
-
-        return fileLists;
-      }),
-    });
-
-    return vis;
+  [stageFile](fileIndex) {
+    console.log(fileIndex);
   },
   get sections() {
     return [
@@ -103,7 +99,7 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
           new ConsoleCommand('Stage', {
             icon: '↗',
             message: 'File was added to the staging area.',
-            run: this.copyFile,
+            run: () => this.dispatch(stageFile(this.vis.activeFileIndex)),
           }),
           new ConsoleCommand('Delete', {
             icon: '×',

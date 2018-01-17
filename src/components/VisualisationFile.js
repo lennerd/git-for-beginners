@@ -76,9 +76,13 @@ class VisualisationFile extends Component {
   render() {
     const { children, file, theme } = this.props;
 
-    this.fileObject.position.x = CELL_HEIGHT * file.row;
-    this.fileObject.position.z = CELL_WIDTH * file.column;
-    this.fileObject.position.y = LEVEL_HEIGHT * file.level;
+    this.fileObject.position.set(
+      CELL_HEIGHT * file.position.row,
+      LEVEL_HEIGHT * file.position.level,
+      CELL_WIDTH * file.position.column,
+    );
+
+    this.fileObject.visible = file.visible;
 
     this.hoverMesh.material.visible = file.hover || file.active;
     this.hoverMesh.material.opacity = file.active ? 1 : 0.5;

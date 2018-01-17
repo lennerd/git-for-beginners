@@ -100,7 +100,7 @@ class Chapter {
     this.state.actions.push(action);
 
     if (this[action.type]) {
-      this[action.type](action);
+      this[action.type](action.payload);
     }
   }
 

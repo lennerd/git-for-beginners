@@ -1,11 +1,18 @@
 import { observable } from 'mobx';
 
-class VisualisationArea {
-  @observable column = 0;
-  @observable row = 0;
+import VisualisationObject from './VisualisationObject';
+
+class VisualisationArea extends VisualisationObject {
+  isArea = true;
+
   @observable width = 1;
   @observable height = 1;
-  @observable name;
+
+  constructor(name) {
+    super();
+
+    this.name = name;
+  }
 }
 
 export default VisualisationArea;
