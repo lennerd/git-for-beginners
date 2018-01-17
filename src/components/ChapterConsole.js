@@ -68,7 +68,7 @@ class ChapterConsole extends Component {
       );
 
       return (
-        <ConsoleSection>
+        <ConsoleSection key={command.id}>
           <ConsoleLabel>{command.name}</ConsoleLabel>
           <ConsoleCommandList>
             {command.commands.map(command => (
