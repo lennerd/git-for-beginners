@@ -34,8 +34,9 @@ class VisualisationCommit extends Component {
   @action.bound handleClick(event) {
     const { commit, vis } = this.props;
 
-    vis.deactivateAll();
+    vis.active = false;
     commit.active = !commit.active;
+
     event.stopPropagation();
   };
 

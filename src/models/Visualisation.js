@@ -5,10 +5,6 @@ import VisualisationObject from "./VisualisationObject";
 class Visualisation extends VisualisationObject {
   isVisulisation = true;
 
-  @computed get hasHoveredObject() {
-    return this.some(object => object.hover);
-  }
-
   @computed get files() {
     return this.filter(object => object.isFile);
   }

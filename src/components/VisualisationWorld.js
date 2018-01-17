@@ -29,7 +29,7 @@ class VisualisationWorld extends PureComponent {
   @action.bound handleClick() {
     const { vis } = this.props;
 
-    vis.deactivateAll();
+    vis.active = false;
   }
 
   render() {

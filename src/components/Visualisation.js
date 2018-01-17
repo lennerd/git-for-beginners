@@ -183,7 +183,7 @@ class Visualisation extends Component {
     return (
       <div
         className={className}
-        style={{ cursor: vis.hasHoveredObject ? 'pointer' : 'auto' }}
+        style={{ cursor: vis.hover ? 'pointer' : 'auto' }}
         ref={(ref) => { this.container = ref; }}
         onMouseMove={this.handleMouseMove}
         onClick={this.handleClick}

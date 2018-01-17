@@ -10,9 +10,29 @@ class VisualisationObject {
   @observable column = 0;
   @observable row = 0;
   @observable level = 0;
-  @observable hover = false;
-  @observable active = false;
+  @observable directHover = false;
+  @observable directActive = false;
   @observable visible = true;
+
+  @computed get hover() {
+    return this.some(object => object.directHover);
+  }
+
+  set hover(hover) {
+    this.traverse((object) => {
+      object.directHover = hover;
+    });
+  }
+
+  @computed get active() {
+    return this.some(object => object.directActive);
+  }
+
+  set active(active) {
+    this.traverse((object) => {
+      object.directActive = active;
+    });
+  }
 
   getPosition() {
     const position = {

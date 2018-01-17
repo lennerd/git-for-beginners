@@ -56,12 +56,7 @@ class VisualisationFile extends Component {
   @action.bound handleClick(event) {
     const { file, vis } = this.props;
 
-    vis.deactivateAll();
-
-    if (file.parent && file.parent.isCommit) {
-      file.parent.active = !file.parent.active;
-    }
-
+    vis.active = false;
     file.active = !file.active;
 
     event.stopPropagation();
@@ -70,19 +65,11 @@ class VisualisationFile extends Component {
   @action.bound handleMouseEnter(event) {
     const { file } = this.props;
 
-    if (file.parent && file.parent.isCommit) {
-      file.parent.hover = true;
-    }
-
     file.hover = true;
   };
 
   @action.bound handleMouseLeave(event) {
     const { file } = this.props;
-
-    if (file.parent && file.parent.isCommit) {
-      file.parent.hover = false;
-    }
 
     file.hover = false;
   };
