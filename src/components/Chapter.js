@@ -6,7 +6,7 @@ import Checkbox from './Checkbox';
 const Chapter = styled.div`
   display: grid;
   grid-area: chapter;
-  grid-template-columns: ${props => props.theme.spacing(1)} 4fr 2fr 4fr 0;
+  grid-template-columns: ${props => props.theme.spacing(1.75)} 4fr 2fr 4fr 0;
   grid-template-rows:
     1fr
     ${props => props.theme.spacing(1)}
@@ -19,6 +19,7 @@ const Chapter = styled.div`
 
   @media (min-width: 1440px) {
     grid-template-columns: 2fr 4fr 2fr 4fr 2fr;
+  }
 `;
 
 export const ChapterMain = styled.div`

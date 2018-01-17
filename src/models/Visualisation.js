@@ -1,4 +1,6 @@
 import { computed, action } from "mobx";
+import flatten from 'lodash/flatten';
+import findIndex from 'lodash/findIndex';
 
 class Visualisation {
   @computed get files() {
@@ -23,12 +25,20 @@ class Visualisation {
       this.commits.some(commit => commit.hover || commit.hoverCommit);
   }
 
+  @computed get flattenFiles() {
+    return flatten([
+      ...this.files,
+      ...this.fileLists.map(fileList => fileList.files.peek()),
+      ...this.commits.map(commit => commit.files.peek()),
+    ]);
+  }
+
   @computed get activeFileIndex() {
-    return this.files.findIndex(file => file.active);
+    return findIndex(this.flattenFiles, file => file.active);
   }
 
   @computed get activeFile() {
-    return this.files[this.activeFileIndex];
+    return this.flattenFiles[this.activeFileIndex];
   }
 
   @computed get lastFile() {

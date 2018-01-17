@@ -33,11 +33,11 @@ const Checkmark = styled.div`
 
 function Checkbox({ className, children, ...props }) {
   return (
-    <label className={className}>
+    <div className={className}>
       {children}
       <input type="checkbox" {...props} />
       <Checkmark />
-    </label>
+    </div>
   );
 }
 

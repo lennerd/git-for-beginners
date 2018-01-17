@@ -21,4 +21,14 @@ export default new Glossary({
       <p>The repository is the version database of your project.</p>
     </Fragment>
   )),
+  stagingArea: new GlossaryTerm('Staging Area', () => (
+    <Fragment>
+      <p>Staging area.</p>
+    </Fragment>
+  )),
+  workingDirectory: new GlossaryTerm('Working Directory', () => (
+    <Fragment>
+      <p>Working Directory.</p>
+    </Fragment>
+  )),
 });

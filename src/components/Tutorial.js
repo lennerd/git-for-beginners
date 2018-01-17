@@ -5,18 +5,29 @@ const Tutorial = styled.div`
   height: 100%;
   display: grid;
   grid-template-columns:
-    ${props => props.theme.largeSpacing()}
+    ${props => props.theme.spacing(3.75)}
     1fr
-    ${props => props.theme.largeSpacing()};
+    ${props => props.theme.spacing(3.75)};
   grid-template-rows:
-    ${props => props.theme.largeSpacing()}
+    ${props => props.theme.spacing(3.75)}
     1fr
-    ${props => props.theme.largeSpacing()};
+    ${props => props.theme.spacing(3.75)};
   grid-template-areas:
     ". header ."
     "navigation chapter ."
     ". chapter .";
   background-image: linear-gradient(135deg, #FEF6F5 0%, #C5CDF6 100%);
+
+  @media (min-width: 1440px) {
+    grid-template-columns:
+      ${props => props.theme.largeSpacing()}
+      1fr
+      ${props => props.theme.largeSpacing()};
+    grid-template-rows:
+      ${props => props.theme.largeSpacing()}
+      1fr
+      ${props => props.theme.largeSpacing()};
+  }
 `;
 
 export const TutorialReset = styled.button`

@@ -66,7 +66,7 @@ const TooltipTitle = styled.div`
   color: ${props => props.theme.color.highlight};
 
   & > * + * {
-    padding-left: ${props => props.theme.spacing(0.5)};
+    margin-left: ${props => props.theme.spacing(0.5)};
   }
 `;
 
@@ -168,16 +168,26 @@ class Tooltip extends Component {
     };
   }
 
-  @action.bound hide() {
+  @action.bound hide(event) {
+    const nativeEvent = event.nativeEvent || event;
+
+    if (nativeEvent.tooltip === this) {
+      return;
+    }
+
     this.toggle(false);
   }
 
   @action toggle(visible = this.hidden) {
     this.hidden = !visible;
+
+    if (this.hidden) {
+      this.history = [this.history[0]];
+    }
   }
 
   @action.bound handleClickTarget(event) {
-    event.stopPropagation();
+    event.nativeEvent.tooltip = this;
 
     this.toggle();
   }
@@ -200,7 +210,7 @@ class Tooltip extends Component {
         <TooltipTitle>
           {this.history.length > 1 && <TooltipTitleLink onClick={this.goBack}><strong>←</strong> Back</TooltipTitleLink>}
           <TooltipTitleTerm>{this.term.name}</TooltipTitleTerm>
-          <TooltipTitleLink onClick={this.hide}><strong>×</strong> Close</TooltipTitleLink>
+          <TooltipTitleLink onClick={this.hide}>Close <strong>×</strong></TooltipTitleLink>
         </TooltipTitle>
         <TooltipBody>
           {createElement(this.term.text)}
