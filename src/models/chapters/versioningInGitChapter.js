@@ -118,8 +118,6 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
     ];
   },
   get commands() {
-    console.log(this.workingDirectory.has(this.activeFile));
-
     return [
       new ConsoleCommand('Unstaged File', {
         available: computed(() => this.workingDirectory.has(this.activeFile)),

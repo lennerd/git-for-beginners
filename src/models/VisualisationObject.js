@@ -118,7 +118,7 @@ class VisualisationObject {
     return this.find(object => object.id === id);
   }
 
-  @action has(object) {
+  has(object) {
     if (this.children.includes(object)) {
       return true;
     }
