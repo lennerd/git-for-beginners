@@ -21,10 +21,10 @@ class ChapterConsole extends Component {
     this.console.scrollTop = this.console.scrollHeight;
   }
 
-  @computed get command() {
+  @computed get visibleCommands() {
     const { commands } = this.props;
 
-    return commands.find((command) => {
+    return commands.filter((command) => {
       if (!command.available) {
         return false;
       }
@@ -42,44 +42,46 @@ class ChapterConsole extends Component {
     this.history.push({ command, parentCommand });
   }
 
-  renderVisibleCommand() {
-    if (this.command == null) {
+  renderVisibleCommands() {
+    if (this.visibleCommands.length === 0) {
       return (
         <ConsoleSection>
-          <ConsoleMessage>No file is selected.</ConsoleMessage>
+          <ConsoleMessage>Nothing selected.</ConsoleMessage>
         </ConsoleSection>
       );
     }
 
-    if (this.command.commands.length === 0) {
-      return (
-        <ConsoleSection>
-          <ConsoleCommand onClick={() => this.runCommand(this.command)}>
-            {this.command.icon !== '' && <ConsoleIcon>{this.command.icon}</ConsoleIcon>}
-            {this.command.name}
-          </ConsoleCommand>
-        </ConsoleSection>
-      );
-    }
-
-    const iconMaxLength = Math.max(
-      ...this.command.commands.map(command => command.icon.length)
-    );
-
-    return (
-      <ConsoleSection>
-        <ConsoleLabel>{this.command.name}</ConsoleLabel>
-        <ConsoleCommandList>
-          {this.command.commands.map((command, index) => (
-            command.available &&
-            <ConsoleCommand key={index} onClick={() => this.runCommand(command, this.command)}>
-              <ConsoleIcon offset={iconMaxLength - command.icon.length}>{command.icon}</ConsoleIcon>
+    return this.visibleCommands.map(command => {
+      if (command.commands.length === 0) {
+        return (
+          <ConsoleSection key={command.id}>
+            <ConsoleCommand onClick={() => this.runCommand(command)}>
+              {command.icon !== '' && <ConsoleIcon>{command.icon}</ConsoleIcon>}
               {command.name}
             </ConsoleCommand>
-          ))}
-        </ConsoleCommandList>
-      </ConsoleSection>
-    )
+          </ConsoleSection>
+        );
+      }
+
+      const iconMaxLength = Math.max(
+        ...command.commands.map(command => command.icon.length)
+      );
+
+      return (
+        <ConsoleSection>
+          <ConsoleLabel>{command.name}</ConsoleLabel>
+          <ConsoleCommandList>
+            {command.commands.map(command => (
+              command.available &&
+              <ConsoleCommand key={command.id} onClick={() => this.runCommand(command, command)}>
+                <ConsoleIcon offset={iconMaxLength - command.icon.length}>{command.icon}</ConsoleIcon>
+                {command.name}
+              </ConsoleCommand>
+            ))}
+          </ConsoleCommandList>
+        </ConsoleSection>
+      );
+    });
   }
 
   renderHistory() {
@@ -105,7 +107,7 @@ class ChapterConsole extends Component {
     return (
       <Console className={className} innerRef={(ref) => { this.console = ref; }}>
         {this.renderHistory()}
-        {this.renderVisibleCommand()}
+        {this.renderVisibleCommands()}
       </Console>
     );
   }

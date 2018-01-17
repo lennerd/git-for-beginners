@@ -60,9 +60,9 @@ class VisualisationFile extends Component {
 
     if (file.parent && file.parent.isCommit) {
       file.parent.active = !file.parent.active;
-    } else {
-      file.active = !file.active;
     }
+
+    file.active = !file.active;
 
     event.stopPropagation();
   };
@@ -72,20 +72,19 @@ class VisualisationFile extends Component {
 
     if (file.parent && file.parent.isCommit) {
       file.parent.hover = true;
-    } else {
-      file.hover = true;
     }
+
+    file.hover = true;
   };
 
   @action.bound handleMouseLeave(event) {
     const { file } = this.props;
 
-
     if (file.parent && file.parent.isCommit) {
       file.parent.hover = false;
-    } else {
-      file.hover = false;
     }
+
+    file.hover = false;
   };
 
   render() {

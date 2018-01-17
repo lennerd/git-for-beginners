@@ -36,7 +36,7 @@ class VisualisationFile extends VisualisationObject {
     const position = super.getPosition();
 
     if (this.parent != null && this.parent.isFileList) {
-      position.level += this.parent.children.indexOf(this);
+      position.level += this.parent.files.indexOf(this);
     }
 
     return position;

@@ -98,6 +98,20 @@ class VisualisationObject {
     return this.find(object => object.id === id);
   }
 
+  @action has(object) {
+    if (this.children.includes(object)) {
+      return true;
+    }
+
+    for (let child of this.children) {
+      if (child.has(object)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   @action add(...objects) {
     for (let object of objects) {
       if (this.children.includes(object)) {
@@ -117,7 +131,7 @@ class VisualisationObject {
     for (let object of objects) {
       const childIndex = this.children.indexOf(object);
 
-      if (childIndex < -1) {
+      if (childIndex < 0) {
         continue;
       }
 

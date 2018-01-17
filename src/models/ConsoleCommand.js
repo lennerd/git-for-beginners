@@ -1,10 +1,14 @@
+import uuid from 'uuid/v4';
+import { extendObservable } from "mobx";
+
 class ConsoleCommand {
+  id = uuid();
   icon = '';
   commands = [];
   available = true;
 
   constructor(name, options) {
-    Object.assign(this, {
+    extendObservable(this, {
       ...options,
       name,
     });

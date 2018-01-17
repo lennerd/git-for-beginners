@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { action } from 'mobx';
+import { action, computed } from 'mobx';
 import { observer } from 'mobx-react';
 import { withTheme } from 'styled-components';
 
@@ -60,7 +60,7 @@ class VisualisationCommit extends Component {
       CELL_WIDTH * commit.position.column,
     );
 
-    const height = commit.files.length * FILE_HEIGHT + (commit.files.length - 1) * (LEVEL_HEIGHT - FILE_HEIGHT);
+    const height = commit.height * FILE_HEIGHT + (commit.height - 1) * (LEVEL_HEIGHT - FILE_HEIGHT);
 
     this.hoverMesh.scale.y = height + COMMIT_OUTLINE;
     this.hoverMesh.position.y = height / 2 - COMMIT_OUTLINE;

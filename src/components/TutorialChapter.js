@@ -13,6 +13,7 @@ import VisualisationFileName from './VisualisationFileName';
 import VisualisationArea from './VisualisationArea';
 import VisualisationAreaName from './VisualisationAreaName';
 import VisualisationCommit from './VisualisationCommit';
+import VisualisationPopup from './VisualisationPopup';
 
 @observer
 class TutorialChapter extends Component {
@@ -22,7 +23,9 @@ class TutorialChapter extends Component {
     return (
       <Visualisation vis={chapter.vis}>
         {chapter.vis.commits.map(commit => (
-          <VisualisationCommit commit={commit} key={commit.id} vis={chapter.vis} />
+          <VisualisationCommit commit={commit} key={commit.id} vis={chapter.vis}>
+            {commit.active && <VisualisationPopup font={fontRegular} level={commit.height} content={commit.checksumShort} />}
+          </VisualisationCommit>
         ))}
         {chapter.vis.files.map(file => (
           <VisualisationFile key={file.id} vis={chapter.vis} file={file}>
