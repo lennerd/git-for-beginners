@@ -42,7 +42,7 @@ class VisualisationCommit extends Component {
   @action.bound handleMouseEnter(event) {
     const { commit } = this.props;
 
-    commit.hover = !commit.hover;
+    commit.hover = true;
   };
 
   @action.bound handleMouseLeave(event) {
@@ -54,8 +54,11 @@ class VisualisationCommit extends Component {
   render() {
     const { children, commit } = this.props;
 
-    this.commitObject.position.x = CELL_HEIGHT * commit.row;
-    this.commitObject.position.z = CELL_WIDTH * commit.column;
+    this.commitObject.position.set(
+      CELL_HEIGHT * commit.position.row,
+      LEVEL_HEIGHT * commit.position.level,
+      CELL_WIDTH * commit.position.column,
+    );
 
     const height = commit.files.length * FILE_HEIGHT + (commit.files.length - 1) * (LEVEL_HEIGHT - FILE_HEIGHT);
 
