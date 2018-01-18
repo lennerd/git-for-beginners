@@ -14,25 +14,25 @@ function LoadingSpinner({ className, pastDelay, ...props }) {
   }
 
   return (
-    <div className={className}>
-      Loading
-    </div>
+    <div className={className}></div>
   );
 }
 
 export default styled(LoadingSpinner)`
+  grid-area: spinner;
+  justify-self: center;
+  align-self: center;
   ${props => props.theme.text.caps}
-  position: absolute;
   pointer-events: none;
-  top: ${props => props.theme.spacing(2)};
-  right: ${props => props.theme.spacing(2)};
+  top: 0;
+  right: 0;
   color: ${props => props.theme.color.highlight};
   opacity: 0.5;
+  z-index: 1;
 
   &:before {
     content: '';
-    display: inline-block;
-    vertical-align: -1px;
+    display: block;
     width: ${props => props.theme.spacing(0.5)};
     height: ${props => props.theme.spacing(0.5)};
     will-change: transformation, border-radius;
@@ -40,6 +40,5 @@ export default styled(LoadingSpinner)`
     animation-duration: 2s;
     animation-iteration-count: infinite;
     background-color: ${props => props.theme.color.highlight};
-    margin-right: ${props => props.theme.spacing(0.75)};
   }
 `;
