@@ -104,7 +104,7 @@ class VisualisationFile extends Component {
     this.fileObject.visible = file.visible;
 
     this.hoverMesh.material.visible = file.hover || file.active || this.copiesHovered || this.copiesActive;
-    this.hoverMesh.material.opacity = file.active ? 1 : 0.5;
+    this.hoverMesh.material.opacity = file.active ? 1 : file.hover ? 0.7 : 0.3;
     //this.hoverMesh.material.color = file.status !== STATUS_MODIFIED ? new THREE.Color(0xFFFFFF) : theme.color.highlight;
 
     let color = theme.color.fileDefault;
