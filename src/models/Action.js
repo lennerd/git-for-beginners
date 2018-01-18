@@ -16,6 +16,10 @@ class Action {
   is(type) {
     return this.type === type.toString();
   }
+
+  toString() {
+    return this.type;
+  }
 }
 
 export function createAction(type, payloadCreator = payload => payload) {

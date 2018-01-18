@@ -1,4 +1,4 @@
-import { computed, action } from "mobx";
+import { computed } from "mobx";
 
 import VisualisationObject from "./VisualisationObject";
 
@@ -17,10 +17,10 @@ class Visualisation extends VisualisationObject {
     return this.filter(object => object.isArea);
   }
 
-  @action deactivateAll() {
-    this.traverse(object => {
-      object.active = false;
-    });
+  @computed get maxChanges() {
+    return Math.max(
+      ...this.files.map(file => file.changes),
+    );
   }
 }
 

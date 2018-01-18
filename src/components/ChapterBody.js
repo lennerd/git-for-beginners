@@ -77,6 +77,7 @@ class ChapterBody extends Component {
 
 export default styled(ChapterBody)`
   position: relative;
+  hyphens: auto;
 
   ${ChapterHeader} + & {
     margin-top: ${props => props.theme.spacing()};

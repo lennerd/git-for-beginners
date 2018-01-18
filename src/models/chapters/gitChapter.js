@@ -9,6 +9,7 @@ import VisualisationFile from "../VisualisationFile";
 import { STATUS_MODIFIED } from "../../constants";
 import VisualisationFileList from "../VisualisationFileList";
 import VisualisationCommit from "../VisualisationCommit";
+import VisualisationRepository from "../VisualisationRepository";
 
 const introductionChapter = createChapter('Git', {
   hasWorkingDirectory: false,
@@ -53,7 +54,7 @@ const introductionChapter = createChapter('Git', {
 
       this.hasStagingArea = true;
     } else if(!this.hasRepository) {
-      this.repository = new VisualisationArea('Repository');
+      this.repository = new VisualisationRepository();
       this.repository.column = 2;
       this.repository.height = 10;
       this.repository.width = 4;
@@ -63,8 +64,9 @@ const introductionChapter = createChapter('Git', {
 
       this.repository.add(this.commit);
       this.vis.add(this.repository);
-
       this.hasRepository = true;
+    } else {
+      this.commit.directActive = true;
     }
   },
   sections: [
@@ -89,12 +91,12 @@ const introductionChapter = createChapter('Git', {
     )),
     new ChapterText(() => (
       <Fragment>
-        Last but not least comes the <strong>repository</strong>. Broadly speaking, this is the version database of your project.
+        Last but not least comes the <strong>repository</strong>. Broadly speaking, it's the version database of your project. All three parts of the project are stored on your computer. Only the repository is shared with others for colaboration.
       </Fragment>
     )),
     new ChapterText(() => (
       <Fragment>
-        New <Tooltip name="version">versions</Tooltip> stored in the repository are called as a <strong>commit</strong>. Beside a snapshot of the project they also contain the author and date of the version, so you are able to log changes later on.
+        New <Tooltip name="version">versions</Tooltip> stored in the repository are called <strong>commits</strong>. Beside beeing a snapshot of the whole project at a certain point of time they also contain the author and date of the version, so you are able to log changes later on.
       </Fragment>
     )),
   ],

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withTheme } from 'styled-components';
 import { observer } from 'mobx-react';
-import { action } from 'mobx';
+import { action, computed } from 'mobx';
 
 import VisualisationObject3D from './VisualisationObject3D';
 import { LEVEL_HEIGHT, CELL_HEIGHT, CELL_WIDTH } from '../theme';
@@ -74,6 +74,24 @@ class VisualisationFile extends Component {
     file.hover = false;
   };
 
+  @computed get copies() {
+    const { file, vis } = this.props;
+
+    return vis.findCopies(file);
+  }
+
+  @computed get copiesHovered() {
+    const { file } = this.props;
+
+    return file.insideGit && this.copies.some(file => file.hover);
+  }
+
+  @computed get copiesActive() {
+    const { file } = this.props;
+
+    return file.insideGit && this.copies.some(file => file.active);
+  }
+
   render() {
     const { children, file, theme } = this.props;
 
@@ -85,7 +103,7 @@ class VisualisationFile extends Component {
 
     this.fileObject.visible = file.visible;
 
-    this.hoverMesh.material.visible = file.hover || file.active;
+    this.hoverMesh.material.visible = file.hover || file.active || this.copiesHovered || this.copiesActive;
     this.hoverMesh.material.opacity = file.active ? 1 : 0.5;
     //this.hoverMesh.material.color = file.status !== STATUS_MODIFIED ? new THREE.Color(0xFFFFFF) : theme.color.highlight;
 

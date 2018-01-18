@@ -13,12 +13,16 @@ const Chapter = styled.div`
     ${props => props.theme.spacing(1)}
     ${props => props.theme.spacing(3.75)};
   grid-template-areas:
+    ". main . console console"
+    ". next . console console"
+    ". next . . .";
+
+  @media (min-width: 1500px) {
+    grid-template-columns: 2fr 4fr 2fr 4fr 2fr;
+    grid-template-areas:
     ". main . console ."
     ". next . console ."
     ". next . . .";
-
-  @media (min-width: 1440px) {
-    grid-template-columns: 2fr 4fr 2fr 4fr 2fr;
   }
 `;
 

@@ -5,7 +5,7 @@ const Console = styled.div`
   ${props => props.theme.mixins.monospaced};
   background-color: white;
   border-radius: ${props => props.theme.borderRadius.large};
-  max-height: ${props => props.theme.spacing(8)};
+  max-height: ${props => props.theme.spacing(10)};
   overflow: auto;
   overflow-x: hidden;
   line-height: ${props => props.theme.spacing(1.1)};
@@ -61,7 +61,6 @@ export const ConsoleMessage = styled.div`
 export const ConsoleLabel = styled.div`
   display: flex;
   padding: ${props => props.theme.spacing(0.25)} 0;
-  flex-shrink: 0;
 
   &:before,
   &:after {

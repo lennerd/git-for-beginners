@@ -1,14 +1,44 @@
-import React, { Component } from 'react';
+import React, { Component, createElement } from 'react';
 import { observer } from 'mobx-react';
 import styled from 'styled-components';
-import { computed, action, observable } from 'mobx';
+import { action } from 'mobx';
 
 import Console, { ConsoleSection, ConsoleMessage, ConsoleIcon, ConsoleCommand, ConsoleLabel, ConsoleCommandList, ConsoleLog, ConsoleTitle } from './Console';
 
+class ChapterConsoleHistory extends Component {
+  render() {
+    const { chapter } = this.props;
+
+    return chapter.console.history.map(log => {
+      let message = log.command.message;
+
+      if (log.error != null) {
+        message = log.error;
+      }
+
+      return (
+        <ConsoleSection key={log.id}>
+          {
+            log.command.parent != null && !log.command.parent.isConsole &&
+            <ConsoleLabel>{log.command.parent.name}</ConsoleLabel>
+          }
+          <ConsoleLog>
+            <ConsoleTitle>
+              {log.command.icon !== '' && <ConsoleIcon>{log.command.icon}</ConsoleIcon>}
+              {log.command.name}
+            </ConsoleTitle>
+            <ConsoleMessage>
+              <span>{createElement(message, { ...log })}</span>
+            </ConsoleMessage>
+          </ConsoleLog>
+        </ConsoleSection>
+      );
+    });
+  }
+}
+
 @observer
 class ChapterConsole extends Component {
-  @observable history = [];
-
   componentDidMount() {
     this.scrollToBottom();
   }
@@ -18,32 +48,23 @@ class ChapterConsole extends Component {
   }
 
   scrollToBottom() {
+    if (this.console == null) {
+      return;
+    }
+
     this.console.scrollTop = this.console.scrollHeight;
   }
 
-  @computed get visibleCommands() {
-    const { commands } = this.props;
-
-    return commands.filter((command) => {
-      if (!command.available) {
-        return false;
-      }
-
-      if (command.commands.length > 0) {
-        return command.commands.some(command => command.available);
-      }
-
-      return true;
-    });
-  }
-
   @action runCommand(command, parentCommand = null) {
-    command.run();
-    this.history.push({ command, parentCommand });
+    const { chapter } = this.props;
+
+    chapter.dispatch(command.action(command.payloadCreator()));
   }
 
   renderVisibleCommands() {
-    if (this.visibleCommands.length === 0) {
+    const { chapter } = this.props;
+
+    if (chapter.console.visibleCommands.length === 0) {
       return (
         <ConsoleSection>
           <ConsoleMessage>Nothing selected.</ConsoleMessage>
@@ -51,7 +72,7 @@ class ChapterConsole extends Component {
       );
     }
 
-    return this.visibleCommands.map(command => {
+    return chapter.console.visibleCommands.map(command => {
       if (command.commands.length === 0) {
         return (
           <ConsoleSection key={command.id}>
@@ -84,29 +105,16 @@ class ChapterConsole extends Component {
     });
   }
 
-  renderHistory() {
-    return this.history.map((log, index) => (
-      <ConsoleSection key={index}>
-        {log.parentCommand != null && <ConsoleLabel>{log.parentCommand.name}</ConsoleLabel>}
-        <ConsoleLog>
-          <ConsoleTitle>
-            {log.command.icon !== '' && <ConsoleIcon>{log.command.icon}</ConsoleIcon>}
-            {log.command.name}
-          </ConsoleTitle>
-          <ConsoleMessage>
-            {log.command.message}
-          </ConsoleMessage>
-        </ConsoleLog>
-      </ConsoleSection>
-    ));
-  }
-
   render() {
-    const {  className } = this.props;
+    const { className, chapter } = this.props;
+
+    if (chapter.console == null) {
+      return null;
+    }
 
     return (
       <Console className={className} innerRef={(ref) => { this.console = ref; }}>
-        {this.renderHistory()}
+        <ChapterConsoleHistory chapter={chapter} />
         {this.renderVisibleCommands()}
       </Console>
     );
@@ -119,7 +127,6 @@ export default styled(ChapterConsole)`
   grid-area: console;
   position: relative;
   z-index: 1;
-  //margin-bottom: ${props => props.theme.spacing(2)};
 `;
 
 /*import React, { Component } from 'react';

@@ -104,6 +104,7 @@ class Visualisation extends Component {
       return;
     }
 
+
     dispatchEvent(this.intersection, new Event('click'));
   };
 

@@ -3,24 +3,16 @@ import { ChapterText, ChapterTask } from "../ChapterSection";
 import { createAction } from "../Action";
 import ConsoleCommand from "../ConsoleCommand";
 import Visualisation from '../Visualisation';
-import VisualisationFile from "../VisualisationFile";
+import VisualisationFile, { createModifications } from "../VisualisationFile";
 import { STATUS_MODIFIED, STATUS_DELETED } from "../../constants";
 import VisualisationArea from '../VisualisationArea';
+import Console from "../Console";
+import React, { Fragment } from "react";
 
 const addVersionDatabase = createAction('ADD_VERSION_DATABASE');
 const restoreFile = createAction('RESTORE_FILE');
 const modifyFile = createAction('MODIFY_FILE', fileIndex => {
-  const change = Math.round(Math.random() * 2);
-  let insertions = 0;
-  let deletions = 0;
-
-  if (change === 0 || change === 1) {
-    insertions += 1 + Math.round(Math.random() * 19);
-  }
-
-  if (change === 0 || change === 2) {
-    deletions += 1 + Math.round(Math.random() * 19);
-  }
+  const { insertions, deletions } = createModifications();
 
   return {
     fileIndex,
@@ -54,9 +46,14 @@ const versioningOfFilesChapter = createChapter('Versioning of Files', {
       new ChapterText(() => 'And there it is, a backup file, an older version of our file. As you can see, we can use filenames to distinguish between them.', { skip: true }),
       new ChapterTask(() => 'Create a few more backups.', this.hasBackups),
       new ChapterText(() => 'Do you see the problem? Data is lost easily. And the developer of this tutorial, like many people out there, was too lazy to come up with a good way of naming your files. Idiot.', { skip: true }),
-      new ChapterText(() => 'A version database might help here.', { skip: true }),
-      new ChapterTask(() => 'Add a version database.', this.hasVersionDatabase),
-      new ChapterTask(() => 'Restore a file.', this.hasRestoredFiles),
+      new ChapterTask(() => 'Add a storage.', this.hasVersionDatabase),
+      new ChapterText(() => (
+        <Fragment>
+          Perfect. You added a version database, which stores and restores all the versions of our file, even when we accidentially deleted one.
+        </Fragment>
+      ), { skip: true }),
+      new ChapterTask(() => 'Restore a file from the version database.', this.hasRestoredFiles),
+      new ChapterText(() => 'You still there? Nice! Let‘s finally start with the real thing.', { skip: true }),
     ];
   },
   get hasFiles() {
@@ -89,6 +86,65 @@ const versioningOfFilesChapter = createChapter('Versioning of Files', {
 
     this.versionDatabase.column = 1;
     this.versionDatabase.height = 10;
+
+    this.console = new Console()
+
+    this.console.add(
+      new ConsoleCommand('Version', {
+        available: () => this.activeFile != null && this.hasVersionDatabase && this.activeFileIndex < (this.vis.files.length - 1),
+        commands: [
+          new ConsoleCommand('Restore', {
+            icon: '↙',
+            message: () => 'Version was was restored.',
+            action: restoreFile,
+            payloadCreator: () => this.activeFileIndex,
+          }),
+        ],
+      }),
+      new ConsoleCommand('File', {
+        available: () => this.activeFile != null && (!this.hasVersionDatabase || this.activeFileIndex === (this.vis.files.length - 1)),
+        commands: [
+          new ConsoleCommand('Modify', {
+            icon: '+-',
+            message: () => 'File was changed.',
+            action: modifyFile,
+            payloadCreator: () => this.activeFileIndex,
+          }),
+          new ConsoleCommand('Backup', {
+            icon: '↗',
+            message: () => 'Version was created.',
+            available: () => this.hasVersionDatabase,
+            action: copyFile,
+            payloadCreator: () => this.activeFileIndex,
+          }),
+          new ConsoleCommand('Copy', {
+            icon: '↗',
+            message: () => 'File was copied.',
+            available: () => !this.hasVersionDatabase && this.activeFileIndex === (this.vis.files.length - 1),
+            action: copyFile,
+            payloadCreator: () => this.activeFileIndex,
+          }),
+          new ConsoleCommand('Delete', {
+            icon: '×',
+            message: () => 'File was deleted.',
+            action: deleteFile,
+            payloadCreator: () => this.activeFileIndex,
+          }),
+        ],
+      }),
+      new ConsoleCommand('Add new file.', {
+        icon: '+',
+        available: () => !this.hasFiles,
+        message: () => 'A new file was created.',
+        action: addFile,
+      }),
+      new ConsoleCommand('Add version database.', {
+        icon: '+',
+        available: () => !this.vis.active && this.hasModifiedFiles && this.hasBackups && !this.hasVersionDatabase,
+        message: () => 'A version database was added.',
+        action: addVersionDatabase,
+      }),
+    );
   },
   [addFile]() {
     const file = new VisualisationFile();
@@ -170,60 +226,6 @@ const versioningOfFilesChapter = createChapter('Versioning of Files', {
     currentFile.deletions += file.deletions;
     currentFile.status = file.status;
     currentFile.visible = file.status !== STATUS_DELETED;
-  },
-
-  get commands() {
-    return [
-      new ConsoleCommand('Version', {
-        available: this.activeFile != null && this.hasVersionDatabase && this.activeFileIndex < (this.vis.files.length - 1),
-        commands: [
-          new ConsoleCommand('Restore', {
-            icon: '↙',
-            message: 'Version was was restored.',
-            run: () => this.dispatch(restoreFile(this.activeFileIndex)),
-          }),
-        ],
-      }),
-      new ConsoleCommand('File', {
-        available: this.activeFile != null && (!this.hasVersionDatabase || this.activeFileIndex === (this.vis.files.length - 1)),
-        commands: [
-          new ConsoleCommand('Modify', {
-            icon: '+-',
-            message: 'File was changed.',
-            run: () => this.dispatch(modifyFile(this.activeFileIndex)),
-          }),
-          new ConsoleCommand('Backup', {
-            icon: '↗',
-            message: 'Version was created.',
-            available: this.hasVersionDatabase,
-            run: () => this.dispatch(copyFile(this.activeFileIndex)),
-          }),
-          new ConsoleCommand('Copy', {
-            icon: '↗',
-            message: 'File was copied.',
-            available: !this.hasVersionDatabase && this.activeFileIndex === (this.vis.files.length - 1),
-            run: () => this.dispatch(copyFile(this.activeFileIndex)),
-          }),
-          new ConsoleCommand('Delete', {
-            icon: '×',
-            message: 'File was deleted.',
-            run: () => this.dispatch(deleteFile(this.activeFileIndex)),
-          }),
-        ],
-      }),
-      new ConsoleCommand('Add new file.', {
-        icon: '+',
-        available: !this.hasFiles,
-        message: 'A new file was created.',
-        run: () => this.dispatch(addFile()),
-      }),
-      new ConsoleCommand('Add version database.', {
-        icon: '+',
-        available: this.hasModifiedFiles && this.hasBackups && !this.hasVersionDatabase,
-        message: 'A version database was added.',
-        run: () => this.dispatch(addVersionDatabase()),
-      }),
-    ];
   },
 });
 

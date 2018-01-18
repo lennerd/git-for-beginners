@@ -1,10 +1,12 @@
-import { computed } from 'mobx';
+import { observable, computed } from 'mobx';
 import sha1 from 'js-sha1';
 
 import VisualisationFileList from './VisualisationFileList';
 
 class VisualisationCommit extends VisualisationFileList {
   isCommit = true;
+
+  @observable parentCommit;
 
   getPosition() {
     const position = super.getPosition();
@@ -14,6 +16,28 @@ class VisualisationCommit extends VisualisationFileList {
     }
 
     return position;
+  }
+
+  @computed get committed() {
+    if (this.parent == null) {
+      return false;
+    }
+
+    let parent = this.parent;
+
+    while (parent != null) {
+      if (parent.isStagingArea) {
+        return false;
+      }
+
+      if (parent.isRepository) {
+        return true;
+      }
+
+      parent = parent.parent;
+    }
+
+    return false;
   }
 
   @computed get checksum() {

@@ -10,7 +10,7 @@ export const init = createAction('INIT');
 
 class Chapter {
   sections = [];
-  commands = null;
+  console = null;
   vis = null;
   component = TutorialChapter;
 
@@ -97,11 +97,29 @@ class Chapter {
   }
 
   @action dispatch(action) {
+    let data;
+
+    try {
+      if (this[action.type]) {
+        data = this[action.type](action.payload);
+      }
+    } catch (error) {
+      console.error(error);
+
+      if (this.console != null) {
+        this.console.error(action, error);
+      }
+
+      return;
+    }
+
+    if (this.console != null) {
+      this.console.log(action, data);
+    }
+
     this.state.actions.push(action);
 
-    if (this[action.type]) {
-      this[action.type](action.payload);
-    }
+    return data;
   }
 
   @action reset() {

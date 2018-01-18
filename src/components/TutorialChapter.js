@@ -24,12 +24,12 @@ class TutorialChapter extends Component {
       <Visualisation vis={chapter.vis}>
         {chapter.vis.commits.map(commit => (
           <VisualisationCommit commit={commit} key={commit.id} vis={chapter.vis}>
-            {commit.active && <VisualisationPopup font={fontRegular} level={commit.height} content={commit.checksumShort} />}
+            <VisualisationPopup font={fontRegular} level={commit.height} content={commit.checksumShort} visible={commit.active && commit.committed} />
           </VisualisationCommit>
         ))}
         {chapter.vis.files.map(file => (
           <VisualisationFile key={file.id} vis={chapter.vis} file={file}>
-            <VisualisationFileStatus font={fontBlack} file={file} />
+            <VisualisationFileStatus font={fontBlack} file={file} vis={chapter.vis} />
             {file.name != null && <VisualisationFileName font={fontRegular} name={file.name} />}
           </VisualisationFile>
         ))}
@@ -54,7 +54,7 @@ class TutorialChapter extends Component {
           />
         </ChapterMain>
         {children}
-        {chapter.commands != null && <ChapterConsole commands={chapter.commands} />}
+        <ChapterConsole chapter={chapter} />
         {chapter.vis != null && this.renderVisualisation()}
         <ChapterNext tutorial={tutorial} chapter={chapter} />
       </Chapter>

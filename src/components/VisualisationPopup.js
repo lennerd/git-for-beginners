@@ -12,6 +12,7 @@ const ARROW_SIZE = 0.1;
 class VisualisationPopup extends PureComponent {
   static defaultProps = {
     level: 0,
+    visible: true,
   };
 
   constructor(props) {
@@ -51,7 +52,7 @@ class VisualisationPopup extends PureComponent {
   }
 
   render() {
-    const { font, level, content } = this.props;
+    const { font, level, content, visible } = this.props;
 
     const shapes = font.generateShapes(content, FONT_SIZE, 2);
     const textGeometry = new THREE.ShapeGeometry(shapes);
@@ -86,6 +87,7 @@ class VisualisationPopup extends PureComponent {
     this.popupGeometry.fromGeometry(shapeGeometry);
 
     this.popupObject.position.y = LEVEL_HEIGHT * level;
+    this.popupObject.visible = visible;
 
     return (
       <VisualisationObject3D object3D={this.popupObject} />

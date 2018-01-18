@@ -35,7 +35,7 @@ class VisualisationCommit extends Component {
     const { commit, vis } = this.props;
 
     vis.active = false;
-    commit.active = !commit.active;
+    commit.directActive = !commit.directActive;
 
     event.stopPropagation();
   };
@@ -43,13 +43,13 @@ class VisualisationCommit extends Component {
   @action.bound handleMouseEnter(event) {
     const { commit } = this.props;
 
-    commit.hover = true;
+    commit.directHover = true;
   };
 
   @action.bound handleMouseLeave(event) {
     const { commit } = this.props;
 
-    commit.hover = false;
+    commit.directHover = false;
   };
 
   render() {
@@ -61,13 +61,15 @@ class VisualisationCommit extends Component {
       CELL_WIDTH * commit.position.column,
     );
 
+    this.commitObject.visible = commit.visible;
+
     const height = commit.height * FILE_HEIGHT + (commit.height - 1) * (LEVEL_HEIGHT - FILE_HEIGHT);
 
     this.hoverMesh.scale.y = height + COMMIT_OUTLINE;
     this.hoverMesh.position.y = height / 2 - COMMIT_OUTLINE;
 
     this.hoverMesh.material.visible = commit.hover || commit.active;
-    this.hoverMesh.material.opacity = commit.active ? 1 : 0.2;
+    this.hoverMesh.material.opacity = commit.active ? 0.3 : 0.1;
 
     return (
       <VisualisationObject3D

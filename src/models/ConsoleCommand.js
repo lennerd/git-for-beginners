@@ -1,21 +1,34 @@
-import uuid from 'uuid/v4';
-import { extendObservable } from "mobx";
+import { observable, computed } from "mobx";
 
-class ConsoleCommand {
-  id = uuid();
-  icon = '';
-  commands = [];
-  available = true;
+import BaseObject from './BaseObject';
 
-  constructor(name, options) {
-    extendObservable(this, {
+class ConsoleCommand extends BaseObject {
+  isConsoleCommand = true;
+
+  @observable icon = '';
+  @observable available = () => {};
+  @observable action;
+  @observable payloadCreator = () => {};
+
+  constructor(name, { commands, ...options }) {
+    super();
+
+    Object.assign(this, {
       ...options,
       name,
     });
+
+    if (commands != null) {
+      this.add(...commands);
+    }
   }
 
-  run() {
-    console.error('Missing run.');
+  @computed get commands() {
+    return this.children;
+  }
+
+  @computed get payload() {
+    return this.payloadCreator();
   }
 }
 

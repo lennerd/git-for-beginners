@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { withTheme } from 'styled-components';
 import { observer } from 'mobx-react';
-import { computed } from 'mobx';
 
 import VisualisationObject3D from './VisualisationObject3D';
 import { STATUS_ADDED, STATUS_DELETED } from '../constants';
@@ -32,18 +31,8 @@ class FileStatus extends Component {
     this.fileStatusObject.add(this.textMesh);
   }
 
-  @computed get maxChanges() {
-    const { file } = this.props;
-
-    if (file.parent == null || !file.parent.isFileList) {
-      return file.changes;
-    }
-
-    return file.parent.maxChanges;
-  }
-
   render() {
-    const { theme, font, file } = this.props;
+    const { theme, font, file, vis } = this.props;
 
     let geometry;
 
@@ -62,8 +51,8 @@ class FileStatus extends Component {
         face.color = new THREE.Color(0xFFFFFFF);
       }
     } else {
-      let plus = Math.round((file.insertions / this.maxChanges) * CHANGE_SIGNS);
-      let minus = Math.round((file.deletions / this.maxChanges) * CHANGE_SIGNS);
+      let plus = Math.round((file.insertions / vis.maxChanges) * CHANGE_SIGNS);
+      let minus = Math.round((file.deletions / vis.maxChanges) * CHANGE_SIGNS);
 
       if (plus === 0 && file.insertions > 0) {
         plus = 1;

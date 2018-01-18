@@ -1,5 +1,4 @@
 import React, { Fragment } from "react";
-import { computed } from 'mobx';
 
 import { createChapter, init } from "../Chapter";
 import { ChapterText, ChapterTask } from "../ChapterSection";
@@ -7,26 +6,51 @@ import Tooltip from "../../components/Tooltip";
 import Visualisation from "../Visualisation";
 import VisualisationArea from "../VisualisationArea";
 import VisualisationFileList from "../VisualisationFileList";
-import VisualisationFile from "../VisualisationFile";
-import { STATUS_MODIFIED, STATUS_DELETED } from "../../constants";
+import VisualisationFile, { createModifications } from "../VisualisationFile";
+import { STATUS_DELETED, STATUS_ADDED } from "../../constants";
 import ConsoleCommand from "../ConsoleCommand";
 import { createAction } from "../Action";
 import VisualisationCommit from "../VisualisationCommit";
 import VisualisationStagingArea from "../VisualisationStagingArea";
 import VisualisationRepository from "../VisualisationRepository";
+import { VisualisationCommitReference, VisualisationFileReference } from "../../components/VisualisationObjectReference";
+import Console from "../Console";
 
 const addFile = createAction('ADD_FILE');
 const stageFile = createAction('STAGE_FILE');
 const unstageFile = createAction('UNSTAGE_FILE');
 const deleteFile = createAction('DELETE_FILE');
 const createCommit = createAction('CREATE_COMMIT');
+const modifyFile = createAction('MODIFY_FILE', fileIndex => {
+  const { insertions, deletions } = createModifications();
+
+  return {
+    fileIndex,
+    insertions,
+    deletions,
+  };
+});
+const revertCommit = createAction('REVERT_COMMIT');
 
 const versioningInGitChapter = createChapter('Versioning in Git', {
+  head: null,
+  get hasRevertedCommit() {
+    return this.state.has(revertCommit);
+  },
   get activeFile() {
-    return this.vis.files[this.activeFileIndex];
+    const activeFile = this.vis.find(object => object.isFile && object.active);
+
+    return activeFile;
   },
   get activeFileIndex() {
-    return this.vis.files.findIndex(file => file.active);
+    if (this.activeFile == null) {
+      return -1;
+    }
+
+    return this.activeFile.nestedIndex;
+  },
+  get activeCommitIndex() {
+    return this.repository.commits.find(commit => commit.active).nestedIndex;
   },
   [init]() {
     this.vis = new Visualisation();
@@ -58,39 +82,218 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
       new VisualisationFile()
     ];
 
-    files.forEach(file => {
-      file.status = STATUS_MODIFIED;
-      file.modify();
-    });
-
     this.workingDirectoryFileList.add(
       ...files
+    );
+
+    this.console = new Console();
+
+    this.console.add(
+      new ConsoleCommand('Working Directory', {
+        available: () => this.activeFile != null && this.workingDirectory.has(this.activeFile),
+        commands: [
+          new ConsoleCommand('Modify file', {
+            icon: '+-',
+            message: ({ data }) => (
+              <Fragment>
+                <VisualisationFileReference vis={this.vis} file={data}>File</VisualisationFileReference> was modified.
+              </Fragment>
+            ),
+            action: modifyFile,
+            payloadCreator: () => this.activeFileIndex,
+          }),
+          new ConsoleCommand('Stage file', {
+            icon: '↗',
+            message: ({ data }) => (
+              <Fragment>
+                <VisualisationFileReference vis={this.vis} file={data}>File</VisualisationFileReference> was added to the staging area.
+              </Fragment>
+            ),
+            action: stageFile,
+            payloadCreator: () => this.activeFileIndex
+          }),
+          new ConsoleCommand('Delete file', {
+            icon: '×',
+            message: ({ data }) => (
+              <Fragment>
+                <VisualisationFileReference vis={this.vis} file={data}>File</VisualisationFileReference> was deleted.
+              </Fragment>
+            ),
+            action: deleteFile,
+            payloadCreator: () => this.activeFileIndex,
+          }),
+        ],
+      }),
+      new ConsoleCommand('Staging Area', {
+        available: () => this.stagingArea.active,
+        commands: [
+          new ConsoleCommand('Create commit', {
+            icon: '↗',
+            message: ({ data }) => (
+              <Fragment>
+                New commit <VisualisationCommitReference vis={this.vis} commit={data} /> was stored in the repository.
+              </Fragment>
+            ),
+            action: createCommit,
+          }),
+          new ConsoleCommand('Unstage file', {
+            icon: '↙',
+            message: ({ data }) => (
+              <Fragment>
+                <VisualisationFileReference vis={this.vis} file={data}>File</VisualisationFileReference> was removed from the staging area.
+              </Fragment>
+            ),
+            action: unstageFile,
+            payloadCreator: () => this.activeFileIndex,
+          }),
+        ],
+      }),
+      new ConsoleCommand('Repository', {
+        available: () => this.repository.active,
+        commands: [
+          new ConsoleCommand('Revert commit', {
+            icon: '↙',
+            message: ({ data }) => (
+              <Fragment>
+                Commit <VisualisationCommitReference vis={this.vis} commit={data} /> was revereted successfully.
+              </Fragment>
+            ),
+            action: revertCommit,
+            payloadCreator: () => this.activeCommitIndex,
+          }),
+        ],
+      }),
+      new ConsoleCommand('Add new file.', {
+        icon: '+',
+        available: () => !this.vis.active,
+        message: ({ data }) => (
+          <Fragment>
+            A new <VisualisationFileReference vis={this.vis} file={data}>file</VisualisationFileReference> was added.
+          </Fragment>
+        ),
+        action: addFile,
+      }),
     );
   },
   [addFile]() {
     const file = new VisualisationFile();
 
     this.workingDirectoryFileList.add(file);
+    return file;
   },
   [stageFile](fileIndex) {
-    const file = this.vis.files[fileIndex];
+    const file = this.vis.at(...fileIndex);
+    let stagedFile = this.stagingAreaFileList.findCopies(file)[0];
 
-    this.stagingAreaFileList.add(file);
+    if (stagedFile != null && !file.modified) {
+      throw () => 'File already staged.';
+    }
+
+    if (file.status !== STATUS_ADDED && file.status !== STATUS_DELETED && !file.modified) {
+      throw () => 'Only modified files can be staged.';
+    }
+
+    if (stagedFile == null) {
+      stagedFile = file.copy();
+      this.stagingAreaFileList.add(stagedFile);
+      this.stagingAreaFileList.sortBy(file => (
+        this.workingDirectoryFileList.findCopies(file)[0].index
+      ));
+    } else {
+      stagedFile.merge(file);
+    }
+
+    if (file.status !== STATUS_DELETED) {
+      file.reset();
+    } else {
+      file.visible = false;
+    }
+
+    return stagedFile;
   },
   [unstageFile](fileIndex) {
-    const file = this.vis.files[fileIndex];
+    const file = this.vis.at(...fileIndex);
+    const unstagedFile = this.workingDirectoryFileList.findCopies(file)[0];
 
-    this.workingDirectoryFileList.add(file);
+    unstagedFile.reset(file);
+    unstagedFile.visible = true;
+    this.stagingAreaFileList.remove(file);
+
+    return unstagedFile;
   },
   [deleteFile](fileIndex) {
-    this.vis.files[fileIndex].status = STATUS_DELETED;
+    const file = this.vis.at(...fileIndex);
+
+    file.status = STATUS_DELETED;
+
+    return file;
+  },
+  [modifyFile]({ fileIndex, insertions, deletions }) {
+    const file = this.vis.at(...fileIndex);
+
+    file.insertions += insertions;
+    file.deletions += deletions;
+
+    return file;
   },
   [createCommit]() {
-    const commit = new VisualisationCommit()
+    const lastCommit = this.repository.commits[this.repository.commits.length - 1];
+    let commit;
 
-    commit.add(...this.stagingAreaFileList.files);
+    if (lastCommit == null) {
+      commit = new VisualisationCommit();
+    } else {
+      commit = lastCommit.copy();
+
+      commit.files.forEach(file => {
+        if (file.status === STATUS_DELETED) {
+          file.visible = false;
+        }
+
+        const stagedFile = this.stagingAreaFileList.findCopies(file)[0];
+
+        if (stagedFile != null) {
+          file.reset(stagedFile);
+          // @IDEA for later: copy also already existing files (copies) into commit and ignore copies while calculating the level.
+          this.stagingAreaFileList.remove(stagedFile);
+        } else {
+          file.reset();
+        }
+      });
+
+      commit.parentCommit = lastCommit;
+    }
+
+    commit.add(
+      ...this.stagingAreaFileList.files,
+    );
 
     this.repository.add(commit);
+    this.head = commit;
+
+    return commit;
+  },
+  [revertCommit](commitIndex) {
+    const commit = this.vis.at(...commitIndex);
+
+    let parentCommit = this.head;
+
+    while (parentCommit != null) {
+      parentCommit.files.forEach(file => {
+        const baseFile = this.workingDirectoryFileList.findCopies(file)[0];
+
+        baseFile.revert(file);
+        baseFile.visible = baseFile.status !== STATUS_DELETED;
+      });
+
+      if (parentCommit === commit) {
+        break;
+      }
+
+      parentCommit = parentCommit.parentCommit;
+    }
+
+    return commit;
   },
   get sections() {
     return [
@@ -113,55 +316,16 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
           Perfect. A new commit was created and added to the <Tooltip name="repository">repository</Tooltip>. Like we said, each commit has a unique identifier, so we can reference it for example in the interactive menu below the visualisation.
         </Fragment>
       ), { skip: true }),
-      new ChapterTask(() => 'Restore a commit.'),
-      new ChapterText(() => 'Quite nice, right? Changes from a previous version were restored.', { skip: true }),
+      new ChapterTask(() => 'Create at least two more commits.', this.repository.commits.length > 2),
+      new ChapterText(() => 'Now that we have a few more versions of our project, let‘s take a look at how to restore an older version.', { skip: true }),
+      new ChapterTask(() => 'Restore a commit.', this.hasRevertedCommit),
+      new ChapterText(() => (
+        <Fragment>
+          Well done! A few commits were created and an older version of your project restored. <em>Go ahead, if you like, and play around with your git powered project a little more.</em> Or jump directly to the …
+        </Fragment>
+      ), { skip: true }),
     ];
   },
-  get commands() {
-    return [
-      new ConsoleCommand('Unstaged File', {
-        available: computed(() => this.workingDirectory.has(this.activeFile)),
-        commands: [
-          new ConsoleCommand('Stage', {
-            icon: '↗',
-            message: 'File was added to the staging area.',
-            run: () => this.dispatch(stageFile(this.activeFileIndex)),
-          }),
-          new ConsoleCommand('Delete', {
-            icon: '×',
-            message: 'File was deleted.',
-            run: () => this.dispatch(deleteFile(this.activeFileIndex)),
-          }),
-        ],
-      }),
-      new ConsoleCommand('Staged File', {
-        available: computed(() => this.stagingArea.has(this.activeFile)),
-        commands: [
-          new ConsoleCommand('Unstage', {
-            icon: '↙',
-            message: 'File was removed from the staging area.',
-            run: () => this.dispatch(unstageFile(this.activeFileIndex)),
-          }),
-        ],
-      }),
-      new ConsoleCommand('Staging Area', {
-        available: computed(() => this.stagingAreaFileList.active),
-        commands: [
-          new ConsoleCommand('Create commit', {
-            icon: '↗',
-            message: 'New commit was stored in the repository.',
-            run: () => this.dispatch(createCommit()),
-          }),
-        ],
-      }),
-      new ConsoleCommand('Add new file.', {
-        icon: '+',
-        available: computed(() => this.activeFile == null),
-        message: 'A new file was added.',
-        run: () => this.dispatch(addFile()),
-      }),
-    ];
-  }
 });
 
 export default versioningInGitChapter;

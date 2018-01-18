@@ -1,15 +1,15 @@
 import { computed } from 'mobx';
 
 import VisualisationObject from './VisualisationObject';
-import { STATUS_DELETED, STATUS_ADDED, STATUS_MODIFIED } from '../constants';
+//import { STATUS_DELETED, STATUS_ADDED, STATUS_MODIFIED } from '../constants';
 
 class VisualisationFileList extends VisualisationObject {
   isFileList = true;
 
   @computed get files() {
-    const files = this.filter(object => object.isFile);
+    const files = this.filter(object => object.isFile && object.visible);
 
-    files.sort((a, b) => {
+    /*files.sort((a, b) => {
       if (a.status !== b.status) {
         if (a.status === STATUS_MODIFIED || a.status === STATUS_DELETED) {
           return -1;
@@ -29,15 +29,9 @@ class VisualisationFileList extends VisualisationObject {
       }
 
       return 0;
-    });
+    });*/
 
     return files;
-  }
-
-  @computed get maxChanges() {
-    return Math.max(
-      ...this.files.map(file => file.changes),
-    );
   }
 }
 
