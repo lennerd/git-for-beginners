@@ -46,7 +46,7 @@ const versioningOfFilesChapter = createChapter('Versioning of Files', {
       new ChapterText(() => 'And there it is, a backup file, an older version of our file. As you can see, we can use filenames to distinguish between them.', { skip: true }),
       new ChapterTask(() => 'Create a few more backups.', this.hasBackups),
       new ChapterText(() => 'Do you see the problem? Data is lost easily. And the developer of this tutorial, like many people out there, was too lazy to come up with a good way of naming your files. Idiot.', { skip: true }),
-      new ChapterTask(() => 'Add a storage.', this.hasVersionDatabase),
+      new ChapterTask(() => 'Add a version database.', this.hasVersionDatabase),
       new ChapterText(() => (
         <Fragment>
           Perfect. You added a version database, which stores and restores all the versions of our file, even when we accidentially deleted one.
@@ -140,7 +140,7 @@ const versioningOfFilesChapter = createChapter('Versioning of Files', {
       }),
       new ConsoleCommand('Add version database.', {
         icon: '+',
-        available: () => !this.vis.active && this.hasModifiedFiles && this.hasBackups && !this.hasVersionDatabase,
+        available: () => this.hasModifiedFiles && this.hasBackups && !this.hasVersionDatabase,
         message: () => 'A version database was added.',
         action: addVersionDatabase,
       }),
@@ -159,6 +159,7 @@ const versioningOfFilesChapter = createChapter('Versioning of Files', {
     file.insertions += insertions;
     file.deletions += deletions;
   },
+  nameIndex: 0,
   [copyFile](fileIndex) {
     const file = this.vis.files[fileIndex];
 
@@ -168,15 +169,10 @@ const versioningOfFilesChapter = createChapter('Versioning of Files', {
     let name = 'file';
 
     if (!this.hasVersionDatabase) {
-      const nameIndex = (fileIndex) % FILE_NAME_VARIANTS.length;
-      name += FILE_NAME_VARIANTS[nameIndex];
+      name += FILE_NAME_VARIANTS[this.nameIndex++];
     }
 
     copy.name = name;
-
-    if (fileIndex === (this.vis.files.length - 1)) {
-      copy.reset();
-    }
 
     this.vis.files.forEach((file, index) => {
       if (this.hasVersionDatabase) {
@@ -197,15 +193,11 @@ const versioningOfFilesChapter = createChapter('Versioning of Files', {
     file.reset();
 
     if (!this.hasVersionDatabase) {
-      if (fileIndex === (this.vis.files.length - 1)) {
-        this.vis.remove(file);
+      this.vis.remove(file);
 
-        this.vis.files.forEach((file, index) => {
-          file.column = this.vis.files.length - (index + 1);
-        });
-      } else {
-        file.visible = false;
-      }
+      this.vis.files.forEach((file, index) => {
+        file.column = this.vis.files.length - (index + 1);
+      });
     }
   },
   [addVersionDatabase]() {

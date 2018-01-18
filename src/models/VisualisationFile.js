@@ -20,16 +20,16 @@ class VisualisationFile extends VisualisationObject {
     return this.insertions + this.deletions;
   }
 
-  @computed get insideGit() {
+  @computed get insideArea() {
     if (this.parent == null) {
       return false;
     }
 
-    if (this.parent.isVersionDatabase) {
-      return false;
+    if (this.parent.isArea) {
+      return true;
     }
 
-    return true;
+    return false;
   }
 
   @action modify() {

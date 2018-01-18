@@ -83,13 +83,13 @@ class VisualisationFile extends Component {
   @computed get copiesHovered() {
     const { file } = this.props;
 
-    return file.insideGit && this.copies.some(file => file.hover);
+    return file.insideArea && this.copies.some(file => file.hover);
   }
 
   @computed get copiesActive() {
     const { file } = this.props;
 
-    return file.insideGit && this.copies.some(file => file.active);
+    return file.insideArea && this.copies.some(file => file.active);
   }
 
   render() {
