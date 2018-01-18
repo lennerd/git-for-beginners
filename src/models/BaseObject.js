@@ -92,7 +92,7 @@ class BaseObject {
     return null;
   }
 
-  findCopies(object) {
+  findCopies(object = this) {
     return this.filter(copy => copy !== object && copy.copyId === object.copyId);
   }
 

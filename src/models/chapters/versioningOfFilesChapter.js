@@ -69,7 +69,7 @@ const versioningOfFilesChapter = createChapter('Versioning of Files', {
     return this.state.has(restoreFile);
   },
   get hasModifiedFiles() {
-    return this.vis.files.some(file => file.modified);
+    return this.vis.files.some(file => file.insertions > 0 || file.deletions > 0);
   },
   get hasVersionDatabase() {
     return this.vis.areas.includes(this.versionDatabase);

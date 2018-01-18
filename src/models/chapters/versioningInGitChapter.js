@@ -4,8 +4,6 @@ import { createChapter, init } from "../Chapter";
 import { ChapterText, ChapterTask } from "../ChapterSection";
 import Tooltip from "../../components/Tooltip";
 import Visualisation from "../Visualisation";
-import VisualisationArea from "../VisualisationArea";
-import VisualisationFileList from "../VisualisationFileList";
 import VisualisationFile, { createModifications } from "../VisualisationFile";
 import { STATUS_DELETED, STATUS_ADDED } from "../../constants";
 import ConsoleCommand from "../ConsoleCommand";
@@ -13,6 +11,7 @@ import { createAction } from "../Action";
 import VisualisationCommit from "../VisualisationCommit";
 import VisualisationStagingArea from "../VisualisationStagingArea";
 import VisualisationRepository from "../VisualisationRepository";
+import VisualisationWorkingDirectory from "../VisualisationWorkingDirectory";
 import { VisualisationCommitReference, VisualisationFileReference } from "../../components/VisualisationObjectReference";
 import Console from "../Console";
 
@@ -59,7 +58,7 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
     this.workingDirectoryFileList = new VisualisationCommit();
     this.stagingAreaFileList = new VisualisationCommit();
 
-    this.workingDirectory = new VisualisationArea('Working Directory');
+    this.workingDirectory = new VisualisationWorkingDirectory();
     this.workingDirectory.add(this.workingDirectoryFileList);
 
     this.stagingArea = new VisualisationStagingArea();
@@ -93,7 +92,17 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
       new ConsoleCommand('Working Directory', {
         available: () => this.workingDirectory.active,
         commands: [
-          new ConsoleCommand('Modify file', {
+          new ConsoleCommand('Stage all files.', {
+            icon: '↗',
+            message: () => 'All files were added to the staging area.',
+            action: stageAllFiles,
+          }),
+        ],
+      }),
+      new ConsoleCommand('File', {
+        available: () => this.workingDirectory.active,
+        commands: [
+          new ConsoleCommand('Modify', {
             available: () => this.activeFile != null,
             icon: '+-',
             message: ({ data }) => (
@@ -104,7 +113,7 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
             action: modifyFile,
             payloadCreator: () => this.activeFileIndex,
           }),
-          new ConsoleCommand('Stage file', {
+          new ConsoleCommand('Stage', {
             available: () => this.activeFile != null,
             icon: '↗',
             message: ({ data }) => (
@@ -115,12 +124,7 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
             action: stageFile,
             payloadCreator: () => this.activeFileIndex
           }),
-          new ConsoleCommand('Stage all files', {
-            icon: '↗',
-            message: () => 'All files were added to the staging area.',
-            action: stageAllFiles,
-          }),
-          new ConsoleCommand('Delete file', {
+          new ConsoleCommand('Delete', {
             available: () => this.activeFile != null,
             icon: '×',
             message: ({ data }) => (
@@ -145,7 +149,12 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
             ),
             action: createCommit,
           }),
-          new ConsoleCommand('Unstage file', {
+        ],
+      }),
+      new ConsoleCommand('File', {
+        available: () => this.stagingArea.active,
+        commands: [
+          new ConsoleCommand('Unstage', {
             icon: '↙',
             message: ({ data }) => (
               <Fragment>
@@ -174,7 +183,6 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
       }),
       new ConsoleCommand('Add new file.', {
         icon: '+',
-        available: () => !this.vis.active,
         message: ({ data }) => (
           <Fragment>
             A new <VisualisationFileReference vis={this.vis} file={data}>file</VisualisationFileReference> was added.
@@ -190,11 +198,10 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
     this.workingDirectoryFileList.add(file);
     return file;
   },
-  [stageFile](fileIndex) {
-    const file = this.vis.at(...fileIndex);
+  stageFile(file) {
     let stagedFile = this.stagingAreaFileList.findCopies(file)[0];
 
-    if (stagedFile != null && !file.modified) {
+    if (stagedFile != null && file.status === stagedFile.status && !file.modified) {
       throw () => 'File already staged.';
     }
 
@@ -216,38 +223,24 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
       file.reset();
     } else {
       file.visible = false;
+      stagedFile.visible = this.repository.findCopies(stagedFile).length > 0;
     }
 
     return stagedFile;
+  },
+  [stageFile](fileIndex) {
+    const file = this.vis.at(...fileIndex);
+
+    return this.stageFile(file);
   },
   [stageAllFiles]() {
     let files = this.workingDirectoryFileList.files;
 
     files.forEach(file => {
-      let stagedFile = this.stagingAreaFileList.findCopies(file)[0];
-
-      if (stagedFile != null && !file.modified) {
-        return;
-      }
-
-      if (file.status !== STATUS_ADDED && file.status !== STATUS_DELETED && !file.modified) {
-        return;
-      }
-
-      if (stagedFile == null) {
-        stagedFile = file.copy();
-        this.stagingAreaFileList.add(stagedFile);
-        this.stagingAreaFileList.sortBy(file => (
-          this.workingDirectoryFileList.findCopies(file)[0].index
-        ));
-      } else {
-        stagedFile.merge(file);
-      }
-
-      if (file.status !== STATUS_DELETED) {
-        file.reset();
-      } else {
-        file.visible = false;
+      try {
+        this.stageFile(file);
+      } catch (e) {
+        console.error(e);
       }
     });
   },
@@ -259,12 +252,18 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
     unstagedFile.visible = true;
     this.stagingAreaFileList.remove(file);
 
+    unstagedFile.visible = unstagedFile.status !== STATUS_DELETED;
+
     return unstagedFile;
   },
   [deleteFile](fileIndex) {
     const file = this.vis.at(...fileIndex);
 
-    file.status = STATUS_DELETED;
+    if (this.vis.findCopies(file).length === 0) {
+      this.workingDirectoryFileList.remove(file);
+    } else {
+      file.status = STATUS_DELETED;
+    }
 
     return file;
   },
@@ -294,7 +293,7 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
 
         if (stagedFile != null) {
           file.reset(stagedFile);
-          // @IDEA for later: copy also already existing files (copies) into commit and ignore copies while calculating the level.
+          // @IDEA for animation later: copy also already existing files (copies) into commit and ignore copies while calculating the level.
           this.stagingAreaFileList.remove(stagedFile);
         } else {
           file.reset();
@@ -323,7 +322,6 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
         const baseFile = this.workingDirectoryFileList.findCopies(file)[0];
 
         baseFile.revert(file);
-        baseFile.visible = baseFile.status !== STATUS_DELETED;
       });
 
       if (parentCommit === commit) {
@@ -358,10 +356,10 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
       ), { skip: true }),
       new ChapterTask(() => 'Create at least two more commits.', this.repository.commits.length > 2),
       new ChapterText(() => 'Now that we have a few more versions of our project, let’s take a look at how to restore an older version.', { skip: true }),
-      new ChapterTask(() => 'Restore a commit.', this.hasRevertedCommit),
+      new ChapterTask(() => 'Revert changes from a commit.', this.hasRevertedCommit),
       new ChapterText(() => (
         <Fragment>
-          Well done! A few commits were created and an older version of your project restored. <em>Go ahead, if you like, and play around with your git powered project a little more.</em> Or jump directly to the …
+          Well done! A few commits were created and an older version of your project restored. <em>Go ahead and play around with your git powered project a little more.</em> Or jump directly to the …
         </Fragment>
       ), { skip: true }),
     ];

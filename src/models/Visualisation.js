@@ -16,12 +16,6 @@ class Visualisation extends VisualisationObject {
   @computed get areas() {
     return this.filter(object => object.isArea);
   }
-
-  @computed get maxChanges() {
-    return Math.max(
-      ...this.files.map(file => file.changes),
-    );
-  }
 }
 
 export default Visualisation;

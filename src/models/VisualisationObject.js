@@ -1,6 +1,4 @@
-import uuid from 'uuid/v4';
 import { observable, computed, action } from "mobx";
-import sortBy from 'lodash/sortBy';
 import BaseObject from './BaseObject';
 
 class CopyId {}

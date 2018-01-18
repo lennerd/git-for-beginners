@@ -21,13 +21,16 @@ class VisualisationFile extends VisualisationObject {
   }
 
   @computed get insideArea() {
-    if (this.parent == null) {
-      return false;
+    let parent = this.parent;
+
+    while (parent != null) {
+      if (parent.isArea) {
+        return true;
+      }
+
+      parent = parent.parent;
     }
 
-    if (this.parent.isArea) {
-      return true;
-    }
 
     return false;
   }
