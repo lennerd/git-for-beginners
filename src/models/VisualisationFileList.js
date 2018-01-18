@@ -33,12 +33,6 @@ class VisualisationFileList extends VisualisationObject {
 
     return files;
   }
-
-  @computed get maxChanges() {
-    return Math.max(
-      ...this.files.map(file => file.changes),
-    );
-  }
 }
 
 export default VisualisationFileList;
