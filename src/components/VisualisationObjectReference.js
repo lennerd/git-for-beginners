@@ -61,10 +61,10 @@ class VisualisationObjectReference extends Component {
 @observer
 export class VisualisationCommitReference extends Component {
   render() {
-    const { commit } = this.props;
+    const { commit, vis } = this.props;
 
     return (
-      <VisualisationObjectReference object={commit}>
+      <VisualisationObjectReference object={commit} vis={vis}>
         {commit.checksumShort}
       </VisualisationObjectReference>
     )
@@ -74,10 +74,10 @@ export class VisualisationCommitReference extends Component {
 @observer
 export class VisualisationFileReference extends Component {
   render() {
-    const { file, children } = this.props;
+    const { file, children, vis } = this.props;
 
     return (
-      <VisualisationObjectReference object={file}>
+      <VisualisationObjectReference object={file} vis={vis}>
         {children || file.name}
       </VisualisationObjectReference>
     )

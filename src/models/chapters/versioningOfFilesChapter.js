@@ -53,7 +53,7 @@ const versioningOfFilesChapter = createChapter('Versioning of Files', {
         </Fragment>
       ), { skip: true }),
       new ChapterTask(() => 'Restore a file from the version database.', this.hasRestoredFiles),
-      new ChapterText(() => 'You still there? Nice! Let‘s finally start with the real thing.', { skip: true }),
+      new ChapterText(() => 'You still there? Nice! Let’s finally start with the real thing.', { skip: true }),
     ];
   },
   get hasFiles() {

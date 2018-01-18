@@ -86,7 +86,7 @@ const introductionChapter = createChapter('Git', {
     )),
     new ChapterText(() => (
       <Fragment>
-        The second part is the <strong>staging area</strong>. Despite its name, it‘s not about showing something to others, but instead collect changes to your project you want to be part of your next version. This way you are able to group changes into seperate version, e.g. by feature or topic.
+        The second part is the <strong>staging area</strong>. Despite its name, it’s not about showing something to others, but instead collect changes to your project you want to be part of your next version. This way you are able to group changes into seperate version, e.g. by feature or topic.
       </Fragment>
     )),
     new ChapterText(() => (

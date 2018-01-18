@@ -357,7 +357,7 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
         </Fragment>
       ), { skip: true }),
       new ChapterTask(() => 'Create at least two more commits.', this.repository.commits.length > 2),
-      new ChapterText(() => 'Now that we have a few more versions of our project, let‘s take a look at how to restore an older version.', { skip: true }),
+      new ChapterText(() => 'Now that we have a few more versions of our project, let’s take a look at how to restore an older version.', { skip: true }),
       new ChapterTask(() => 'Restore a commit.', this.hasRevertedCommit),
       new ChapterText(() => (
         <Fragment>

@@ -88,7 +88,7 @@ export default styled(ChapterBody)`
   }
 
   strong {
-    font-weight: 400;
+    font-weight: 600;
     color: ${props => props.theme.color.highlight};
   }
 
