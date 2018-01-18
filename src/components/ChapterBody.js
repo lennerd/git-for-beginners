@@ -30,15 +30,13 @@ class ChapterBody extends Component {
       }
 
       if (section.is(SECTION_TASK)) {
-
         return (
           <Fragment key={index}>
             <ChapterCheckbox checked={section.done}>
             {createElement(section.text)}
             </ChapterCheckbox>
             {
-              !section.done && section.tip != null &&
-              <ChapterTip>{section.tip}</ChapterTip>
+              section.tip != null && <ChapterTip>{section.tip}</ChapterTip>
             }
           </Fragment>
         );
