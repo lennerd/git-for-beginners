@@ -18,6 +18,7 @@ import Console from "../Console";
 
 const addFile = createAction('ADD_FILE');
 const stageFile = createAction('STAGE_FILE');
+const stageAllFiles = createAction('STAGE_ALL_FILES');
 const unstageFile = createAction('UNSTAGE_FILE');
 const deleteFile = createAction('DELETE_FILE');
 const createCommit = createAction('CREATE_COMMIT');
@@ -55,7 +56,7 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
   [init]() {
     this.vis = new Visualisation();
 
-    this.workingDirectoryFileList = new VisualisationFileList();
+    this.workingDirectoryFileList = new VisualisationCommit();
     this.stagingAreaFileList = new VisualisationCommit();
 
     this.workingDirectory = new VisualisationArea('Working Directory');
@@ -90,9 +91,10 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
 
     this.console.add(
       new ConsoleCommand('Working Directory', {
-        available: () => this.activeFile != null && this.workingDirectory.has(this.activeFile),
+        available: () => this.workingDirectory.active,
         commands: [
           new ConsoleCommand('Modify file', {
+            available: () => this.activeFile != null,
             icon: '+-',
             message: ({ data }) => (
               <Fragment>
@@ -103,6 +105,7 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
             payloadCreator: () => this.activeFileIndex,
           }),
           new ConsoleCommand('Stage file', {
+            available: () => this.activeFile != null,
             icon: '↗',
             message: ({ data }) => (
               <Fragment>
@@ -112,7 +115,13 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
             action: stageFile,
             payloadCreator: () => this.activeFileIndex
           }),
+          new ConsoleCommand('Stage all files', {
+            icon: '↗',
+            message: () => 'All files were added to the staging area.',
+            action: stageAllFiles,
+          }),
           new ConsoleCommand('Delete file', {
+            available: () => this.activeFile != null,
             icon: '×',
             message: ({ data }) => (
               <Fragment>
@@ -121,7 +130,7 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
             ),
             action: deleteFile,
             payloadCreator: () => this.activeFileIndex,
-          }),
+          })
         ],
       }),
       new ConsoleCommand('Staging Area', {
@@ -210,6 +219,37 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
     }
 
     return stagedFile;
+  },
+  [stageAllFiles]() {
+    let files = this.workingDirectoryFileList.files;
+
+    files.forEach(file => {
+      let stagedFile = this.stagingAreaFileList.findCopies(file)[0];
+
+      if (stagedFile != null && !file.modified) {
+        return;
+      }
+
+      if (file.status !== STATUS_ADDED && file.status !== STATUS_DELETED && !file.modified) {
+        return;
+      }
+
+      if (stagedFile == null) {
+        stagedFile = file.copy();
+        this.stagingAreaFileList.add(stagedFile);
+        this.stagingAreaFileList.sortBy(file => (
+          this.workingDirectoryFileList.findCopies(file)[0].index
+        ));
+      } else {
+        stagedFile.merge(file);
+      }
+
+      if (file.status !== STATUS_DELETED) {
+        file.reset();
+      } else {
+        file.visible = false;
+      }
+    });
   },
   [unstageFile](fileIndex) {
     const file = this.vis.at(...fileIndex);

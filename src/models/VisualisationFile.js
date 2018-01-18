@@ -29,7 +29,7 @@ class VisualisationFile extends VisualisationObject {
       return false;
     }
 
-    return false;
+    return true;
   }
 
   @action modify() {

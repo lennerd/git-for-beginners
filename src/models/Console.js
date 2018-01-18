@@ -1,7 +1,7 @@
 import uuid from 'uuid/v4';
-import { observable, computed, action } from 'mobx';
+import { observable, action } from 'mobx';
 
-import BaseObject from './BaseObject';
+import ConsoleObject from './ConsoleObject';
 
 class ConsoleLog {
   id = uuid();
@@ -15,24 +15,10 @@ class ConsoleLog {
   }
 }
 
-class Console extends BaseObject {
+class Console extends ConsoleObject {
   isConsole = true;
 
   @observable history = [];
-
-  @computed get visibleCommands() {
-    return this.children.filter((command) => {
-      if (!command.available()) {
-        return false;
-      }
-
-      if (command.children.length > 0) {
-        return command.children.some(command => command.available);
-      }
-
-      return true;
-    });
-  }
 
   @action log(action, data) {
     this.store(action, { data });

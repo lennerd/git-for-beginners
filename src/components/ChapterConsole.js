@@ -92,7 +92,7 @@ class ChapterConsole extends Component {
         <ConsoleSection key={command.id}>
           <ConsoleLabel>{command.name}</ConsoleLabel>
           <ConsoleCommandList>
-            {command.commands.map(command => (
+            {command.visibleCommands.map(command => (
               command.available &&
               <ConsoleCommand key={command.id} onClick={() => this.runCommand(command, command)}>
                 <ConsoleIcon offset={iconMaxLength - command.icon.length}>{command.icon}</ConsoleIcon>
