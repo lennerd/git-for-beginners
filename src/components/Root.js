@@ -9,9 +9,9 @@ import glossary from '../glossary';
 
 import App from './App';
 
-function Root({ ticker }) {
+function Root() {
   return (
-    <Provider tutorial={tutorial} ticker={ticker} glossary={glossary}>
+    <Provider tutorial={tutorial} glossary={glossary}>
       <ThemeProvider theme={theme}>
         <App />
       </ThemeProvider>

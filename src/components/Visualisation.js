@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { inject, observer } from 'mobx-react';
+import { observer } from 'mobx-react';
+import { everyFrame } from 'popmotion';
 import { transaction } from 'mobx';
 
 import VisualisationScene from './VisualisationScene';
@@ -29,7 +30,6 @@ function dispatchEvent(object, event) {
   });
 }
 
-@inject('ticker')
 @observer
 class Visualisation extends Component {
   static defaultProps = {
@@ -45,12 +45,6 @@ class Visualisation extends Component {
   rect = new THREE.Vector2();
 
   handleTick = () => {
-    /*const { tick } = this.props.tutorial;
-
-    if (!tick) {
-      return;
-    }*/
-
     this.raycaster.setFromCamera(this.mouse, this.camera);
 
     this.prevIntersection = this.intersection;
@@ -104,7 +98,6 @@ class Visualisation extends Component {
       return;
     }
 
-
     dispatchEvent(this.intersection, new Event('click'));
   };
 
@@ -127,18 +120,14 @@ class Visualisation extends Component {
       return;
     }
 
-    const { ticker } = this.props;
-
-    ticker.removeEventListener('tick', this.handleTick);
     window.removeEventListener('resize', this.handleResize);
+    this.everyFrame.stop();
 
     this.renderer.dispose();
   }
 
   startTicking() {
-    const { /*tick, */ticker } = this.props;
-
-    if (this.ticking/* || !tick*/) {
+    if (this.ticking) {
       return;
     }
 
@@ -152,8 +141,8 @@ class Visualisation extends Component {
 
     this.renderer.shadowMap.enabled = true;
 
-    ticker.addEventListener('tick', this.handleTick);
     window.addEventListener('resize', this.handleResize);
+    this.everyFrame = everyFrame().start(this.handleTick);
 
     this.handleResize();
     this.handleTick();
