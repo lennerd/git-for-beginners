@@ -59,6 +59,7 @@ class VisualisationFile extends VisualisationObject {
     file.deletions = this.deletions;
     file.status = this.status;
     file.name = this.name;
+    file.copyPosition = this.position;
 
     return file;
   }

@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { withTheme } from 'styled-components';
 import { observer } from 'mobx-react';
-import { action, computed } from 'mobx';
+import { action, computed, reaction } from 'mobx';
+import { value, tween } from 'popmotion';
 
 import VisualisationObject3D from './VisualisationObject3D';
 import { LEVEL_HEIGHT, CELL_HEIGHT, CELL_WIDTH } from '../theme';
@@ -19,7 +20,7 @@ class VisualisationFile extends Component {
   constructor(props) {
     super();
 
-    const { theme } = props;
+    const { file, theme } = props;
 
     this.fileObject = new THREE.Group();
 
@@ -51,6 +52,53 @@ class VisualisationFile extends Component {
     this.fileObject.add(this.shadowMash);
     this.fileObject.add(this.hoverMesh);
     this.fileObject.add(this.fileMesh);
+
+    this.height = value(1, height => {
+      this.fileObject.scale.y = height;
+    });
+
+    this.position = value(file.position, position => {
+      this.fileObject.position.set(
+        CELL_HEIGHT * position.row,
+        LEVEL_HEIGHT * position.level,
+        CELL_WIDTH * position.column,
+      );
+    });
+
+    this.disposePosition = reaction(
+      () => file.position,
+      position => {
+        this.moveTo(position);
+      }
+    );
+  }
+
+  appear() {
+    tween({ from: 0, to: 1, duration: 400 }).start(this.height);
+  }
+
+  moveTo(to) {
+    tween({ from: this.position.get(), to, duration: 400 }).start(this.position);
+  }
+
+  moveFrom(from) {
+    tween({ from, to: this.position.get(), duration: 400 }).start(this.position);
+  }
+
+  componentDidMount() {
+    const { file } = this.props;
+
+    if (this.copies.length === 0) {
+      this.appear();
+    }
+
+    if (file.copyPosition != null) {
+      this.moveFrom(file.copyPosition);
+    }
+  }
+
+  componentWillUnmount() {
+    this.disposePosition();
   }
 
   @action.bound handleClick(event) {
@@ -94,12 +142,6 @@ class VisualisationFile extends Component {
 
   render() {
     const { children, file, theme } = this.props;
-
-    this.fileObject.position.set(
-      CELL_HEIGHT * file.position.row,
-      LEVEL_HEIGHT * file.position.level,
-      CELL_WIDTH * file.position.column,
-    );
 
     this.fileObject.visible = file.visible;
 
