@@ -74,7 +74,7 @@ class VisualisationFile extends Component {
   }
 
   appear() {
-    tween({ from: 0, to: 1, duration: 400 }).start(this.height);
+    tween({ from: 0, to: this.height.get(), duration: 400 }).start(this.height);
   }
 
   moveTo(to) {
