@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import { ChapterCheckbox } from './Chapter';
+
 function ChapterTip({ className, children }) {
   return (
     <div className={className}>
@@ -30,5 +32,9 @@ export default styled(ChapterTip)`
     font-style: normal;
     width: ${props => props.theme.spacing(1.75)};
     color: ${props => props.theme.color.highlight};
+  }
+
+  ${ChapterCheckbox} + & {
+    margin-top: ${props => props.theme.spacing(0.75)};
   }
 `;

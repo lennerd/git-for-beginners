@@ -1,27 +1,6 @@
 import React, { Component } from "react";
 import { Transition } from 'react-transition-group';
-import { value, tween } from "popmotion";
-import { MotionValue } from 'popmotion-react';
-
-/*function ChapterSectionTransition({ children, ...props }) {
-  const hidden = { opacity: 0 };
-  const visible = { opacity: 1 };
-
-  const actions = {
-    enter: tween({ from: hidden, to: visible, duration: 700, }),
-    exit: tween({ from: visible, to: hidden, duration: 700, }),
-  };
-
-  return (
-    <Transition {...props} actions={actions}>
-      {(status, { opacity }) => (
-        <div style={{ opacity }}>
-          {children}
-        </div>
-      )}
-    </Transition>
-  );
-}*/
+import { tween } from "popmotion";
 
 class ChapterSectionTransition extends Component {
   state = {
@@ -54,7 +33,7 @@ class ChapterSectionTransition extends Component {
     return (
       <Transition {...props} onEnter={this.handleEnter} onExit={this.handleExit} addEndListener={this.addEndListener}>
         {() => (
-          <div style={{ opacity }}>{children}</div>
+          <div style={{ opacity }} ref={ref => { this.container = ref }}>{children}</div>
         )}
       </Transition>
     );

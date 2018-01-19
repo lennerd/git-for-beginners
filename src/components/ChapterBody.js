@@ -1,4 +1,4 @@
-import React, { Component, createElement } from 'react';
+import React, { Component, createElement, Fragment } from 'react';
 import styled from 'styled-components';
 import { observer } from 'mobx-react';
 import { action } from 'mobx';
@@ -10,6 +10,7 @@ import { SECTION_TEXT, SECTION_TASK } from '../constants';
 import ChapterTip from './ChapterTip';
 import { readOn } from '../models/Chapter';
 import ChapterSectionTransition from './ChapterSectionTransition';
+import HeightTransition from './HeightTransition';
 
 @observer
 class ChapterBody extends Component {
@@ -23,7 +24,7 @@ class ChapterBody extends Component {
     const { chapter } = this.props;
 
     return (
-      <TransitionGroup>
+      <TransitionGroup component={Fragment} exit={false}>
         {chapter.visibleSections.map((section, index) => {
           if (section.is(SECTION_TEXT)) {
             return (
@@ -73,10 +74,10 @@ class ChapterBody extends Component {
     const { className } = this.props;
 
     return (
-      <div className={className}>
+      <HeightTransition className={className}>
         {this.renderSections()}
         {this.renderReadOn()}
-      </div>
+      </HeightTransition>
     );
   }
 }
