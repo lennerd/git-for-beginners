@@ -4,10 +4,6 @@ import { observer } from "mobx-react";
 
 import Console, { ConsoleMessage, ConsoleSection } from "./Console";
 
-/*  hasPrompt: false,
-  hasCommand: false,
-  hasParameters: false,*/
-
 @observer
 class Commandline extends Component {
   render() {

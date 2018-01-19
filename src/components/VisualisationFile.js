@@ -86,14 +86,8 @@ class VisualisationFile extends Component {
   }
 
   componentDidMount() {
-    const { file } = this.props;
-
     if (this.copies.length === 0) {
       this.appear();
-    }
-
-    if (file.copyPosition != null) {
-      this.moveFrom(file.copyPosition);
     }
   }
 
