@@ -26,6 +26,7 @@ class TutorialContainer extends Component {
             currentChapter.component != null &&
             createElement(currentChapter.component, {
               ...fonts,
+              key: currentChapter.id,
               chapter: currentChapter,
               tutorial,
             })

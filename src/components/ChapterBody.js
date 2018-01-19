@@ -1,13 +1,15 @@
-import React, { Component, Fragment, createElement } from 'react';
+import React, { Component, createElement } from 'react';
 import styled from 'styled-components';
 import { observer } from 'mobx-react';
 import { action } from 'mobx';
+import { TransitionGroup } from 'react-transition-group';
 
 import ChapterHeader from './ChapterHeader';
 import { ChapterText, ChapterReadOn, ChapterCheckbox } from './Chapter';
 import { SECTION_TEXT, SECTION_TASK } from '../constants';
 import ChapterTip from './ChapterTip';
 import { readOn } from '../models/Chapter';
+import ChapterSectionTransition from './ChapterSectionTransition';
 
 @observer
 class ChapterBody extends Component {
@@ -20,30 +22,36 @@ class ChapterBody extends Component {
   renderSections() {
     const { chapter } = this.props;
 
-    return chapter.visibleSections.map((section, index) => {
-      if (section.is(SECTION_TEXT)) {
-        return (
-          <ChapterText key={index}>
-            {createElement(section.text)}
-          </ChapterText>
-        );
-      }
+    return (
+      <TransitionGroup>
+        {chapter.visibleSections.map((section, index) => {
+          if (section.is(SECTION_TEXT)) {
+            return (
+              <ChapterSectionTransition key={index}>
+                <ChapterText>
+                  {createElement(section.text)}
+                </ChapterText>
+              </ChapterSectionTransition>
+            );
+          }
 
-      if (section.is(SECTION_TASK)) {
-        return (
-          <Fragment key={index}>
-            <ChapterCheckbox checked={section.done}>
-            {createElement(section.text)}
-            </ChapterCheckbox>
-            {
-              section.tip != null && <ChapterTip>{section.tip}</ChapterTip>
-            }
-          </Fragment>
-        );
-      }
+          if (section.is(SECTION_TASK)) {
+            return (
+              <ChapterSectionTransition key={index}>
+                <ChapterCheckbox checked={section.done}>
+                {createElement(section.text)}
+                </ChapterCheckbox>
+                {
+                  section.tip != null && <ChapterTip>{section.tip}</ChapterTip>
+                }
+              </ChapterSectionTransition>
+            );
+          }
 
-      throw new Error('Unknown section type.');
-    });
+          throw new Error('Unknown section type.');
+        })}
+      </TransitionGroup>
+    );
   }
 
   renderReadOn() {
