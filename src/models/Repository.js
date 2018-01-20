@@ -1,38 +1,35 @@
 import { observable, action } from 'mobx';
-import Chance from 'chance';
-import { Record, OrderedMap, OrderedSet } from 'immutable';
-import DiffMatchPatch from 'diff-match-patch';
+import { Record, Map, Set } from 'immutable';
 
-const dmp = new DiffMatchPatch();
-const chance = new Chance();
-
-export const STATUS_UNTRACKED = 0b1;
-export const STATUS_TRACKED = 0b10;
-export const STATUS_MODIFIED = 0b100;
-export const STATUS_STAGED = 0b1000;
-export const STATUS_UNMODIFIED = 0b10000;
+import chance from './chance';
 
 class Repository {
   workingDirectory = new WorkingDirectory();
   stagingArea = new StagingArea();
 
-  @observable.ref head;
-  @observable.ref commits = new OrderedSet();
+  @observable.ref commits = new Set();
+  @observable head;
+  @observable branches = [];
+
+  constructor() {
+    const master = new Branch('master');
+
+    this.head = master;
+    this.branches = [master];
+  }
 
   @action stageFile(file) {
-    const blob = this.workingDirectory.tree.get(file.name);
+    let stagedBlob = this.stagingArea.tree.get(file);
 
-    if (blob == null) {
-      throw new Error('Unknown file.');
-    }
-
-    let stagedBlob = this.stagingArea.tree.get(file.name);
-
-    if (stagedBlob != null && blob === stagedBlob) {
+    if (stagedBlob != null && file.blob === stagedBlob) {
       throw new Error('Cannot stage unmodified file.');
     }
 
-    this.stagingArea.tree = this.stagingArea.tree.set(file.name, blob);
+    this.stagingArea.tree = this.stagingArea.tree.set(file, file.blob);
+  }
+
+  @action unstageFile(file) {
+    this.stagingArea.tree = this.stagingArea.tree.remove(file);
   }
 
   @action createCommit(message = chance.sentence()) {
@@ -41,56 +38,72 @@ class Repository {
       message,
       time: Date.now(),
       tree: this.stagingArea.tree,
-      parent: this.head,
+      parent: this.head.commit,
     });
 
     this.commits = this.commits.add(commit);
-    this.head = commit;
+    this.head.commit = commit;
 
-    this.stagingArea.tree = new OrderedMap();
+    this.stagingArea.tree = this.stagingArea.tree.clear();
 
     return commit;
   }
 
   getFileStatus(file) {
-    const stagedBlob = this.stagingArea.tree.get(file.name);
+    /*let status = 0;
 
-    if (stagedBlob === file.blob) {
-      return STATUS_TRACKED | STATUS_STAGED;
+    if (!this.stagingArea.tree.has(file)) {
+      status = status | STATUS_UNTRACKED
+    } else {
+      status = status | STATUS_TRACKED;
     }
 
-    if (this.head != null) {
-      const committedBlob = this.head.tree.get(file.name);
+    if (this.head.commit != null) {
+      const committedBlob = this.head.commit.tree.get(file);
 
-      if (committedBlob !== file.blob) {
-        return STATUS_TRACKED | STATUS_MODIFIED;
+      if (committedBlob === file.blob) {
+        status = status | STATUS_UNMODIFIED;
       } else {
-        return STATUS_TRACKED | STATUS_UNMODIFIED;
+        status = status | STATUS_MODIFIED;
       }
     }
 
-    return STATUS_UNTRACKED;
+    const stagedBlob = this.stagingArea.tree.get(file);
+
+    if (stagedBlob != null && stagedBlob === file.blob) {
+      return STATUS_TRACKED | STATUS_STAGED;
+    }
+
+    if (this.head.commit != null) {
+      const committedBlob = this.head.commit.tree.get(file);
+
+      if (committedBlob === file.blob) {
+        return STATUS_TRACKED | STATUS_UNMODIFIED;
+      } else {
+        return STATUS_TRACKED | STATUS_MODIFIED;
+      }
+    }
+
+    return STATUS_TRACKED | STATUS_MODIFIED;*/
+
+    return 0;
   }
 }
 
 class WorkingDirectory {
-  @observable.ref tree = new OrderedMap();
+  @observable.ref tree = new Map();
 
-  @action saveFile(file) {
-    this.tree = this.tree.set(file.name, file.blob);
-
-    return file;
+  @action addFile(file) {
+    this.tree = this.tree.set(file, file.blob);
   }
 
-  @action deleteFile(file) {
-    this.tree = this.tree.remove(file.name);
-
-    return file;
+  @action removeFile(file) {
+    this.tree = this.tree.remove(file);
   }
 }
 
 class StagingArea {
-  @observable.ref tree = new OrderedMap();
+  @observable.ref tree = new Map();
 }
 
 class Commit extends Record({
@@ -103,56 +116,11 @@ class Commit extends Record({
 
 }
 
-class Blob extends Record({
-  content: '',
-}) {
-  merge(source) {
-    const patches = dmp.patch_make(this.content, source.content);
-    const content = dmp.patch_apply(patches, this.content)[0];
+class Branch {
+  @observable commit;
 
-    return this.set('content', content);
-  }
-}
-
-export class File {
-  @observable.ref blob;
-
-  constructor(name, content) {
+  constructor(name) {
     this.name = name;
-    this.blob = new Blob({ content });
-  }
-
-  static create(name = chance.unique(chance.word, 1, { length: 6 })[0]) {
-    const numberOfSentences = chance.natural({ min: 1, max: 10 });
-    const lines = chance.n(chance.sentence, numberOfSentences);
-
-    return new this(name, lines.join('\n'));
-  }
-
-  @action modify() {
-    const lines = this.blob.content.split('\n');
-    const turns = chance.natural({ min: 1, max: 3});
-
-    for (let i = 0; i < turns; i++) {
-      const index = chance.natural({ min: 0, max: lines.length }) - 1;
-      const newOrDelete = chance.natural({ min: 1, max: 3});
-
-      let numberOfDeletedLines = 0;
-      let newLines = [];
-
-      if (newOrDelete <= 2) {
-        const numberOfNewLines = chance.natural({ min: 1, max: 10 });
-        newLines = chance.n(chance.sentence, numberOfNewLines);
-      }
-
-      if (newOrDelete >= 2) {
-        numberOfDeletedLines = chance.natural({ min: 1, max: 10 });
-      }
-
-      lines.splice(index, numberOfDeletedLines, ...newLines);
-    }
-
-    this.blob = new Blob({ content: lines.join('\n') });
   }
 }
 

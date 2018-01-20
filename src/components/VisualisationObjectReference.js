@@ -44,6 +44,11 @@ class VisualisationObjectReference extends Component {
   render() {
     const { object, children } = this.props;
 
+    if (object == null) {
+      return children;
+    }
+    console.log(object);
+
     return (
       <VisualisationReference
         active={object.active}

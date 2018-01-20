@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { action, computed } from 'mobx';
+import { action } from 'mobx';
 import { observer } from 'mobx-react';
 import { withTheme } from 'styled-components';
 

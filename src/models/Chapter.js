@@ -8,6 +8,8 @@ import TutorialChapter from '../components/TutorialChapter';
 export const readOn = createAction('READ_ON');
 export const init = createAction('INIT');
 
+class ConsoleError extends Error {}
+
 class Chapter {
   sections = [];
   console = null;
@@ -104,6 +106,10 @@ class Chapter {
         data = this[action.type](action.payload);
       }
     } catch (error) {
+      if (!(error instanceof ConsoleError)) {
+        throw error;
+      }
+
       console.error(error);
 
       if (this.console != null) {

@@ -6,7 +6,7 @@ import { value, tween } from 'popmotion';
 
 import VisualisationObject3D from './VisualisationObject3D';
 import { LEVEL_HEIGHT, CELL_HEIGHT, CELL_WIDTH } from '../theme';
-import { STATUS_ADDED, STATUS_DELETED, STATUS_MODIFIED } from '../constants';
+import { STATUS_DELETED, STATUS_ADDED, STATUS_MODIFIED } from '../constants';
 
 export const FILE_SIZE_RATIO = 1 / Math.sqrt(2);
 export const FILE_HEIGHT = LEVEL_HEIGHT / 2;
@@ -85,11 +85,11 @@ class VisualisationFile extends Component {
     tween({ from, to: this.position.get(), duration: 400 }).start(this.position);
   }
 
-  componentDidMount() {
+  /*componentDidMount() {
     if (this.copies.length === 0) {
       this.appear();
     }
-  }
+  }*/
 
   componentWillUnmount() {
     this.disposePosition();
@@ -116,7 +116,7 @@ class VisualisationFile extends Component {
     file.hover = false;
   };
 
-  @computed get copies() {
+  /*@computed get copies() {
     const { file, vis } = this.props;
 
     return vis.findCopies(file);
@@ -132,16 +132,15 @@ class VisualisationFile extends Component {
     const { file } = this.props;
 
     return file.insideArea && this.copies.some(file => file.active);
-  }
+  }*/
 
   render() {
-    const { children, file, theme } = this.props;
+    const { children, file, theme, vis } = this.props;
 
     this.fileObject.visible = file.visible;
 
     this.hoverMesh.material.visible = file.hover || file.active || this.copiesHovered || this.copiesActive;
     this.hoverMesh.material.opacity = file.active ? 1 : file.hover ? 0.7 : 0.3;
-    //this.hoverMesh.material.color = file.status !== STATUS_MODIFIED ? new THREE.Color(0xFFFFFF) : theme.color.highlight;
 
     let color = theme.color.fileDefault;
 
@@ -155,7 +154,7 @@ class VisualisationFile extends Component {
 
     // Add small offset when for not new or deleted files so no artefacts appear between colors.
     this.fileMesh.material.polygonOffset = true;
-    this.fileMesh.material.polygonOffsetFactor = file.status !== STATUS_MODIFIED ? -0.01 : 0;
+    this.fileMesh.material.polygonOffsetFactor = file.status === STATUS_MODIFIED ? -0.01 : 0;
 
     this.fileMesh.material.needsUpdate = true;
 
