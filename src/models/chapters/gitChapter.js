@@ -81,7 +81,7 @@ const introductionChapter = createChapter('Git', {
     new ChapterText(() => 'Let’s take a look at the different parts of Git.'),
     new ChapterText(() => (
       <Fragment>
-        First, there is the <strong>working directory</strong>, the folder on your computer where all the files and folders of your project are stored in. Here you add, modify or delete files with other software like you are used to.
+        First, there is the <strong>working directory</strong>, the folder on your computer where all the files of your project are stored in. Here you add, modify or delete files with other software like you are used to.
       </Fragment>
     )),
     new ChapterText(() => (

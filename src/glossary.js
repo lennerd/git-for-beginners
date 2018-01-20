@@ -18,17 +18,20 @@ export default new Glossary({
   )),
   repository: new GlossaryTerm('Repository', () => (
     <Fragment>
-      <p>The repository is the version database of your project.</p>
+      <p>The repository is the version database storing all the versions of your project as <TooltipTerm name="commit">commits</TooltipTerm>.</p>
+      <p>At it's core it's a very simple object database initialised in your project folder.</p>
     </Fragment>
   )),
   stagingArea: new GlossaryTerm('Staging Area', () => (
     <Fragment>
-      <p>Staging area.</p>
+      <p>The staging area can be used to collect changes in your file you want to be part of your next version.</p>
+      <p>This way you are able to group changes into seperate version, e.g. by feature or topic.</p>
     </Fragment>
   )),
   workingDirectory: new GlossaryTerm('Working Directory', () => (
     <Fragment>
-      <p>Working Directory.</p>
+      <p>The working directory is essentially the folder on your computer where all the files of your project are stored in.</p>
+      <p>Here you add, modify or delete files with other software like you are used to.</p>
     </Fragment>
   )),
 });

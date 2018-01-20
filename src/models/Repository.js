@@ -7,6 +7,7 @@ import chance from './chance';
 class Repository {
   workingDirectory = new WorkingDirectory();
   stagingArea = new StagingArea();
+  fileSystem = new Set();
 
   @observable.ref commits = new Set();
   @observable head;
@@ -17,6 +18,14 @@ class Repository {
 
     this.head = master;
     this.branches = [master];
+  }
+
+  @action addFile(file) {
+    this.fileSystem = this.fileSystem.add(file);
+  }
+
+  @action removeFile(file) {
+    this.fileSystem = this.fileSystem.remove(file);
   }
 
   @action stageFile(file) {
