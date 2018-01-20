@@ -8,7 +8,7 @@ import { STATUS_ADDED, STATUS_MODIFIED, STATUS_UNMODIFIED, STATUS_DELETED } from
 import { Set } from "immutable";
 import sortBy from 'lodash/sortBy';
 
-class FileVisualisation extends VisualisationFile {
+class BlobVisualisation extends VisualisationFile {
   constructor(vis, fileList, file, status, diff = { added: 0, removed: 0 }) {
     super();
 
@@ -79,41 +79,38 @@ class CommitVisualisation extends VisualisationFileList {
   getChildren() {
     const children = [];
 
-    let files = Set.fromKeys(this.commit.tree);
-
-    if (this.commit.parent != null) {
-      files = files.concat(this.commit.parent.tree.keySeq());
-    }
-
-    for (let file of files) {
+    for (let [file, blob] of this.commit.tree) {
       let status = STATUS_UNMODIFIED;
       let parentBlob;
       let diff;
 
-      if (this.commit.tree.has(file)) {
-        // File is part of this commit.
-        if (this.commit.parent != null) {
-          parentBlob = this.commit.parent.tree.get(file);
-        }
-
-        if (parentBlob == null) {
-          // File was added in this commit.
-          status = STATUS_ADDED;
-        }
-
-        if (parentBlob != null && parentBlob !== file.blob) {
-          // File was changed in this commit.
-          status = STATUS_MODIFIED;
-          diff = file.blob.diff(parentBlob);
-        }
-      } else if (this.commit.parent != null && this.commit.parent.tree.has(file)) {
-        // File is not part of this commit.
-        status = STATUS_DELETED;
-      } else {
-        continue;
+      // File is part of this commit.
+      if (this.commit.parent != null) {
+        parentBlob = this.commit.parent.tree.get(file);
       }
 
-      children.push(new FileVisualisation(this.vis, this, file, status, diff));
+      if (parentBlob == null) {
+        // File was added in this commit.
+        status = STATUS_ADDED;
+      }
+
+      if (parentBlob != null && parentBlob !== blob) {
+        // File was changed in this commit.
+        status = STATUS_MODIFIED;
+        diff = blob.diff(parentBlob);
+      }
+
+      children.push(new BlobVisualisation(this.vis, this, file, status, diff));
+    }
+
+    if (this.commit.parent != null) {
+      for (let file of this.commit.parent.tree.keys()) {
+        if (this.commit.tree.has(file)) {
+          continue;
+        }
+
+        children.push(new BlobVisualisation(this.vis, this, file, STATUS_DELETED));
+      }
     }
 
     return sortBy(children, visFile => visFile.file.name);
@@ -131,15 +128,15 @@ class StagingAreaVisualisation extends VisualisationArea {
 
     this.fileList = new VisualisationFileList();
     this.fileList.getParent = () => this;
-    this.fileList.getChildren = () => this.visFiles;
+    this.fileList.getChildren = () => this.blobs;
   }
 
-  @computed get visFiles() {
+  @computed get blobs() {
     const { stagingArea, workingDirectory, head } = this.repo;
-    const visFiles = [];
+    const blobs = [];
 
     if (stagingArea.tree == null) {
-      return visFiles;
+      return blobs;
     }
 
     for (let file of this.vis.files) {
@@ -176,10 +173,10 @@ class StagingAreaVisualisation extends VisualisationArea {
         continue;
       }
 
-      visFiles.push(new FileVisualisation(this.vis, this.fileList, file, status, diff));
+      blobs.push(new BlobVisualisation(this.vis, this.fileList, file, status, diff));
     }
 
-    return sortBy(visFiles, visFile => visFile.file.name);
+    return sortBy(blobs, visFile => visFile.file.name);
   }
 
   getParent() {
@@ -204,12 +201,12 @@ class WorkingDirectoryVisualisation extends VisualisationArea {
 
     this.fileList = new VisualisationFileList();
     this.fileList.getParent = () => this;
-    this.fileList.getChildren = () => this.fileListChildren;
+    this.fileList.getChildren = () => this.blobs;
   }
 
-  @computed get fileListChildren() {
+  @computed get blobs() {
     const { stagingArea, workingDirectory, head } = this.repo;
-    const children = [];
+    const blobs = [];
 
     for (let file of this.vis.files) {
       let status = STATUS_UNMODIFIED;
@@ -264,10 +261,10 @@ class WorkingDirectoryVisualisation extends VisualisationArea {
         continue;
       }
 
-      children.push(new FileVisualisation(this.vis, this.fileList, file, status, diff));
+      blobs.push(new BlobVisualisation(this.vis, this.fileList, file, status, diff));
     }
 
-    return sortBy(children, visFile => visFile.file.name);
+    return sortBy(blobs, visFile => visFile.file.name);
   }
 
   getParent() {
