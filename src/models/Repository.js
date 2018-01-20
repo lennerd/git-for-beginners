@@ -49,7 +49,15 @@ class Repository {
   }
 
   @action createCommit(message = chance.sentence()) {
-    const tree = this.stagingArea.tree.concat(this.workingDirectory.tree);
+    let tree = this.stagingArea.tree;
+
+    if (tree == null) {
+      return;
+    }
+
+    if (this.head.commit != null) {
+      tree = this.head.commit.tree.concat(this.stagingArea.tree);
+    }
 
     const commit = new Commit({
       author: chance.name(),
