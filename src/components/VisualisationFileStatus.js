@@ -3,7 +3,7 @@ import { withTheme } from 'styled-components';
 import { observer } from 'mobx-react';
 
 import VisualisationObject3D from './VisualisationObject3D';
-import { STATUS_ADDED, STATUS_DELETED } from '../constants';
+import { STATUS_ADDED, STATUS_DELETED, STATUS_MODIFIED } from '../constants';
 import { FILE_WIDTH, FILE_DEPTH, FILE_HEIGHT } from './VisualisationFile';
 
 const CHANGE_SIGNS = 4;
@@ -32,7 +32,8 @@ class FileStatus extends Component {
   }
 
   render() {
-    const { theme, font, vis, file } = this.props;
+    const { theme, font, file } = this.props;
+    const changes = file.diff.added + file.diff.removed;
 
     let geometry;
 
@@ -51,8 +52,8 @@ class FileStatus extends Component {
         face.color = new THREE.Color(0xFFFFFFF);
       }
     } else {
-      let plus = Math.round((file.insertions / vis.maxChanges) * CHANGE_SIGNS);
-      let minus = Math.round((file.deletions / vis.maxChanges) * CHANGE_SIGNS);
+      let plus = Math.round((file.diff.added / changes) * CHANGE_SIGNS);
+      let minus = Math.round((file.diff.removed / changes) * CHANGE_SIGNS);
 
       // Min plusses
       if (plus === 0 && file.insertions > 0) {

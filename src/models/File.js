@@ -1,10 +1,8 @@
 import { observable, action } from 'mobx';
-import DiffMatchPatch from 'diff-match-patch';
 import { Record } from 'immutable';
+import { diffLines } from 'diff';
 
 import chance from './chance';
-
-const dmp = new DiffMatchPatch();
 
 class File {
   @observable.ref blob;
@@ -23,7 +21,7 @@ class File {
 
   @action modify() {
     const lines = this.blob.content.split('\n');
-    const turns = chance.natural({ min: 1, max: 3});
+    const turns = chance.natural({ min: 1, max: 10});
 
     for (let i = 0; i < turns; i++) {
       const index = chance.natural({ min: 0, max: lines.length }) - 1;
@@ -51,11 +49,23 @@ class File {
 class Blob extends Record({
   content: '',
 }) {
-  merge(source) {
+  /*merge(source) {
     const patches = dmp.patch_make(this.content, source.content);
     const [content] = dmp.patch_apply(patches, this.content);
 
     return this.set('content', content);
+  }*/
+
+  diff(source) {
+    return diffLines(this.content, source.content).reduce((diff, change) => {
+      if (change.removed) {
+        diff.removed += change.count;
+      } else if (change.added) {
+        diff.added += change.count;
+      }
+
+      return diff;
+    }, { added: 0, removed: 0 });
   }
 }
 

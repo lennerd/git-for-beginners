@@ -1,5 +1,6 @@
-import { observable, action } from 'mobx';
+import { observable, action, computed } from 'mobx';
 import { Record, Map, Set } from 'immutable';
+import sha1 from 'js-sha1';
 
 import chance from './chance';
 
@@ -19,9 +20,31 @@ class Repository {
   }
 
   @action stageFile(file) {
-    let stagedBlob = this.stagingArea.tree.get(file);
+    if (this.stagingArea.tree == null) {
+      // No stage tree yet.
+      this.stagingArea.tree = new Map();
+    }
 
-    if (stagedBlob != null && file.blob === stagedBlob) {
+    if (!this.workingDirectory.tree.has(file)) {
+      // File does not exist in the working directory, so also remove it from the staging area.
+      this.stagingArea.tree = this.stagingArea.tree.remove(file);
+
+      return;
+    }
+
+    const stagedBlob = this.stagingArea.tree.get(file);
+    let committedBlob;
+
+    if (this.head.commit != null) {
+      // Get blob from checkedout commit
+      committedBlob = this.head.commit.tree.get(file);
+    }
+
+    if (
+      (stagedBlob != null && file.blob === stagedBlob) ||
+      (committedBlob != null && file.blob === committedBlob)
+    ) {
+      // File has no changes to the last staged OR committed file.
       throw new Error('Cannot stage unmodified file.');
     }
 
@@ -29,64 +52,39 @@ class Repository {
   }
 
   @action unstageFile(file) {
+    if (this.stagingArea.tree == null) {
+      return;
+    }
+
     this.stagingArea.tree = this.stagingArea.tree.remove(file);
+
+    if (this.stagingArea.tree.size === 0) {
+      // Remove tree from staging area if no other file exists.
+      this.stagingArea.tree = null;
+    }
   }
 
   @action createCommit(message = chance.sentence()) {
+    const tree = this.stagingArea.tree.concat(this.workingDirectory.tree);
+
     const commit = new Commit({
       author: chance.name(),
       message,
       time: Date.now(),
-      tree: this.stagingArea.tree,
+      tree,
       parent: this.head.commit,
     });
 
     this.commits = this.commits.add(commit);
     this.head.commit = commit;
 
-    this.stagingArea.tree = this.stagingArea.tree.clear();
+    this.stagingArea.tree = null;
 
     return commit;
   }
 
-  getFileStatus(file) {
-    /*let status = 0;
-
-    if (!this.stagingArea.tree.has(file)) {
-      status = status | STATUS_UNTRACKED
-    } else {
-      status = status | STATUS_TRACKED;
-    }
-
-    if (this.head.commit != null) {
-      const committedBlob = this.head.commit.tree.get(file);
-
-      if (committedBlob === file.blob) {
-        status = status | STATUS_UNMODIFIED;
-      } else {
-        status = status | STATUS_MODIFIED;
-      }
-    }
-
-    const stagedBlob = this.stagingArea.tree.get(file);
-
-    if (stagedBlob != null && stagedBlob === file.blob) {
-      return STATUS_TRACKED | STATUS_STAGED;
-    }
-
-    if (this.head.commit != null) {
-      const committedBlob = this.head.commit.tree.get(file);
-
-      if (committedBlob === file.blob) {
-        return STATUS_TRACKED | STATUS_UNMODIFIED;
-      } else {
-        return STATUS_TRACKED | STATUS_MODIFIED;
-      }
-    }
-
-    return STATUS_TRACKED | STATUS_MODIFIED;*/
-
-    return 0;
+  @action revertCommit(commit) {
+    this.workingDirectory.tree = commit.tree;
   }
 }
 
@@ -103,7 +101,7 @@ class WorkingDirectory {
 }
 
 class StagingArea {
-  @observable.ref tree = new Map();
+  @observable.ref tree;
 }
 
 class Commit extends Record({
@@ -113,7 +111,13 @@ class Commit extends Record({
   tree: null,
   parent: null,
 }) {
+  @computed get checksum() {
+    return sha1(JSON.stringify(this.toJS()));
+  }
 
+  @computed get checksumShort() {
+    return this.checksum.substring(0, 7);
+  }
 }
 
 class Branch {

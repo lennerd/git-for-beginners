@@ -12,6 +12,10 @@ class VisualisationFile extends VisualisationObject {
   @observable status = STATUS_ADDED;
   @observable name;
 
+  @computed get diff() {
+    return { added: this.insertions, removed: this.deletions };
+  }
+
   @computed get modified() {
     return this.insertions > 0 || this.deletions > 0;
   }

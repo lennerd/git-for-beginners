@@ -41,53 +41,27 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
 
     return activeVisFile.file;
   },
-  /*
-  get activeCommitIndex() {
-    return this.repository.commits.find(commit => commit.active).nestedIndex;
+
+  get activeCommit() {
+    const activeVisCommit = this.vis.repository.find(object => object.isCommit && object.active);
+
+    console.log(activeVisCommit);
+
+    if (activeVisCommit == null) {
+      return null;
+    }
+
+    return activeVisCommit.commit;
   },
-  */
   [init]() {
     this.repo = new Repository();
 
     this.vis = new GitVisualisation(this.repo);
 
-    /*this.vis = new Visualisation();
-
-    this.workingDirectoryFileList = new VisualisationCommit();
-    this.stagingAreaFileList = new VisualisationCommit();
-
-    this.workingDirectory = new VisualisationWorkingDirectory();
-    this.workingDirectory.add(this.workingDirectoryFileList);
-
-    this.stagingArea = new VisualisationStagingArea();
-    this.stagingArea.column = 1;
-    this.stagingArea.add(this.stagingAreaFileList);
-
-    this.repository = new VisualisationRepository();
-    this.repository.column = 2;
-    this.repository.height = 10;
-    this.repository.width = 4;
-
-    this.vis.add(
-      this.workingDirectory,
-      this.stagingArea,
-      this.repository,
-    );
-
-    const files = [
-      new VisualisationFile(),
-      new VisualisationFile(),
-      new VisualisationFile()
-    ];
-
-    this.workingDirectoryFileList.add(
-      ...files
-    );*/
-
     this.console = new Console();
 
     this.console.add(
-      new ConsoleCommand('Working Directory', {
+      /*new ConsoleCommand('Working Directory', {
         available: () => this.vis.workingDirectory.active,
         commands: [
           new ConsoleCommand('Stage all files.', {
@@ -96,7 +70,7 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
             action: stageAllFiles,
           }),
         ],
-      }),
+      }),*/
       new ConsoleCommand('File', {
         available: () => this.vis.workingDirectory.active,
         commands: [
@@ -175,7 +149,7 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
               </Fragment>
             ),
             action: revertCommit,
-            payloadCreator: () => this.activeFile.name,
+            payloadCreator: () => this.activeCommit.checksum,
           }),
         ],
       }),
@@ -194,39 +168,10 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
     const file = File.create();
 
     this.repo.workingDirectory.addFile(file);
+    console.log('add file', file.name);
 
     return file;
   },
-  /*stageFile(file) {
-    let stagedFile = this.stagingAreaFileList.findCopies(file)[0];
-
-    if (stagedFile != null && file.status === stagedFile.status && !file.modified) {
-      throw () => 'File already staged.';
-    }
-
-    if (file.status !== STATUS_ADDED && file.status !== STATUS_DELETED && !file.modified) {
-      throw () => 'Only modified files can be staged.';
-    }
-
-    if (stagedFile == null) {
-      stagedFile = file.copy();
-      this.stagingAreaFileList.add(stagedFile);
-      this.stagingAreaFileList.sortBy(file => (
-        this.workingDirectoryFileList.findCopies(file)[0].index
-      ));
-    } else {
-      stagedFile.merge(file);
-    }
-
-    if (file.status !== STATUS_DELETED) {
-      file.reset();
-    } else {
-      file.visible = false;
-      stagedFile.visible = this.repository.findCopies(stagedFile).length > 0;
-    }
-
-    return stagedFile;
-  },*/
   [stageFile](fileName) {
     const file = this.vis.files.find(file => file.name === fileName);
 
@@ -234,8 +179,8 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
 
     return file;
   },
-  [stageAllFiles]() {
-    /*let files = this.workingDirectoryFileList.files;
+  /*[stageAllFiles]() {
+    let files = this.workingDirectoryFileList.files;
 
     files.forEach(file => {
       try {
@@ -243,9 +188,9 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
       } catch (e) {
         console.error(e);
       }
-    });*/
+    });
     throw new Error('Not yet.');
-  },
+  },*/
   [unstageFile](fileName) {
     const file = this.vis.files.find(file => file.name === fileName);
 
@@ -261,73 +206,28 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
     return file;
   },
   [modifyFile](fileName) {
-    throw new Error('Not yet.');
-    /*const file = this.vis.at(...fileName);
+    const file = this.vis.files.find(file => file.name === fileName);
 
-    file.insertions += insertions;
-    file.deletions += deletions;
+    file.modify();
 
-    return file;*/
+    this.repo.workingDirectory.addFile(file);
+
+    return file;
   },
   [createCommit]() {
-    throw new Error('Not yet.');
-    /*const lastCommit = this.repository.commits[this.repository.commits.length - 1];
-    let commit;
-
-    if (lastCommit == null) {
-      commit = new VisualisationCommit();
-    } else {
-      commit = lastCommit.copy();
-
-      commit.files.forEach(file => {
-        if (file.status === STATUS_DELETED) {
-          file.visible = false;
-        }
-
-        const stagedFile = this.stagingAreaFileList.findCopies(file)[0];
-
-        if (stagedFile != null) {
-          file.reset(stagedFile);
-          // @IDEA for animation later: copy also already existing files (copies) into commit and ignore copies while calculating the level.
-          this.stagingAreaFileList.remove(stagedFile);
-        } else {
-          file.reset();
-        }
-      });
-
-      commit.parentCommit = lastCommit;
-    }
-
-    commit.add(
-      ...this.stagingAreaFileList.files,
-    );
-
-    this.repository.add(commit);
-    this.head = commit;
-
-    return commit;*/
+    return this.repo.createCommit();
   },
-  [revertCommit](commitIndex) {
-    throw new Error('Not yet.');
-    /*const commit = this.vis.at(...commitIndex);
+  [revertCommit](commitChecksum) {
+    const commit = this.repo.commits.find(commit => commit.checksum === commitChecksum);
 
-    let parentCommit = this.head;
-
-    while (parentCommit != null) {
-      parentCommit.files.forEach(file => {
-        const baseFile = this.workingDirectoryFileList.findCopies(file)[0];
-
-        baseFile.revert(file);
-      });
-
-      if (parentCommit === commit) {
-        break;
-      }
-
-      parentCommit = parentCommit.parentCommit;
+    if (commit == null) {
+      console.error('Missing commit');
+      return;
     }
 
-    return commit;*/
+    this.repo.revertCommit(commit);
+
+    return commit;
   },
   get sections() {
     return [

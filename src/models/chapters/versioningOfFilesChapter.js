@@ -57,28 +57,28 @@ const versioningOfFilesChapter = createChapter('Versioning of Files', {
     ];
   },
   get hasFiles() {
-    return this.vis.files.length > 0;
+    return this.vis.visFiles.length > 0;
   },
   get hasCopiedFile() {
-    return this.vis.files.length > 1;
+    return this.vis.visFiles.length > 1;
   },
   get hasBackups() {
-    return this.vis.files.length > 3;
+    return this.vis.visFiles.length > 3;
   },
   get hasRestoredFiles() {
     return this.state.has(restoreFile);
   },
   get hasModifiedFiles() {
-    return this.vis.files.some(file => file.insertions > 0 || file.deletions > 0);
+    return this.vis.visFiles.some(file => file.insertions > 0 || file.deletions > 0);
   },
   get hasVersionDatabase() {
-    return this.vis.areas.includes(this.versionDatabase);
+    return this.vis.visAreas.includes(this.versionDatabase);
   },
   get activeFileIndex() {
-    return this.vis.files.findIndex(file => file.active);
+    return this.vis.visFiles.findIndex(file => file.active);
   },
   get activeFile() {
-    return this.vis.files[this.activeFileIndex];
+    return this.vis.visFiles[this.activeFileIndex];
   },
   [init]() {
     this.vis = new Visualisation();
@@ -91,7 +91,7 @@ const versioningOfFilesChapter = createChapter('Versioning of Files', {
 
     this.console.add(
       new ConsoleCommand('Version', {
-        available: () => this.activeFile != null && this.hasVersionDatabase && this.activeFileIndex < (this.vis.files.length - 1),
+        available: () => this.activeFile != null && this.hasVersionDatabase && this.activeFileIndex < (this.vis.visFiles.length - 1),
         commands: [
           new ConsoleCommand('Restore', {
             icon: '↙',
@@ -102,7 +102,7 @@ const versioningOfFilesChapter = createChapter('Versioning of Files', {
         ],
       }),
       new ConsoleCommand('File', {
-        available: () => this.activeFile != null && (!this.hasVersionDatabase || this.activeFileIndex === (this.vis.files.length - 1)),
+        available: () => this.activeFile != null && (!this.hasVersionDatabase || this.activeFileIndex === (this.vis.visFiles.length - 1)),
         commands: [
           new ConsoleCommand('Modify', {
             icon: '+-',
@@ -120,7 +120,7 @@ const versioningOfFilesChapter = createChapter('Versioning of Files', {
           new ConsoleCommand('Copy', {
             icon: '↗',
             message: () => 'File was copied.',
-            available: () => !this.hasVersionDatabase && this.activeFileIndex === (this.vis.files.length - 1),
+            available: () => !this.hasVersionDatabase && this.activeFileIndex === (this.vis.visFiles.length - 1),
             action: copyFile,
             payloadCreator: () => this.activeFileIndex,
           }),
@@ -154,14 +154,14 @@ const versioningOfFilesChapter = createChapter('Versioning of Files', {
     this.vis.add(file);
   },
   [modifyFile]({ fileIndex, insertions, deletions }) {
-    const file = this.vis.files[fileIndex];
+    const file = this.vis.visFiles[fileIndex];
 
     file.insertions += insertions;
     file.deletions += deletions;
   },
   nameIndex: 0,
   [copyFile](fileIndex) {
-    const file = this.vis.files[fileIndex];
+    const file = this.vis.visFiles[fileIndex];
 
     const copy = file.copy();
     copy.visible = file.status !== STATUS_DELETED;
@@ -174,45 +174,45 @@ const versioningOfFilesChapter = createChapter('Versioning of Files', {
 
     copy.name = name;
 
-    this.vis.files.forEach((file, index) => {
+    this.vis.visFiles.forEach((file, index) => {
       if (this.hasVersionDatabase) {
-        file.row = this.vis.files.length - (index + 1);
+        file.row = this.vis.visFiles.length - (index + 1);
         file.column = 1;
         file.visible = true;
         file.name = `Version ${index + 1}`;
       } else {
-        file.column = this.vis.files.length - index;
+        file.column = this.vis.visFiles.length - index;
       }
     });
 
     this.vis.add(copy);
   },
   [deleteFile](fileIndex) {
-    const file = this.vis.files[fileIndex];
+    const file = this.vis.visFiles[fileIndex];
     file.status = STATUS_DELETED;
     file.reset();
 
     if (!this.hasVersionDatabase) {
       this.vis.remove(file);
 
-      this.vis.files.forEach((file, index) => {
-        file.column = this.vis.files.length - (index + 1);
+      this.vis.visFiles.forEach((file, index) => {
+        file.column = this.vis.visFiles.length - (index + 1);
       });
     }
   },
   [addVersionDatabase]() {
     this.vis.add(this.versionDatabase);
 
-    this.vis.files.forEach((file, index) => {
-      file.column = index < (this.vis.files.length - 1) ? 1 : 0;
-      file.row = index < (this.vis.files.length - 1) ? this.vis.files.length - (index + 2) : 0;
+    this.vis.visFiles.forEach((file, index) => {
+      file.column = index < (this.vis.visFiles.length - 1) ? 1 : 0;
+      file.row = index < (this.vis.visFiles.length - 1) ? this.vis.visFiles.length - (index + 2) : 0;
       file.visible = true;
-      file.name = index === (this.vis.files.length - 1) ? 'file' : `Version ${index + 1}`;
+      file.name = index === (this.vis.visFiles.length - 1) ? 'file' : `Version ${index + 1}`;
     });
   },
   [restoreFile](fileIndex) {
-    const file = this.vis.files[fileIndex];
-    const currentFile = this.vis.files[this.vis.files.length - 1];
+    const file = this.vis.visFiles[fileIndex];
+    const currentFile = this.vis.visFiles[this.vis.visFiles.length - 1];
 
     currentFile.insertions += file.insertions;
     currentFile.deletions += file.deletions;

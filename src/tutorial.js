@@ -30,11 +30,6 @@ autorun(() => {
   const deserializedTutorialState = serialize(tutorialState);
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(deserializedTutorialState));
-
-  if (process.env.NODE_ENV === 'development') {
-    console.log('---');
-    console.log(deserializedTutorialState);
-  }
 });
 
 const tutorial = new Tutorial(tutorialState);

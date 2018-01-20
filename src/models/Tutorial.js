@@ -90,6 +90,7 @@ class Tutorial {
     });
 
     this.state.chapterStates = this.chapters.map(chapter => chapter.state);
+    window.location.reload(true);
   }
 
   @action navigate(chapter) {

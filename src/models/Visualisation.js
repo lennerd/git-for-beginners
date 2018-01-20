@@ -5,21 +5,21 @@ import VisualisationObject from "./VisualisationObject";
 class Visualisation extends VisualisationObject {
   isVisulisation = true;
 
-  @computed get files() {
+  @computed get visFiles() {
     return this.filter(object => object.isFile);
   }
 
-  @computed get commits() {
-    return this.filter(object => object.isCommit);
+  @computed get visFileLists() {
+    return this.filter(object => object.isFileList);
   }
 
-  @computed get areas() {
+  @computed get visAreas() {
     return this.filter(object => object.isArea);
   }
 
   @computed get maxChanges() {
     return Math.max(
-      ...this.files.map(file => file.changes),
+      ...this.visFiles.map(file => file.changes),
     );
   }
 }

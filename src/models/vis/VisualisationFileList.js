@@ -8,6 +8,10 @@ class VisualisationFileList extends VisualisationObject {
   @computed get files() {
     return this.filter(object => object.isFile && object.visible);
   }
+
+  @computed get height() {
+    return this.files.length;
+  }
 }
 
 export default VisualisationFileList;

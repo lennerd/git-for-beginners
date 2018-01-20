@@ -22,11 +22,11 @@ class TutorialChapter extends Component {
 
     return (
       <Visualisation vis={chapter.vis}>
-        {/*chapter.vis.commits.map(commit => (
+        {chapter.vis.visFileLists.map(commit => (
           <VisualisationCommit commit={commit} key={commit.id} vis={chapter.vis}>
-            <VisualisationPopup font={fontRegular} level={commit.height} content={commit.checksumShort} visible={commit.active && commit.committed} />
+            {commit.isCommit && <VisualisationPopup font={fontRegular} level={commit.height} content={commit.commit.checksumShort} />}
           </VisualisationCommit>
-        ))*/}
+        ))}
         {chapter.vis.visFiles.map(file => (
           <VisualisationFile key={file.id} vis={chapter.vis} file={file}>
             <VisualisationFileStatus font={fontBlack} file={file} vis={chapter.vis} />
