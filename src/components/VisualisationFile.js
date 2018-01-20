@@ -134,12 +134,24 @@ class VisualisationFile extends Component {
     return file.insideArea && this.copies.some(file => file.active);
   }*/
 
+  @computed get versionsHovered() {
+    const { file, vis } = this.props;
+
+    return vis.getVersions(file).some(file => file.hover);
+  }
+
+  @computed get versionsActive() {
+    const { file, vis } = this.props;
+
+    return vis.getVersions(file).some(file => file.active);
+  }
+
   render() {
-    const { children, file, theme, vis } = this.props;
+    const { children, file, theme } = this.props;
 
     this.fileObject.visible = file.visible;
 
-    this.hoverMesh.material.visible = file.hover || file.active || this.copiesHovered || this.copiesActive;
+    this.hoverMesh.material.visible = file.hover || file.active || this.versionsHovered || this.versionsActive;
     this.hoverMesh.material.opacity = file.active ? 1 : file.hover ? 0.7 : 0.3;
 
     let color = theme.color.fileDefault;

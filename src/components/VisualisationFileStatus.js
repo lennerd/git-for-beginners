@@ -33,7 +33,6 @@ class FileStatus extends Component {
 
   render() {
     const { theme, font, file } = this.props;
-    const changes = file.diff.added + file.diff.removed;
 
     let geometry;
 
@@ -52,8 +51,8 @@ class FileStatus extends Component {
         face.color = new THREE.Color(0xFFFFFFF);
       }
     } else {
-      let plus = Math.round((file.diff.added / changes) * CHANGE_SIGNS);
-      let minus = Math.round((file.diff.removed / changes) * CHANGE_SIGNS);
+      let plus = Math.round((file.diff.added / file.maxChanges) * CHANGE_SIGNS);
+      let minus = Math.round((file.diff.removed / file.maxChanges) * CHANGE_SIGNS);
 
       // Min plusses
       if (plus === 0 && file.insertions > 0) {

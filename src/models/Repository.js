@@ -32,22 +32,6 @@ class Repository {
       return;
     }
 
-    const stagedBlob = this.stagingArea.tree.get(file);
-    let committedBlob;
-
-    if (this.head.commit != null) {
-      // Get blob from checkedout commit
-      committedBlob = this.head.commit.tree.get(file);
-    }
-
-    if (
-      (stagedBlob != null && file.blob === stagedBlob) ||
-      (committedBlob != null && file.blob === committedBlob)
-    ) {
-      // File has no changes to the last staged OR committed file.
-      throw new Error('Cannot stage unmodified file.');
-    }
-
     this.stagingArea.tree = this.stagingArea.tree.set(file, file.blob);
   }
 

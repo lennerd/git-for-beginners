@@ -1,4 +1,4 @@
-import { computed } from "mobx";
+import { computed, observable } from "mobx";
 
 import Visualisation from "./Visualisation";
 import VisualisationArea from "./VisualisationArea";
@@ -6,11 +6,13 @@ import VisualisationFileList from "./VisualisationFileList";
 import VisualisationFile from "./VisualisationFile";
 import { STATUS_ADDED, STATUS_MODIFIED, STATUS_UNMODIFIED, STATUS_DELETED } from "../../constants";
 import { Set } from "immutable";
+import sortBy from 'lodash/sortBy';
 
 class FileVisualisation extends VisualisationFile {
-  constructor(fileList, file, status, diff = { added: 0, removed: 0 }) {
+  constructor(vis, fileList, file, status, diff = { added: 0, removed: 0 }) {
     super();
 
+    this.vis = vis;
     this.fileList = fileList;
     this.file = file;
     this.status = status;
@@ -23,6 +25,29 @@ class FileVisualisation extends VisualisationFile {
 
   getParent() {
     return this.fileList;
+  }
+
+  @computed get changeRelatedFiles() {
+    if (this.parent.isCommit) {
+      // File belongs to commit.
+      return this.parent.children;
+    }
+
+    // File belongs to Staging Area or Working Directory
+    return [
+      ...this.vis.stagingArea.fileList.children,
+      ...this.vis.workingDirectory.fileList.children,
+    ];
+  }
+
+  @computed get changes() {
+    return this.diff.added + this.diff.removed;
+  }
+
+  @computed get maxChanges() {
+    return Math.max(
+      ...this.changeRelatedFiles.map(file => file.changes),
+    );
   }
 }
 
@@ -88,14 +113,16 @@ class CommitVisualisation extends VisualisationFileList {
         continue;
       }
 
-      children.push(new FileVisualisation(this, file, status, diff));
+      children.push(new FileVisualisation(this.vis, this, file, status, diff));
     }
 
-    return children;
+    return sortBy(children, visFile => visFile.file.name);
   }
 }
 
 class StagingAreaVisualisation extends VisualisationArea {
+  isStagingArea = true;
+
   constructor(vis, repo) {
     super('Staging Area');
 
@@ -149,12 +176,10 @@ class StagingAreaVisualisation extends VisualisationArea {
         continue;
       }
 
-      console.log('staging area', status);
-
-      visFiles.push(new FileVisualisation(this.fileList, file, status, diff));
+      visFiles.push(new FileVisualisation(this.vis, this.fileList, file, status, diff));
     }
 
-    return visFiles;
+    return sortBy(visFiles, visFile => visFile.file.name);
   }
 
   getParent() {
@@ -169,6 +194,8 @@ class StagingAreaVisualisation extends VisualisationArea {
 }
 
 class WorkingDirectoryVisualisation extends VisualisationArea {
+  isWorkingDirectory = true;
+
   constructor(vis, repo) {
     super('Working Directory');
 
@@ -237,12 +264,10 @@ class WorkingDirectoryVisualisation extends VisualisationArea {
         continue;
       }
 
-      console.log('working directory', status);
-
-      children.push(new FileVisualisation(this.fileList, file, status, diff));
+      children.push(new FileVisualisation(this.vis, this.fileList, file, status, diff));
     }
 
-    return children;
+    return sortBy(children, visFile => visFile.file.name);
   }
 
   getParent() {
@@ -257,6 +282,8 @@ class WorkingDirectoryVisualisation extends VisualisationArea {
 }
 
 class RepositoryVisualisation extends VisualisationArea {
+  isRepository = true;
+
   constructor(vis, repo) {
     super('repository');
 
@@ -308,6 +335,10 @@ class GitVisualisation extends Visualisation {
     }
 
     return files;
+  }
+
+  getVersions(file) {
+    return this.filter(object => object.isFile && object !== file && object.file.blob === file.file.blob);
   }
 
   getParent() {
