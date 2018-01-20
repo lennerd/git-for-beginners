@@ -65,34 +65,24 @@ class VisualisationFile extends Component {
       );
     });
 
-    this.disposePosition = reaction(
-      () => file.position,
-      position => {
-        this.moveTo(position);
+    this.hoverOpacity = value(0, opacity => {
+      this.hoverMesh.material.opacity = opacity;
+    });
+  }
+
+  componentDidMount() {
+    const { file } = this.props;
+
+    this.disposeHoverOpacity = reaction(
+      () => file.active ? 1 : file.hover ? 0.7 : this.versionsHovered || this.versionsActive ? 0.3 : 0,
+      opacity => {
+        tween({ from: this.hoverOpacity.get(), to: opacity, duration: 200 }).start(this.hoverOpacity);
       }
     );
   }
 
-  appear() {
-    tween({ from: 0, to: this.height.get(), duration: 400 }).start(this.height);
-  }
-
-  moveTo(to) {
-    tween({ from: this.position.get(), to, duration: 400 }).start(this.position);
-  }
-
-  moveFrom(from) {
-    tween({ from, to: this.position.get(), duration: 400 }).start(this.position);
-  }
-
-  /*componentDidMount() {
-    if (this.copies.length === 0) {
-      this.appear();
-    }
-  }*/
-
   componentWillUnmount() {
-    this.disposePosition();
+    this.disposeHoverOpacity();
   }
 
   @action.bound handleClick(event) {
@@ -150,9 +140,6 @@ class VisualisationFile extends Component {
     const { children, file, theme } = this.props;
 
     this.fileObject.visible = file.visible;
-
-    this.hoverMesh.material.visible = file.hover || file.active || this.versionsHovered || this.versionsActive;
-    this.hoverMesh.material.opacity = file.active ? 1 : file.hover ? 0.7 : 0.3;
 
     let color = theme.color.fileDefault;
 

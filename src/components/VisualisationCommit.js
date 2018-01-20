@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { action } from 'mobx';
+import { action, reaction } from 'mobx';
 import { observer } from 'mobx-react';
 import { withTheme } from 'styled-components';
+import { value, tween } from 'popmotion';
 
 import VisualisationObject3D from './VisualisationObject3D';
 import { CELL_HEIGHT, CELL_WIDTH, LEVEL_HEIGHT } from '../theme';
@@ -29,6 +30,25 @@ class VisualisationCommit extends Component {
     this.hoverMesh.position.z = COMMIT_OUTLINE;
 
     this.commitObject.add(this.hoverMesh);
+
+    this.hoverOpacity = value(0, opacity => {
+      this.hoverMesh.material.opacity = opacity;
+    });
+  }
+
+  componentDidMount() {
+    const { commit } = this.props;
+
+    this.disposeHoverOpacity = reaction(
+      () => commit.active ? 0.3 : commit.hover ? 0.1 : 0,
+      opacity => {
+        tween({ from: this.hoverOpacity.get(), to: opacity, duration: 200 }).start(this.hoverOpacity);
+      }
+    );
+  }
+
+  componentWillUnmount() {
+    this.disposeHoverOpacity();
   }
 
   @action.bound handleClick(event) {
@@ -67,9 +87,6 @@ class VisualisationCommit extends Component {
 
     this.hoverMesh.scale.y = height + COMMIT_OUTLINE;
     this.hoverMesh.position.y = height / 2 - COMMIT_OUTLINE;
-
-    this.hoverMesh.material.visible = commit.hover || commit.active;
-    this.hoverMesh.material.opacity = commit.active ? 0.3 : 0.1;
 
     return (
       <VisualisationObject3D
