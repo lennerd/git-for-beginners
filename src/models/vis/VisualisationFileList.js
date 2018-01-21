@@ -1,4 +1,5 @@
 import { computed } from 'mobx';
+import uniqBy from 'lodash/uniqBy';
 
 import VisualisationObject from './VisualisationObject';
 
@@ -9,8 +10,12 @@ class VisualisationFileList extends VisualisationObject {
     return this.filter(object => object.isFile && object.visible);
   }
 
+  @computed get uniqueFiles() {
+    return uniqBy(this.files, fileVis => fileVis.file);
+  }
+
   @computed get height() {
-    return this.files.length;
+    return this.uniqueFiles.length;
   }
 }
 
