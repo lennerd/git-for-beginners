@@ -10,6 +10,7 @@ import { FILE_WIDTH, FILE_HEIGHT, FILE_DEPTH } from './VisualisationFile';
 
 const COMMIT_OUTLINE = 0.06;
 
+// @TODO Rename to VisualisationFileList
 @withTheme
 @observer
 class VisualisationCommit extends Component {
@@ -37,10 +38,12 @@ class VisualisationCommit extends Component {
   }
 
   componentDidMount() {
-    const { commit } = this.props;
-
     this.disposeHoverOpacity = reaction(
-      () => commit.active ? 0.3 : commit.hover ? 0.1 : 0,
+      () => {
+        const { commit } = this.props;
+
+        return commit.active ? 0.3 : commit.hover ? 0.1 : 0;
+      },
       opacity => {
         tween({ from: this.hoverOpacity.get(), to: opacity, duration: 200 }).start(this.hoverOpacity);
       }

@@ -3,6 +3,7 @@ import takeWhile from 'lodash/takeWhile';
 
 import ChapterState from './ChapterState';
 import { init } from './Chapter';
+import { reset } from './chance';
 
 class Tutorial {
   @observable chapters = [];
@@ -90,7 +91,7 @@ class Tutorial {
     });
 
     this.state.chapterStates = this.chapters.map(chapter => chapter.state);
-    window.location.reload(true);
+    reset()
   }
 
   @action navigate(chapter) {

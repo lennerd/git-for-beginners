@@ -1,5 +1,5 @@
 import { observable, action, computed } from 'mobx';
-import { Record, Map, Set } from 'immutable';
+import { Record, Map, OrderedSet } from 'immutable';
 import sha1 from 'js-sha1';
 
 import chance from './chance';
@@ -8,7 +8,7 @@ class Repository {
   workingDirectory = new WorkingDirectory();
   stagingArea = new StagingArea();
 
-  @observable.ref commits = new Set();
+  @observable.ref commits = new OrderedSet();
   @observable head;
   @observable branches = [];
 

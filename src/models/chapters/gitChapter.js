@@ -3,70 +3,44 @@ import React, { Fragment } from "react";
 import { createChapter, readOn, init } from "../Chapter";
 import { ChapterText } from "../ChapterSection";
 import Tooltip from "../../components/Tooltip";
-import Visualisation from "../Visualisation";
-import VisualisationArea from "../VisualisationArea";
-import VisualisationFile from "../VisualisationFile";
-import { STATUS_MODIFIED } from "../../constants";
-import VisualisationFileList from "../VisualisationFileList";
-import VisualisationCommit from "../VisualisationCommit";
-import VisualisationRepository from "../VisualisationRepository";
+import GitVisualisation from "../vis/GitVisualisation";
+import Repository from "../Repository";
+import File from "../File";
 
 const introductionChapter = createChapter('Git', {
-  hasWorkingDirectory: false,
-  hasStagingArea: false,
-  hasRepository: false,
   [init]() {
-    this.vis = new Visualisation();
+    this.repo = new Repository();
+    this.vis = new GitVisualisation(this.repo);
+
+    this.files = [
+      File.create(),
+      File.create(),
+      File.create()
+    ];
+
+    for (let file of this.files) {
+      this.repo.workingDirectory.addFile(file);
+    }
+
+    this.vis.useRepository = false;
+    this.vis.useStagingArea = false;
+    this.vis.useWorkingDirectory = false;
   },
   [readOn]() {
-    if (!this.hasWorkingDirectory) {
-      this.workingDirectory = new VisualisationArea('Working Directory');
+    if (!this.vis.useWorkingDirectory) {
+      this.vis.useWorkingDirectory = true;
+    } else if(!this.vis.useStagingArea) {
+      for (let file of this.files) {
+        this.repo.stageFile(file);
+      }
 
-      this.fileList = new VisualisationFileList();
+      this.vis.useStagingArea = true;
+    } else if(!this.vis.useRepository) {
+      this.repo.createCommit();
 
-      this.fileList.add(
-        new VisualisationFile(),
-        new VisualisationFile(),
-        new VisualisationFile(),
-      );
-
-      this.fileList.files.forEach((file, index) => {
-        file.status = STATUS_MODIFIED;
-        file.modify();
-      });
-
-      this.workingDirectory.add(this.fileList);
-      this.vis.add(this.workingDirectory);
-
-      this.hasWorkingDirectory = true;
-    } else if(!this.hasStagingArea) {
-      this.stagingArea = new VisualisationArea('Staging Area');
-      this.stagingArea.column = 1;
-
-      this.stagedFileList = this.fileList.copy();
-
-      this.fileList.files.forEach((file, index) => {
-        file.reset();
-      });
-
-      this.stagingArea.add(this.stagedFileList);
-      this.vis.add(this.stagingArea);
-
-      this.hasStagingArea = true;
-    } else if(!this.hasRepository) {
-      this.repository = new VisualisationRepository();
-      this.repository.column = 2;
-      this.repository.height = 10;
-      this.repository.width = 4;
-
-      this.commit = new VisualisationCommit();
-      this.commit.add(...this.stagedFileList.files);
-
-      this.repository.add(this.commit);
-      this.vis.add(this.repository);
-      this.hasRepository = true;
+      this.vis.useRepository = true;
     } else {
-      this.commit.directActive = true;
+      this.vis.repository.children[0].directActive = true;
     }
   },
   sections: [

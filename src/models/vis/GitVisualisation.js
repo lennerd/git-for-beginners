@@ -88,10 +88,10 @@ class CommitVisualisation extends VisualisationFileList {
         parentBlob = this.commit.parent.tree.get(file);
       }
 
-      if (parentBlob == null) {
+      if (parentBlob == null) { // -> previousBlob
         // File was added in this commit.
         status = STATUS_ADDED;
-      } else if (parentBlob !== blob) {
+      } else if (parentBlob !== blob) { // -> previousBlob
         // File was changed in this commit.
         status = STATUS_MODIFIED;
         diff = blob.diff(parentBlob);
@@ -265,6 +265,12 @@ class RepositoryVisualisation extends VisualisationArea {
 }
 
 class GitVisualisation extends Visualisation {
+  isGit = true;
+
+  @observable useWorkingDirectory = true;
+  @observable useStagingArea = true;
+  @observable useRepository = true;
+
   constructor(repo) {
     super();
 
@@ -302,11 +308,21 @@ class GitVisualisation extends Visualisation {
   }
 
   getChildren() {
-    return [
-      this.workingDirectory,
-      this.stagingArea,
-      this.repository,
-    ];
+    const children = [];
+
+    if (this.useWorkingDirectory) {
+      children.push(this.workingDirectory);
+    }
+
+    if (this.useStagingArea) {
+      children.push(this.stagingArea);
+    }
+
+    if (this.useRepository) {
+      children.push(this.repository);
+    }
+
+    return children;
   }
 }
 

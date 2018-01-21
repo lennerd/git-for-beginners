@@ -73,6 +73,13 @@ class VisualisationFile extends Component {
   componentDidMount() {
     const { file } = this.props;
 
+    this.disposePosition = reaction(
+      () => file.position,
+      position => {
+        tween({ from: this.position.get(), to: position, duration: 600 }).start(this.position);
+      }
+    );
+
     this.disposeHoverOpacity = reaction(
       () => file.active ? 1 : file.hover ? 0.7 : this.versionsHovered || this.versionsActive ? 0.3 : 0,
       opacity => {
@@ -82,6 +89,7 @@ class VisualisationFile extends Component {
   }
 
   componentWillUnmount() {
+    this.disposePosition();
     this.disposeHoverOpacity();
   }
 
@@ -106,32 +114,22 @@ class VisualisationFile extends Component {
     file.hover = false;
   };
 
-  /*@computed get copies() {
-    const { file, vis } = this.props;
-
-    return vis.findCopies(file);
-  }
-
-  @computed get copiesHovered() {
-    const { file } = this.props;
-
-    return file.insideArea && this.copies.some(file => file.hover);
-  }
-
-  @computed get copiesActive() {
-    const { file } = this.props;
-
-    return file.insideArea && this.copies.some(file => file.active);
-  }*/
-
   @computed get versionsHovered() {
     const { file, vis } = this.props;
+
+    if (!vis.isGit) {
+      return false;
+    }
 
     return vis.getVersions(file).some(file => file.hover);
   }
 
   @computed get versionsActive() {
     const { file, vis } = this.props;
+
+    if (!vis.isGit) {
+      return false;
+    }
 
     return vis.getVersions(file).some(file => file.active);
   }
