@@ -61,6 +61,7 @@ export const ConsoleMessage = styled.div`
 export const ConsoleLabel = styled.div`
   display: flex;
   padding: ${props => props.theme.spacing(0.25)} 0;
+  color: grey;
 
   &:before,
   &:after {

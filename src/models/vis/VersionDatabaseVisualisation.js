@@ -1,4 +1,4 @@
-import { computed, observable, action } from "mobx";
+import { computed, observable, action, reaction } from "mobx";
 
 import Visualisation from "./Visualisation";
 import VisualisationArea from "./VisualisationArea";
@@ -32,25 +32,15 @@ class FileVisualisation extends VisualisationFile {
     this.diff = diff;
   }
 
-  getParent() {
-    if (this.vis.useVersionDatabase && this.vis.files.indexOf(this) > 0) {
-      return this.vis.versionDatabase;
-    }
-
-    return this.vis;
-  }
-
-  getChildren() {
-    return [];
-  }
-
   getPosition() {
     const position = super.getPosition();
+    const index = this.vis.files.indexOf(this);
 
     if (this.vis.useVersionDatabase) {
-      position.row =  this.index;
+      position.row = index === 0 ? 0 : index - 1;
+      position.column = index === 0 ? 0 : 1;
     } else {
-      position.column = this.index;
+      position.column = index;
     }
 
     return position;
@@ -83,7 +73,7 @@ class FileVisualisation extends VisualisationFile {
   }
 
   @action copy() {
-    const copy = new this.constructor(this.vis, this.nameIndex);
+    const copy = super.copy(this.vis, this.nameIndex);
 
     copy.status = STATUS_MODIFIED;
 
@@ -100,16 +90,37 @@ class VersionDatabaseVisualisation extends Visualisation {
     super();
 
     this.versionDatabase = new VisualisationArea('Version Database');
-
     this.versionDatabase.column = 1;
     this.versionDatabase.height = 10;
 
-    this.versionDatabase.getChildren = () => this.getVersionDatabaseChildren();
-    this.versionDatabase.getParent = () => this;
+    reaction(() => ({
+      files: this.files.length,
+      useVersionDatabse: this.useVersionDatabase
+    }), this.handleFiles, true);
   }
 
-  getVersionDatabaseChildren() {
-    return this.files.slice(1);
+  @action.bound handleVersionDatabase() {
+    console.log();
+    if (this.useVersionDatabase) {
+      this.add(this.versionDatabase);
+    } else {
+      this.remove(this.versionDatabase);
+    }
+  }
+
+  @action.bound handleFiles() {
+    let children = this.files.slice();
+
+    if (this.useVersionDatabase) {
+      this.versionDatabase.set(...children.slice(1));
+
+      children = [
+        this.versionDatabase,
+        children[0]
+      ];
+    }
+
+    this.set(...children);
   }
 
   addFile() {
@@ -150,25 +161,6 @@ class VersionDatabaseVisualisation extends Visualisation {
 
     current.diff = file.diff;
     current.status = STATUS_MODIFIED;
-  }
-
-  getFileParent() {
-    return this;
-  }
-
-  getParent() {
-    return null;
-  }
-
-  getChildren() {
-    if (this.useVersionDatabase) {
-      return [
-        this.files[0],
-        this.versionDatabase,
-      ]
-    }
-
-    return this.files;
   }
 }
 

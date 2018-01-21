@@ -91,7 +91,7 @@ class Tutorial {
     });
 
     this.state.chapterStates = this.chapters.map(chapter => chapter.state);
-    reset()
+    reset();
   }
 
   @action navigate(chapter) {

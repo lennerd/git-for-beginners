@@ -34,11 +34,11 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
 
     return activeVisFile.file;
   },
-
+  get activeFileIndex() {
+    return this.vis.files.indexOf(this.activeFile);
+  },
   get activeCommit() {
     const activeVisCommit = this.vis.repository.find(object => object.isCommit && object.active);
-
-    console.log(activeVisCommit);
 
     if (activeVisCommit == null) {
       return null;
@@ -76,7 +76,7 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
               </Fragment>
             ),
             action: modifyFile,
-            payloadCreator: () => this.activeFile.name,
+            payloadCreator: () => this.activeFileIndex,
           }),
           new ConsoleCommand('Stage', {
             available: () => this.activeFile != null,
@@ -87,7 +87,7 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
               </Fragment>
             ),
             action: stageFile,
-            payloadCreator: () => this.activeFile.name
+            payloadCreator: () => this.activeFileIndex
           }),
           new ConsoleCommand('Delete', {
             available: () => this.activeFile != null,
@@ -98,7 +98,7 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
               </Fragment>
             ),
             action: deleteFile,
-            payloadCreator: () => this.activeFile.name,
+            payloadCreator: () => this.activeFileIndex,
           })
         ],
       }),
@@ -127,7 +127,7 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
               </Fragment>
             ),
             action: unstageFile,
-            payloadCreator: () => this.activeFile.name,
+            payloadCreator: () => this.activeFileIndex,
           }),
         ],
       }),
@@ -148,11 +148,13 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
       }),
       new ConsoleCommand('Add new file.', {
         icon: '+',
-        message: ({ data }) => (
+        message: ({ data }) => {
+          return (
           <Fragment>
             A new <VisualisationFileReference vis={this.vis} file={data}>file</VisualisationFileReference> was added.
           </Fragment>
-        ),
+          );
+        },
         action: addFile,
       }),
     );
@@ -161,12 +163,11 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
     const file = File.create();
 
     this.repo.workingDirectory.addFile(file);
-    console.log('add file', file.name);
 
     return file;
   },
-  [stageFile](fileName) {
-    const file = this.vis.files.find(file => file.name === fileName);
+  [stageFile](fileIndex) {
+    const file = this.vis.files[fileIndex];
 
     this.repo.stageFile(file);
 
@@ -181,25 +182,25 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
       } catch (e) {
         console.error(e);
       }
-    });
+    })
     throw new Error('Not yet.');
   },*/
-  [unstageFile](fileName) {
-    const file = this.vis.files.find(file => file.name === fileName);
+  [unstageFile](fileIndex) {
+    const file = this.vis.files[fileIndex];
 
     this.repo.unstageFile(file);
 
     return file;
   },
-  [deleteFile](fileName) {
-    const file = this.vis.files.find(file => file.name === fileName);
+  [deleteFile](fileIndex) {
+    const file = this.vis.files[fileIndex];
 
     this.repo.workingDirectory.removeFile(file);
 
     return file;
   },
-  [modifyFile](fileName) {
-    const file = this.vis.files.find(file => file.name === fileName);
+  [modifyFile](fileIndex) {
+    const file = this.vis.files[fileIndex];
 
     file.modify();
 

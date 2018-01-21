@@ -1,29 +1,47 @@
 import uuid from 'uuid/v4';
-import { computed } from "mobx";
+import { computed, action, observable } from "mobx";
 
 class BaseObject {
+  @observable children = [];
+  @observable parent = null;
+
   @computed get id() {
     return this.getId();
   }
 
-  @computed get parent() {
-    return this.getParent();
+  @action set(...children) {
+    this.remove(...this.children);
+    this.add(...children);
   }
 
-  @computed get children() {
-    return this.getChildren();
+  @action add(...children) {
+    for (let child of children) {
+      if (this.children.includes(child)) {
+        continue;
+      }
+
+      if (child.parent != null) {
+        child.parent.remove(child);
+      }
+
+      child.parent = this;
+      this.children.push(child);
+    }
+  }
+
+  @action remove(...children) {
+    for (let child of children) {
+      if (!this.children.includes(child)) {
+        continue;
+      }
+
+      child.parent = null;
+      this.children.remove(child);
+    }
   }
 
   getId() {
     return uuid();
-  }
-
-  getParent() {
-    throw new Error(`getParent() in ${this.constructor.name} not implemented`);
-  }
-
-  getChildren() {
-    throw new Error(`getChildren() in ${this.constructor.name} not implemented`);
   }
 
   @computed get index() {
@@ -92,6 +110,10 @@ class BaseObject {
     }
 
     return null;
+  }
+
+  @action copy(...args) {
+    return new this.constructor(...args);
   }
 }
 

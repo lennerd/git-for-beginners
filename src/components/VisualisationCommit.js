@@ -17,7 +17,7 @@ class VisualisationCommit extends Component {
   constructor(props) {
     super();
 
-    const { theme } = props;
+    const { theme, commit } = props;
 
     this.commitObject = new THREE.Group();
 
@@ -32,18 +32,31 @@ class VisualisationCommit extends Component {
 
     this.commitObject.add(this.hoverMesh);
 
+    this.position = value(commit.position, position => {
+      this.commitObject.position.set(
+        CELL_HEIGHT * position.row,
+        LEVEL_HEIGHT * position.level,
+        CELL_WIDTH * position.column,
+      );
+    });
+
     this.hoverOpacity = value(0, opacity => {
       this.hoverMesh.material.opacity = opacity;
     });
   }
 
   componentDidMount() {
-    this.disposeHoverOpacity = reaction(
-      () => {
-        const { commit } = this.props;
+    const { commit } = this.props;
 
-        return commit.active ? 0.3 : commit.hover ? 0.1 : 0;
-      },
+    this.disposePosition = reaction(
+      () => commit.position,
+      position => {
+        tween({ from: this.position.get(), to: position, duration: 600 }).start(this.position);
+      }
+    );
+
+    this.disposeHoverOpacity = reaction(
+      () => commit.active ? 0.3 : commit.hover ? 0.1 : 0,
       opacity => {
         tween({ from: this.hoverOpacity.get(), to: opacity, duration: 200 }).start(this.hoverOpacity);
       }
@@ -51,6 +64,7 @@ class VisualisationCommit extends Component {
   }
 
   componentWillUnmount() {
+    this.disposePosition();
     this.disposeHoverOpacity();
   }
 
@@ -77,12 +91,6 @@ class VisualisationCommit extends Component {
 
   render() {
     const { children, commit } = this.props;
-
-    this.commitObject.position.set(
-      CELL_HEIGHT * commit.position.row,
-      LEVEL_HEIGHT * commit.position.level,
-      CELL_WIDTH * commit.position.column,
-    );
 
     this.commitObject.visible = commit.visible;
 

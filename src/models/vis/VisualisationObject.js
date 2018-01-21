@@ -1,4 +1,4 @@
-import { observable, computed } from "mobx";
+import { observable, computed, action } from "mobx";
 import BaseObject from './BaseObject';
 
 class VisualisationObject extends BaseObject {
@@ -10,6 +10,7 @@ class VisualisationObject extends BaseObject {
   @observable directHover = false;
   @observable directActive = false;
   @observable visible = true;
+  //@observable prevPosition;
 
   @computed get hover() {
     return this.some(object => object.directHover);
@@ -49,6 +50,16 @@ class VisualisationObject extends BaseObject {
 
   @computed get position() {
     return this.getPosition();
+  }
+
+  @action copy(...args) {
+    const copy = new this.constructor(...args);
+
+    copy.column = this.column;
+    copy.row = this.row;
+    copy.level = this.level;
+
+    return copy;
   }
 }
 

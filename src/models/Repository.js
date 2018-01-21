@@ -31,9 +31,21 @@ class Repository {
   }
 
   @action unstageFile(file) {
-    let blob = this.stagingArea.tree.get(file);
+    const blob = this.stagingArea.tree.get(file);
+    let committedBlob;
 
-    if (blob == null) {
+    if (this.head.commit != null) {
+      committedBlob = this.head.commit.tree.get(file);
+    }
+
+    // Restore staging area blob from last commit, if available.
+    if (committedBlob == null) {
+      this.stagingArea.tree = this.stagingArea.tree.remove(file);
+    } else {
+      this.stagingArea.tree = this.stagingArea.tree.set(file, committedBlob);
+    }
+
+    /*if (blob == null) {
       // File is not part of the staging area. So possible it was deleted. Restore it from the last commit.
       const committedBlob = this.head.commit.tree.get(file);
 
@@ -42,7 +54,7 @@ class Repository {
       }
 
       blob = committedBlob;
-    }
+    }*/
 
     this.workingDirectory.tree = this.workingDirectory.tree.set(file, blob);
   }

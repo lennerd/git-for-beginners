@@ -30,17 +30,21 @@ const introductionChapter = createChapter('Git', {
     if (!this.vis.useWorkingDirectory) {
       this.vis.useWorkingDirectory = true;
     } else if(!this.vis.useStagingArea) {
+      this.vis.useStagingArea = true;
+
       for (let file of this.files) {
         this.repo.stageFile(file);
       }
-
-      this.vis.useStagingArea = true;
     } else if(!this.vis.useRepository) {
-      this.repo.createCommit();
-
       this.vis.useRepository = true;
+
+      this.repo.createCommit();
     } else {
-      this.vis.repository.children[0].directActive = true;
+      const commit = this.vis.repository.find(object => object.isCommit);
+
+      if (commit != null) {
+        commit.directActive = true;
+      }
     }
   },
   sections: [

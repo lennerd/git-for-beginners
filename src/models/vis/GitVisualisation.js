@@ -1,34 +1,26 @@
-import { computed, observable } from "mobx";
+import { computed, observable, action, reaction } from "mobx";
+import { Set } from "immutable";
+import sortBy from 'lodash/sortBy';
 
 import Visualisation from "./Visualisation";
 import VisualisationArea from "./VisualisationArea";
 import VisualisationFileList from "./VisualisationFileList";
 import VisualisationFile from "./VisualisationFile";
 import { STATUS_ADDED, STATUS_MODIFIED, STATUS_UNMODIFIED, STATUS_DELETED } from "../../constants";
-import { Set } from "immutable";
-import sortBy from 'lodash/sortBy';
 
 class FileVisualisation extends VisualisationFile {
-  constructor(vis, fileList, file, status, diff = { added: 0, removed: 0 }) {
+  @observable status;
+  @observable diff;
+
+  constructor(file) {
     super();
 
-    this.vis = vis;
-    this.fileList = fileList;
     this.file = file;
-    this.status = status;
-    this.diff = diff;
-  }
-
-  getChildren() {
-    return [];
-  }
-
-  getParent() {
-    return this.fileList;
   }
 
   @computed get changeRelatedFiles() {
-    if (this.parent.isCommit) {
+    return [];
+    /*if (this.parent.isCommit) {
       // File belongs to commit.
       return this.parent.children;
     }
@@ -37,7 +29,7 @@ class FileVisualisation extends VisualisationFile {
     return [
       ...this.vis.stagingArea.fileList.children,
       ...this.vis.workingDirectory.fileList.children,
-    ];
+    ];*/
   }
 
   @computed get changes() {
@@ -45,21 +37,35 @@ class FileVisualisation extends VisualisationFile {
   }
 
   @computed get maxChanges() {
-    return Math.max(
+    return this.changes;
+    /*return Math.max(
       ...this.changeRelatedFiles.map(file => file.changes),
-    );
+    );*/
+  }
+
+  @action copy() {
+    const copy = super.copy(this.file);
+
+    copy.status = this.status;
+    copy.diff = this.diff;
+
+    return copy;
   }
 }
-
 
 class CommitVisualisation extends VisualisationFileList {
   isCommit = true;
 
-  constructor(repository, commit) {
+  constructor(vis, commit) {
     super();
 
-    this.repository = repository;
+    this.vis = vis;
     this.commit = commit;
+
+    reaction(() => ({
+      tree: this.commit.tree,
+      parentTree: this.commit.parent != null && this.commit.parent.tree,
+    }), this.handleTreeChanges, true);
   }
 
   getPosition() {
@@ -72,11 +78,22 @@ class CommitVisualisation extends VisualisationFileList {
     return position;
   }
 
-  getParent() {
-    return this.repository;
+  @action getChild(file, status, diff = { added: 0, removed: 0 }) {
+    let child = this.find(object => {
+      return object.isFile && object.file === file;
+    });
+
+    if (child == null) {
+      child = new FileVisualisation(file);
+    }
+
+    child.status = status;
+    child.diff = diff;
+
+    return child;
   }
 
-  getChildren() {
+  @action.bound handleTreeChanges() {
     const children = [];
 
     for (let [file, blob] of this.commit.tree) {
@@ -97,7 +114,7 @@ class CommitVisualisation extends VisualisationFileList {
         diff = blob.diff(parentBlob);
       }
 
-      children.push(new FileVisualisation(this.vis, this, file, status, diff));
+      children.push(this.getChild(file, status, diff));
     }
 
     if (this.commit.parent != null) {
@@ -106,11 +123,13 @@ class CommitVisualisation extends VisualisationFileList {
           continue;
         }
 
-        children.push(new FileVisualisation(this.vis, this, file, STATUS_DELETED));
+        children.push(this.getChild(file, STATUS_DELETED));
       }
     }
 
-    return sortBy(children, visFile => visFile.file.name);
+    this.set(
+      ...sortBy(children, visFile => visFile.file.name)
+    );
   }
 }
 
@@ -124,16 +143,33 @@ class StagingAreaVisualisation extends VisualisationArea {
     this.repo = repo;
 
     this.fileList = new VisualisationFileList();
-    this.fileList.getParent = () => this;
-    this.fileList.getChildren = () => this.getFileListChildren();
+    this.add(this.fileList);
+
+    reaction(() => ({
+      stagingAreaTree: this.repo.stagingArea.tree,
+      headCommitTree: this.repo.head.commit != null && this.repo.head.commit.tree,
+    }), this.handleTreeChanges, true);
   }
 
-  getFileListChildren() {
+  getChild(file, status, diff = { added: 0, removed: 0 }) {
+    let child = this.find(object => object.isFile && object.file === file);
+
+    if (child == null) {
+      child = new FileVisualisation(file);
+    }
+
+    child.status = status;
+    child.diff = diff;
+
+    return child;
+  }
+
+  @action.bound handleTreeChanges() {
     const { stagingArea, head } = this.repo;
     const children = [];
 
     for (let [file, blob] of stagingArea.tree) {
-      let status;
+      let status = STATUS_UNMODIFIED;
       let committedBlob;
       let diff;
 
@@ -147,11 +183,10 @@ class StagingAreaVisualisation extends VisualisationArea {
         status = STATUS_MODIFIED;
         diff = blob.diff(committedBlob);
       } else {
-        // Don't show unmodified.
         continue;
       }
 
-      children.push(new FileVisualisation(this.vis, this.fileList, file, status, diff));
+      children.push(this.getChild(file, status, diff));
     }
 
     if (head.commit != null) {
@@ -160,11 +195,13 @@ class StagingAreaVisualisation extends VisualisationArea {
           continue;
         }
 
-        children.push(new FileVisualisation(this.vis, this.fileList, file, STATUS_DELETED));
+        children.push(this.getChild(file, STATUS_DELETED));
       }
     }
 
-    return sortBy(children, children => children.file.name);
+    this.fileList.set(
+      ...sortBy(children, children => children.file.name)
+    );
   }
 
   getParent() {
@@ -188,11 +225,30 @@ class WorkingDirectoryVisualisation extends VisualisationArea {
     this.repo = repo;
 
     this.fileList = new VisualisationFileList();
-    this.fileList.getParent = () => this;
-    this.fileList.getChildren = () => this.getFileListChildren();
+    this.add(this.fileList);
+
+    reaction(() => ({
+      workingDirectoryTree: this.repo.workingDirectory.tree,
+      stagingAreaTree: this.repo.stagingArea.tree,
+    }), this.handleTreeChanges, true);
   }
 
-  getFileListChildren() {
+  @action getChild(file, status, diff = { added: 0, removed: 0 }) {
+    let child = this.find(object => {
+      return object.isFile && object.file === file;
+    });
+
+    if (child == null) {
+      child = new FileVisualisation(file);
+    }
+
+    child.status = status;
+    child.diff = diff;
+
+    return child;
+  }
+
+  @action.bound handleTreeChanges(tree) {
     const { stagingArea, workingDirectory } = this.repo;
     const children = [];
 
@@ -212,7 +268,7 @@ class WorkingDirectoryVisualisation extends VisualisationArea {
         diff = blob.diff(stagedBlob);
       }
 
-      children.push(new FileVisualisation(this.vis, this.fileList, file, status, diff));
+      children.push(this.getChild(file, status, diff));
     }
 
     for (let file of stagingArea.tree.keys()) {
@@ -220,20 +276,12 @@ class WorkingDirectoryVisualisation extends VisualisationArea {
         continue;
       }
 
-      children.push(new FileVisualisation(this.vis, this.fileList, file, STATUS_DELETED));
+      children.push(this.getChild(file, STATUS_DELETED));
     }
 
-    return sortBy(children, visFile => visFile.file.name);
-  }
-
-  getParent() {
-    return this.vis;
-  }
-
-  getChildren() {
-    return [
-      this.fileList,
-    ];
+    this.fileList.set(
+      ...sortBy(children, visFile => visFile.file.name)
+    );
   }
 }
 
@@ -246,21 +294,33 @@ class RepositoryVisualisation extends VisualisationArea {
     this.vis = vis;
     this.repo = repo;
     this.height = 10;
-    this.width = 4;
+    this.width = 10;
+
+    reaction(() => ({
+      commits: this.repo.commits,
+    }), this.handleCommitChanges, true);
   }
 
-  getParent() {
-    return this.vis;
-  }
-
-  getChildren() {
-    const visCommits = [];
+  @action.bound handleCommitChanges() {
+    const children = [];
 
     for (let commit of this.repo.commits) {
-      visCommits.push(new CommitVisualisation(this, commit));
+      children.push(this.getChild(commit));
     }
 
-    return visCommits;
+    this.set(...children);
+  }
+
+  @action getChild(commit) {
+    let child = this.find(object => {
+      return object.isCommit && object.commit === commit;
+    });
+
+    if (child == null) {
+      child = new CommitVisualisation(this.vis, commit);
+    }
+
+    return child;
   }
 }
 
@@ -277,12 +337,15 @@ class GitVisualisation extends Visualisation {
     this.repo = repo;
 
     this.workingDirectory = new WorkingDirectoryVisualisation(this, this.repo);
+    this.add(this.workingDirectory);
 
     this.stagingArea = new StagingAreaVisualisation(this, this.repo);
     this.stagingArea.column = 1;
+    this.add(this.stagingArea);
 
     this.repository = new RepositoryVisualisation(this, this.repo);
     this.repository.column = 2;
+    this.add(this.repository);
   }
 
   @computed get files() {
@@ -296,33 +359,11 @@ class GitVisualisation extends Visualisation {
       files = files.concat(this.repo.head.commit.tree.keySeq());
     }
 
-    return files;
+    return sortBy(files.toArray(), file => file.name);
   }
 
   getVersions(file) {
     return this.filter(object => object.isFile && object !== file && object.file.blob === file.file.blob);
-  }
-
-  getParent() {
-    return null;
-  }
-
-  getChildren() {
-    const children = [];
-
-    if (this.useWorkingDirectory) {
-      children.push(this.workingDirectory);
-    }
-
-    if (this.useStagingArea) {
-      children.push(this.stagingArea);
-    }
-
-    if (this.useRepository) {
-      children.push(this.repository);
-    }
-
-    return children;
   }
 }
 
