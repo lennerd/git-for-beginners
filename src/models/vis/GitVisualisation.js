@@ -8,7 +8,7 @@ import { STATUS_ADDED, STATUS_MODIFIED, STATUS_UNMODIFIED, STATUS_DELETED } from
 import { Set } from "immutable";
 import sortBy from 'lodash/sortBy';
 
-class BlobVisualisation extends VisualisationFile {
+class FileVisualisation extends VisualisationFile {
   constructor(vis, fileList, file, status, diff = { added: 0, removed: 0 }) {
     super();
 
@@ -84,7 +84,6 @@ class CommitVisualisation extends VisualisationFileList {
       let parentBlob;
       let diff;
 
-      // File is part of this commit.
       if (this.commit.parent != null) {
         parentBlob = this.commit.parent.tree.get(file);
       }
@@ -92,15 +91,13 @@ class CommitVisualisation extends VisualisationFileList {
       if (parentBlob == null) {
         // File was added in this commit.
         status = STATUS_ADDED;
-      }
-
-      if (parentBlob != null && parentBlob !== blob) {
+      } else if (parentBlob !== blob) {
         // File was changed in this commit.
         status = STATUS_MODIFIED;
         diff = blob.diff(parentBlob);
       }
 
-      children.push(new BlobVisualisation(this.vis, this, file, status, diff));
+      children.push(new FileVisualisation(this.vis, this, file, status, diff));
     }
 
     if (this.commit.parent != null) {
@@ -109,7 +106,7 @@ class CommitVisualisation extends VisualisationFileList {
           continue;
         }
 
-        children.push(new BlobVisualisation(this.vis, this, file, STATUS_DELETED));
+        children.push(new FileVisualisation(this.vis, this, file, STATUS_DELETED));
       }
     }
 
@@ -128,55 +125,46 @@ class StagingAreaVisualisation extends VisualisationArea {
 
     this.fileList = new VisualisationFileList();
     this.fileList.getParent = () => this;
-    this.fileList.getChildren = () => this.blobs;
+    this.fileList.getChildren = () => this.getFileListChildren();
   }
 
-  @computed get blobs() {
-    const { stagingArea, workingDirectory, head } = this.repo;
-    const blobs = [];
+  getFileListChildren() {
+    const { stagingArea, head } = this.repo;
+    const children = [];
 
-    if (stagingArea.tree == null) {
-      return blobs;
-    }
-
-    for (let file of this.vis.files) {
+    for (let [file, blob] of stagingArea.tree) {
       let status;
-      let diff;
       let committedBlob;
+      let diff;
 
-      if (stagingArea.tree.has(file)) {
-        // File is staged.
+      if (head.commit != null) {
+        committedBlob = head.commit.tree.get(file);
+      }
 
-        if (head.commit != null) {
-          // Get blob from the last commit.
-          committedBlob = head.commit.tree.get(file);
-        }
-
-        if (committedBlob == null) {
-          // No committed file. Staged file is new.
-          status = STATUS_ADDED;
-        }
-
-        if (committedBlob != null && committedBlob !== file.blob) {
-          // Staged file was modified since the last commit.
-          status = STATUS_MODIFIED;
-          diff = file.blob.diff(committedBlob);
-        }
-      } else if (
-        head.commit != null && head.commit.tree.has(file) &&
-        !workingDirectory.tree.has(file)
-      ) {
-        // File only exists in the last commit, but not in the working directory.
-        status = STATUS_DELETED;
+      if (committedBlob == null) {
+        status = STATUS_ADDED;
+      } else if (committedBlob !== blob) {
+        status = STATUS_MODIFIED;
+        diff = blob.diff(committedBlob);
       } else {
-        // Skip the rest.
+        // Don't show unmodified.
         continue;
       }
 
-      blobs.push(new BlobVisualisation(this.vis, this.fileList, file, status, diff));
+      children.push(new FileVisualisation(this.vis, this.fileList, file, status, diff));
     }
 
-    return sortBy(blobs, visFile => visFile.file.name);
+    if (head.commit != null) {
+      for (let file of head.commit.tree.keys()) {
+        if (stagingArea.tree.has(file)) {
+          continue;
+        }
+
+        children.push(new FileVisualisation(this.vis, this.fileList, file, STATUS_DELETED));
+      }
+    }
+
+    return sortBy(children, children => children.file.name);
   }
 
   getParent() {
@@ -201,70 +189,41 @@ class WorkingDirectoryVisualisation extends VisualisationArea {
 
     this.fileList = new VisualisationFileList();
     this.fileList.getParent = () => this;
-    this.fileList.getChildren = () => this.blobs;
+    this.fileList.getChildren = () => this.getFileListChildren();
   }
 
-  @computed get blobs() {
-    const { stagingArea, workingDirectory, head } = this.repo;
-    const blobs = [];
+  getFileListChildren() {
+    const { stagingArea, workingDirectory } = this.repo;
+    const children = [];
 
-    for (let file of this.vis.files) {
+    for (let [file, blob] of workingDirectory.tree) {
       let status = STATUS_UNMODIFIED;
-      let diff;
       let stagedBlob;
-      let committedBlob;
+      let diff;
 
+      stagedBlob = stagingArea.tree.get(file);
+
+      if (stagedBlob == null) {
+        // File was added in this commit.
+        status = STATUS_ADDED;
+      } else if (stagedBlob !== blob) {
+        // File was changed in this commit.
+        status = STATUS_MODIFIED;
+        diff = blob.diff(stagedBlob);
+      }
+
+      children.push(new FileVisualisation(this.vis, this.fileList, file, status, diff));
+    }
+
+    for (let file of stagingArea.tree.keys()) {
       if (workingDirectory.tree.has(file)) {
-        // File is part of the working directory.
-
-        if (stagingArea.tree != null) {
-          // Get staged file blob.
-          stagedBlob = stagingArea.tree.get(file);
-        }
-
-        if (head.commit != null) {
-          // Get committed file blob.
-          committedBlob = head.commit.tree.get(file);
-        }
-
-        if (stagedBlob == null && committedBlob == null) {
-          // File is added if no staged or committed blob exist.
-          status = STATUS_ADDED;
-        }
-
-        // First check for staged file and THEN for committed file.
-        if (stagedBlob != null) {
-          // Staged file exists.
-
-          if (stagedBlob !== file.blob) {
-            // File has different content than the file in the staging area.
-            status = STATUS_MODIFIED;
-            diff = file.blob.diff(stagedBlob);
-          }
-        } else if (committedBlob != null) {
-          // Committed file exists.
-
-          if (committedBlob !== file.blob) {
-            // File has different content than the file in the repository.
-            status = STATUS_MODIFIED;
-            diff = file.blob.diff(committedBlob);
-          }
-        }
-      } else if (
-        (stagingArea.tree == null || stagingArea.tree.has(file)) ||
-        (head.commit != null && head.commit.has(file))
-      ) {
-        // File is not part of the working directory and staging area, but only the last commit.
-        status = STATUS_DELETED;
-      } else {
-        // Skip the rest.
         continue;
       }
 
-      blobs.push(new BlobVisualisation(this.vis, this.fileList, file, status, diff));
+      children.push(new FileVisualisation(this.vis, this.fileList, file, STATUS_DELETED));
     }
 
-    return sortBy(blobs, visFile => visFile.file.name);
+    return sortBy(children, visFile => visFile.file.name);
   }
 
   getParent() {

@@ -7,7 +7,6 @@ import chance from './chance';
 class Repository {
   workingDirectory = new WorkingDirectory();
   stagingArea = new StagingArea();
-  fileSystem = new Set();
 
   @observable.ref commits = new Set();
   @observable head;
@@ -20,66 +19,45 @@ class Repository {
     this.branches = [master];
   }
 
-  @action addFile(file) {
-    this.fileSystem = this.fileSystem.add(file);
-  }
-
-  @action removeFile(file) {
-    this.fileSystem = this.fileSystem.remove(file);
-  }
-
   @action stageFile(file) {
-    if (this.stagingArea.tree == null) {
-      // No stage tree yet.
-      this.stagingArea.tree = new Map();
-    }
+    const blob = this.workingDirectory.tree.get(file);
 
-    if (!this.workingDirectory.tree.has(file)) {
+    if (blob == null) {
       // File does not exist in the working directory, so also remove it from the staging area.
       this.stagingArea.tree = this.stagingArea.tree.remove(file);
-
-      return;
+    } else {
+      this.stagingArea.tree = this.stagingArea.tree.set(file, blob);
     }
-
-    this.stagingArea.tree = this.stagingArea.tree.set(file, file.blob);
   }
 
   @action unstageFile(file) {
-    if (this.stagingArea.tree == null) {
-      return;
+    let blob = this.stagingArea.tree.get(file);
+
+    if (blob == null) {
+      // File is not part of the staging area. So possible it was deleted. Restore it from the last commit.
+      const committedBlob = this.head.commit.tree.get(file);
+
+      if (committedBlob == null) {
+        throw new Error('No blob to restore.');
+      }
+
+      blob = committedBlob;
     }
 
-    this.stagingArea.tree = this.stagingArea.tree.remove(file);
-
-    if (this.stagingArea.tree.size === 0) {
-      // Remove tree from staging area if no other file exists.
-      this.stagingArea.tree = null;
-    }
+    this.workingDirectory.tree = this.workingDirectory.tree.set(file, blob);
   }
 
   @action createCommit(message = chance.sentence()) {
-    let tree = this.stagingArea.tree;
-
-    if (tree == null) {
-      return;
-    }
-
-    if (this.head.commit != null) {
-      tree = this.head.commit.tree.concat(this.stagingArea.tree);
-    }
-
     const commit = new Commit({
       author: chance.name(),
       message,
       time: Date.now(),
-      tree,
+      tree: this.stagingArea.tree,
       parent: this.head.commit,
     });
 
     this.commits = this.commits.add(commit);
     this.head.commit = commit;
-
-    this.stagingArea.tree = null;
 
     return commit;
   }
@@ -102,7 +80,7 @@ class WorkingDirectory {
 }
 
 class StagingArea {
-  @observable.ref tree;
+  @observable.ref tree = new Map();
 }
 
 class Commit extends Record({
