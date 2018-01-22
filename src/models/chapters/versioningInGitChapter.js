@@ -72,7 +72,7 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
             message: ({ data }) => {
               return (
               <Fragment>
-                A new <VisualisationFileReference vis={this.vis} file={data}>file</VisualisationFileReference> was added.
+                A new file <VisualisationFileReference vis={this.vis} file={data} /> was added.
               </Fragment>
               );
             },
@@ -88,7 +88,7 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
             icon: '+-',
             message: ({ data }) => (
               <Fragment>
-                <VisualisationFileReference vis={this.vis} file={data}>File</VisualisationFileReference> was modified.
+                File <VisualisationFileReference vis={this.vis} file={data} /> was modified.
               </Fragment>
             ),
             action: modifyFile,
@@ -99,7 +99,7 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
             icon: '↗',
             message: ({ data }) => (
               <Fragment>
-                <VisualisationFileReference vis={this.vis} file={data}>File</VisualisationFileReference> was added to the staging area.
+                File <VisualisationFileReference vis={this.vis} file={data} /> was added to the staging area.
               </Fragment>
             ),
             action: stageFile,
@@ -110,7 +110,7 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
             icon: '×',
             message: ({ data }) => (
               <Fragment>
-                <VisualisationFileReference vis={this.vis} file={data}>File</VisualisationFileReference> was deleted.
+                File <VisualisationFileReference vis={this.vis} file={data} /> was deleted.
               </Fragment>
             ),
             action: deleteFile,
@@ -139,7 +139,7 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
             icon: '↙',
             message: ({ data }) => (
               <Fragment>
-                <VisualisationFileReference vis={this.vis} file={data}>File</VisualisationFileReference> was removed from the staging area.
+                File <VisualisationFileReference vis={this.vis} file={data} /> was removed from the staging area.
               </Fragment>
             ),
             action: unstageFile,

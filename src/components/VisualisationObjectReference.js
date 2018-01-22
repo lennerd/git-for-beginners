@@ -79,11 +79,11 @@ export class VisualisationCommitReference extends Component {
 @observer
 export class VisualisationFileReference extends Component {
   render() {
-    const { file, children, vis } = this.props;
+    const { file, vis } = this.props;
 
     return (
       <VisualisationObjectReference object={file} vis={vis}>
-        {children || file.name}
+        {file.file.name}
       </VisualisationObjectReference>
     )
   }

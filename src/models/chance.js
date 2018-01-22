@@ -18,9 +18,15 @@ export function reset() {
   chance.mixin({
     diff() {
       return {
-        added: chance.natural(),
-        removed: chance.natural()
+        added: this.natural(),
+        removed: this.natural()
       };
+    },
+
+    fileName() {
+      return this.unique(() => {
+        return `${this.word({ length: 6 })}.${this.word({ length: 3 })}`
+      }, 1)[0];
     }
   });
 }

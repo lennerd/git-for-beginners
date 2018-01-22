@@ -101,7 +101,7 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
       payloadElement: () => {
         if (this.activeVisFile != null) {
           return (
-            <VisualisationFileReference vis={this.vis} file={this.activeVisFile}>file</VisualisationFileReference>
+            <VisualisationFileReference vis={this.vis} file={this.activeVisFile} />
           );
         }
 
@@ -141,7 +141,7 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
             icon: '+',
             message: ({ data }) => (
               <Fragment>
-                A new <VisualisationFileReference vis={this.vis} file={data}>file</VisualisationFileReference> was added.
+                A new file <VisualisationFileReference vis={this.vis} file={data} /> was added.
               </Fragment>
             ),
             action: addFile,
@@ -156,7 +156,7 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
             icon: '+-',
             message: ({ data }) => (
               <Fragment>
-                <VisualisationFileReference vis={this.vis} file={data}>File</VisualisationFileReference> was modified.
+                File <VisualisationFileReference vis={this.vis} file={data} /> was modified.
               </Fragment>
             ),
             action: modifyFile,
@@ -167,7 +167,7 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
             icon: '×',
             message: ({ data }) => (
               <Fragment>
-                <VisualisationFileReference vis={this.vis} file={data}>File</VisualisationFileReference> was deleted.
+                File <VisualisationFileReference vis={this.vis} file={data} /> was deleted.
               </Fragment>
             ),
             action: deleteFile,

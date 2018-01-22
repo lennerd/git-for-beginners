@@ -517,7 +517,7 @@ function createFileStatus(vis, file) {
   }
 
   return react`${padEnd(status, FILE_STATUS_SPACES)}${
-    <VisualisationFileReference key={file.visFile.id} vis={vis} file={file.visFile}>file</VisualisationFileReference>
+    <VisualisationFileReference key={file.visFile.id} vis={vis} file={file.visFile} />
   }`;
 }
 

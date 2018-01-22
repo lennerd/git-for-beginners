@@ -12,7 +12,12 @@ class File {
     this.blob = new Blob({ content });
   }
 
-  static create(name = chance.unique(chance.word, 1, { length: 6 })[0]) {
+  static create(name) {
+    if (name == null) {
+      name = chance.fileName();
+
+    }
+
     const numberOfSentences = chance.natural({ min: 1, max: 10 });
     const lines = chance.n(chance.sentence, numberOfSentences);
 
