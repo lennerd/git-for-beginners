@@ -1,5 +1,6 @@
 import { computed } from 'mobx';
 import uniqBy from 'lodash/uniqBy';
+import sortBy from 'lodash/sortBy';
 
 import VisualisationObject from './VisualisationObject';
 
@@ -7,7 +8,7 @@ class VisualisationFileList extends VisualisationObject {
   isFileList = true;
 
   @computed get files() {
-    return this.filter(object => object.isFile && object.visible);
+    return sortBy(this.filter(object => object.isFile && object.visible), fileVis => fileVis.file.name);
   }
 
   @computed get uniqueFiles() {

@@ -1,4 +1,4 @@
-import { computed, observable, action, reaction } from "mobx";
+import { computed, observable, action/*, reaction*/ } from "mobx";
 import { Set } from "immutable";
 import sortBy from 'lodash/sortBy';
 
@@ -7,15 +7,84 @@ import VisualisationArea from "./VisualisationArea";
 import VisualisationFileList from "./VisualisationFileList";
 import VisualisationFile from "./VisualisationFile";
 import { STATUS_ADDED, STATUS_MODIFIED, STATUS_UNMODIFIED, STATUS_DELETED } from "../../constants";
+import File from "../File";
 
 class FileVisualisation extends VisualisationFile {
-  @observable status;
-  @observable diff;
-
-  constructor(file) {
+  constructor(file, prevPosition) {
     super();
 
     this.file = file;
+    this.prevPosition = prevPosition;
+  }
+
+  @computed get container() {
+    let parent = this.parent;
+
+    while (parent != null) {
+      if (parent.isContainer) {
+        return parent;
+      }
+
+      parent = parent.parent;
+    }
+
+    return null;
+  }
+
+  @computed get tree() {
+    if (this.container == null) {
+      return null;
+    }
+
+    return this.container.tree;
+  }
+
+  @computed get parentTree() {
+    if (this.container == null) {
+      return null;
+    }
+
+    return this.container.parentTree;
+  }
+
+  @computed get blob() {
+    if (this.tree == null) {
+      return null;
+    }
+
+    return this.tree.get(this.file);
+  }
+
+  @computed get parentBlob() {
+    if (this.parentTree == null) {
+      return null;
+    }
+
+    return this.parentTree.get(this.file);
+  }
+
+  @computed get status() {
+    if (this.blob == null) {
+      return STATUS_DELETED;
+    }
+
+    if (this.parentBlob == null) {
+      return STATUS_ADDED
+    }
+
+    if (this.blob === this.parentBlob) {
+      return STATUS_UNMODIFIED;
+    }
+
+    return STATUS_MODIFIED;
+  }
+
+  @computed get diff() {
+    if (this.blob == null || this.parentBlob == null) {
+      return { added: 0, removed: 0 };
+    }
+
+    return this.blob.diff(this.parentBlob);
   }
 
   @computed get changeRelatedFiles() {
@@ -54,6 +123,7 @@ class FileVisualisation extends VisualisationFile {
 }
 
 class CommitVisualisation extends VisualisationFileList {
+  isContainer = true;
   isCommit = true;
 
   constructor(vis, commit) {
@@ -61,11 +131,6 @@ class CommitVisualisation extends VisualisationFileList {
 
     this.vis = vis;
     this.commit = commit;
-
-    reaction(() => ({
-      tree: this.commit.tree,
-      parentTree: this.commit.parent != null && this.commit.parent.tree,
-    }), this.handleTreeChanges, true);
   }
 
   getPosition() {
@@ -78,63 +143,21 @@ class CommitVisualisation extends VisualisationFileList {
     return position;
   }
 
-  @action getChild(file, status, diff = { added: 0, removed: 0 }) {
-    let child = this.find(object => {
-      return object.isFile && object.file === file;
-    });
-
-    if (child == null) {
-      child = new FileVisualisation(file);
-    }
-
-    child.status = status;
-    child.diff = diff;
-
-    return child;
+  @computed get tree() {
+    return this.commit.tree;
   }
 
-  @action.bound handleTreeChanges() {
-    const children = [];
-
-    for (let [file, blob] of this.commit.tree) {
-      let status = STATUS_UNMODIFIED;
-      let parentBlob;
-      let diff;
-
-      if (this.commit.parent != null) {
-        parentBlob = this.commit.parent.tree.get(file);
-      }
-
-      if (parentBlob == null) { // -> previousBlob
-        // File was added in this commit.
-        status = STATUS_ADDED;
-      } else if (parentBlob !== blob) { // -> previousBlob
-        // File was changed in this commit.
-        status = STATUS_MODIFIED;
-        diff = blob.diff(parentBlob);
-      }
-
-      children.push(this.getChild(file, status, diff));
-    }
-
+  @computed get parentTree() {
     if (this.commit.parent != null) {
-      for (let file of this.commit.parent.tree.keys()) {
-        if (this.commit.tree.has(file)) {
-          continue;
-        }
-
-        children.push(this.getChild(file, STATUS_DELETED));
-      }
+      return this.commit.parent.tree;
     }
 
-    this.set(
-      ...sortBy(children, visFile => visFile.file.name)
-    );
+    return null;
   }
 }
 
 class StagingAreaVisualisation extends VisualisationArea {
-  isStagingArea = true;
+  isContainer = true;
 
   constructor(vis, repo) {
     super('Staging Area');
@@ -144,79 +167,23 @@ class StagingAreaVisualisation extends VisualisationArea {
 
     this.fileList = new VisualisationFileList();
     this.add(this.fileList);
-
-    reaction(() => ({
-      stagingAreaTree: this.repo.stagingArea.tree,
-      headCommitTree: this.repo.head.commit != null && this.repo.head.commit.tree,
-    }), this.handleTreeChanges, true);
   }
 
-  getChild(file, status, diff = { added: 0, removed: 0 }) {
-    let child = this.find(object => object.isFile && object.file === file);
+  @computed get tree() {
+    return this.repo.stagingArea.tree;
+  }
 
-    if (child == null) {
-      child = new FileVisualisation(file);
+  @computed get parentTree() {
+    if (this.repo.head.commit != null) {
+      return this.repo.head.commit.tree;
     }
 
-    child.status = status;
-    child.diff = diff;
-
-    return child;
-  }
-
-  @action.bound handleTreeChanges() {
-    const { stagingArea, head } = this.repo;
-    const children = [];
-
-    for (let [file, blob] of stagingArea.tree) {
-      let status = STATUS_UNMODIFIED;
-      let committedBlob;
-      let diff;
-
-      if (head.commit != null) {
-        committedBlob = head.commit.tree.get(file);
-      }
-
-      if (committedBlob == null) {
-        status = STATUS_ADDED;
-      } else if (committedBlob !== blob) {
-        status = STATUS_MODIFIED;
-        diff = blob.diff(committedBlob);
-      } else {
-        continue;
-      }
-
-      children.push(this.getChild(file, status, diff));
-    }
-
-    if (head.commit != null) {
-      for (let file of head.commit.tree.keys()) {
-        if (stagingArea.tree.has(file)) {
-          continue;
-        }
-
-        children.push(this.getChild(file, STATUS_DELETED));
-      }
-    }
-
-    this.fileList.set(
-      ...sortBy(children, children => children.file.name)
-    );
-  }
-
-  getParent() {
-    return this.vis;
-  }
-
-  getChildren() {
-    return [
-      this.fileList,
-    ];
+    return null;
   }
 }
 
 class WorkingDirectoryVisualisation extends VisualisationArea {
-  isWorkingDirectory = true;
+  isContainer = true;
 
   constructor(vis, repo) {
     super('Working Directory');
@@ -226,107 +193,29 @@ class WorkingDirectoryVisualisation extends VisualisationArea {
 
     this.fileList = new VisualisationFileList();
     this.add(this.fileList);
-
-    reaction(() => ({
-      workingDirectoryTree: this.repo.workingDirectory.tree,
-      stagingAreaTree: this.repo.stagingArea.tree,
-    }), this.handleTreeChanges, true);
   }
 
-  @action getChild(file, status, diff = { added: 0, removed: 0 }) {
-    let child = this.find(object => {
-      return object.isFile && object.file === file;
-    });
-
-    if (child == null) {
-      child = new FileVisualisation(file);
-    }
-
-    child.status = status;
-    child.diff = diff;
-
-    return child;
+  @computed get tree() {
+    return this.repo.workingDirectory.tree;
   }
 
-  @action.bound handleTreeChanges(tree) {
-    const { stagingArea, workingDirectory } = this.repo;
-    const children = [];
-
-    for (let [file, blob] of workingDirectory.tree) {
-      let status = STATUS_UNMODIFIED;
-      let stagedBlob;
-      let diff;
-
-      stagedBlob = stagingArea.tree.get(file);
-
-      if (stagedBlob == null) {
-        // File was added in this commit.
-        status = STATUS_ADDED;
-      } else if (stagedBlob !== blob) {
-        // File was changed in this commit.
-        status = STATUS_MODIFIED;
-        diff = blob.diff(stagedBlob);
-      }
-
-      children.push(this.getChild(file, status, diff));
-    }
-
-    for (let file of stagingArea.tree.keys()) {
-      if (workingDirectory.tree.has(file)) {
-        continue;
-      }
-
-      children.push(this.getChild(file, STATUS_DELETED));
-    }
-
-    this.fileList.set(
-      ...sortBy(children, visFile => visFile.file.name)
-    );
+  @computed get parentTree() {
+    return this.repo.stagingArea.tree;
   }
 }
 
 class RepositoryVisualisation extends VisualisationArea {
-  isRepository = true;
-
   constructor(vis, repo) {
-    super('repository');
+    super('Repository');
 
     this.vis = vis;
     this.repo = repo;
     this.height = 10;
     this.width = 10;
-
-    reaction(() => ({
-      commits: this.repo.commits,
-    }), this.handleCommitChanges, true);
-  }
-
-  @action.bound handleCommitChanges() {
-    const children = [];
-
-    for (let commit of this.repo.commits) {
-      children.push(this.getChild(commit));
-    }
-
-    this.set(...children);
-  }
-
-  @action getChild(commit) {
-    let child = this.find(object => {
-      return object.isCommit && object.commit === commit;
-    });
-
-    if (child == null) {
-      child = new CommitVisualisation(this.vis, commit);
-    }
-
-    return child;
   }
 }
 
 class GitVisualisation extends Visualisation {
-  isGit = true;
-
   @observable useWorkingDirectory = true;
   @observable useStagingArea = true;
   @observable useRepository = true;
@@ -364,6 +253,164 @@ class GitVisualisation extends Visualisation {
 
   getVersions(file) {
     return this.filter(object => object.isFile && object !== file && object.file.blob === file.file.blob);
+  }
+
+  addFile() {
+    const file = File.create();
+
+    this.repo.workingDirectory.addFile(file);
+
+    // Create a new file vis
+    this.workingDirectory.fileList.add(new FileVisualisation(file));
+
+    return file;
+  }
+
+  stageFile(fileIndex) {
+    const file = this.files[fileIndex];
+
+    // Get the file vis from the working directory
+    const visFiles = this.workingDirectory.filter(object => object.isFile && object.file === file);
+
+    // Remove all the copies from the working directory if the status was deleted
+    if (visFiles[0].status === STATUS_DELETED) {
+      this.workingDirectory.fileList.remove(...visFiles);
+
+      const stagedVisFiles = this.stagingArea.filter(object => object.isFile && object.file === file);
+
+      // Remove also all the files from the staging area if it is added
+      if (stagedVisFiles[0].status === STATUS_DELETED) {
+        this.stagingArea.fileList.remove(...stagedVisFiles);
+      }
+    // Create a copy in the working directory if needed
+    } else if (visFiles.length === 1) {
+      this.workingDirectory.fileList.add(new FileVisualisation(file));
+    }
+
+    // Move it into the staging area
+    this.repo.stageFile(file);
+    this.stagingArea.fileList.add(visFiles[0]);
+
+    const stagedVisFiles = this.stagingArea.filter(object => object.isFile && object.file === file);
+
+    // Remove all the files from the staging are, if there are deleted.
+    // @TODO Check if parent tree exists. So this is a deletion to the next version.
+    if (stagedVisFiles[0].status === STATUS_DELETED) {
+      this.stagingArea.fileList.remove(...stagedVisFiles);
+    }
+
+    return file;
+  }
+
+  unstageFile(fileIndex) {
+    const file = this.files[fileIndex];
+
+    this.repo.unstageFile(file);
+
+    // Get all files vis staged to the staging area. Get all in case user staged multiple times.
+    const stagedVisFiles = this.stagingArea.filter(object => object.isFile && object.file === file);
+
+    // Move the first of these files back to the working directory.
+    this.workingDirectory.fileList.add(stagedVisFiles[0]);
+
+    // Remove the other ones, if needed.
+    if (stagedVisFiles.length > 1) {
+      this.stagingArea.fileList.remove(...stagedVisFiles);
+    }
+
+    return file;
+  }
+
+  deleteFile(fileIndex) {
+    const file = this.files[fileIndex];
+
+    // Get all file vis for this file. Can be more because we create copies in the working directory.
+    const visFiles = this.workingDirectory.filter(object => object.isFile && object.file === file);
+
+    // Remove the file if it is newly added.
+    if (visFiles[0].status === STATUS_ADDED) {
+      this.workingDirectory.fileList.remove(...visFiles);
+    }
+
+    this.repo.workingDirectory.removeFile(file);
+
+    return file;
+  }
+
+  modifyFile(fileIndex) { // Done
+    const file = this.files[fileIndex];
+
+    file.modify();
+    this.repo.workingDirectory.addFile(file);
+
+    return file;
+  }
+
+  createCommit() {
+    const commit = this.repo.createCommit();
+
+    // Create a new commit vis
+    const visCommit = new CommitVisualisation(this.vis, commit);
+
+    // Move all the files from the staging area to the commit
+    const stagedVisFiles = this.stagingArea.filter(object => object.isFile);
+    visCommit.add(...stagedVisFiles);
+
+    // Look for a parent commit and merge the files into our new one.
+    if (commit.parent != null) {
+      const parentVisCommit = this.repository.find(object => object.isCommit && object.commit === commit.parent);
+
+      // Wait, do not copy all the files! Only the one, not present in the staging area.
+      const parentVisFiles = parentVisCommit.filter(object => object.isFile).filter(
+        parentVisFile => (
+          !stagedVisFiles.some(stagedVisFile => stagedVisFile.file === parentVisFile.file)
+        )
+      );
+
+      // Create copy of all the files in the parent commit
+      for (let parentVisFile of parentVisFiles) {
+        parentVisCommit.add(new FileVisualisation(parentVisFile.file, parentVisFile.position));
+      }
+
+      // Finally copy all the files from the parent commit into our new one.
+      visCommit.add(...parentVisFiles);
+    }
+
+    // Move commit to repository
+    this.repository.add(visCommit);
+
+    return commit;
+  }
+
+  revertCommit(commitChecksum) {
+    const commit = this.repo.commits.find(commit => commit.checksum === commitChecksum);
+
+    if (commit == null) {
+      console.error('Missing commit');
+      return;
+    }
+
+    // Get commit vis.
+    const visCommit = this.repository.find(object => object.isCommit && object.commit === commit);
+
+    // Filter files inside the commit for changes
+    const changedVisFiles = visCommit.filter(object => (
+      object.isFile && object.status !== STATUS_UNMODIFIED
+    ));
+
+    // Copy all changed files from the commit.
+    for (let changedVisFile of changedVisFiles) {
+      visCommit.add(new FileVisualisation(changedVisFile.file));
+    }
+
+    console.log(changedVisFiles);
+
+    // Move them into the working directory
+    this.workingDirectory.fileList.add(...changedVisFiles);
+
+    //this.repo.revertCommit(commit);
+
+    return commit;
   }
 }
 

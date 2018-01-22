@@ -73,10 +73,14 @@ class VisualisationFile extends Component {
   componentDidMount() {
     const { file } = this.props;
 
+    if (file.prevPosition != null) {
+      tween({ from: file.prevPosition, to: this.position.get(), duration: 1400 }).start(this.position);
+    }
+
     this.disposePosition = reaction(
       () => file.position,
       position => {
-        tween({ from: this.position.get(), to: position, duration: 600 }).start(this.position);
+        tween({ from: this.position.get(), to: position, duration: 1400 }).start(this.position);
       }
     );
 

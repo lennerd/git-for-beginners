@@ -18,7 +18,7 @@ function spacing(multiply = 1) {
   return css`${(props) => props.theme.rem(props.theme.baseSpacing * multiply)}`;
 }
 
-export const CELL_WIDTH = 2.3;
+export const CELL_WIDTH = 2.4;
 export const CELL_HEIGHT = 3;
 export const LEVEL_HEIGHT = 0.25;
 

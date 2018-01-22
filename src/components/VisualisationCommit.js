@@ -51,7 +51,7 @@ class VisualisationCommit extends Component {
     this.disposePosition = reaction(
       () => commit.position,
       position => {
-        tween({ from: this.position.get(), to: position, duration: 600 }).start(this.position);
+        tween({ from: this.position.get(), to: position, duration: 1400 }).start(this.position);
       }
     );
 

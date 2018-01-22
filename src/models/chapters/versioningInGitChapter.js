@@ -9,7 +9,7 @@ import { VisualisationCommitReference, VisualisationFileReference } from "../../
 import Console from "../Console";
 import Repository from "../Repository";
 import GitVisualisation from "../vis/GitVisualisation";
-import File from "../File";
+//import File from "../File";
 
 const addFile = createAction('ADD_FILE');
 const stageFile = createAction('STAGE_FILE');
@@ -160,59 +160,59 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
     );
   },
   [addFile]() {
-    const file = File.create();
+    /*const file = File.create();
 
     this.repo.workingDirectory.addFile(file);
 
-    return file;
+    return file;*/
+
+    return this.vis.addFile();
   },
   [stageFile](fileIndex) {
-    const file = this.vis.files[fileIndex];
+    /*const file = this.vis.files[fileIndex];
 
     this.repo.stageFile(file);
 
-    return file;
-  },
-  /*[stageAllFiles]() {
-    let files = this.workingDirectoryFileList.files;
+    return file;*/
 
-    files.forEach(file => {
-      try {
-        this.stageFile(file);
-      } catch (e) {
-        console.error(e);
-      }
-    })
-    throw new Error('Not yet.');
-  },*/
+    return this.vis.stageFile(fileIndex);
+  },
   [unstageFile](fileIndex) {
-    const file = this.vis.files[fileIndex];
+    /*const file = this.vis.files[fileIndex];
 
     this.repo.unstageFile(file);
 
-    return file;
+    return file;*/
+
+    return this.vis.unstageFile(fileIndex);
   },
   [deleteFile](fileIndex) {
-    const file = this.vis.files[fileIndex];
+    /*const file = this.vis.files[fileIndex];
 
     this.repo.workingDirectory.removeFile(file);
 
-    return file;
+    return file;*/
+
+    return this.vis.deleteFile(fileIndex);
   },
   [modifyFile](fileIndex) {
-    const file = this.vis.files[fileIndex];
+    /*const file = this.vis.files[fileIndex];
 
     file.modify();
 
     this.repo.workingDirectory.addFile(file);
 
-    return file;
+    return file;*/
+
+    return this.vis.modifyFile(fileIndex);
   },
   [createCommit]() {
-    return this.repo.createCommit();
+    /*return this.repo.createCommit();*/
+
+    return this.vis.createCommit();
   },
   [revertCommit](commitChecksum) {
-    const commit = this.repo.commits.find(commit => commit.checksum === commitChecksum);
+    /*const commit = this.repo.commits.find(commit => commit.checksum === commitChecksum);
 
     if (commit == null) {
       console.error('Missing commit');
@@ -221,7 +221,8 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
 
     this.repo.revertCommit(commit);
 
-    return commit;
+    return commit;*/
+    return this.vis.revertCommit(commitChecksum);
   },
   get sections() {
     return [

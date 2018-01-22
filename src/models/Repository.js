@@ -21,11 +21,16 @@ class Repository {
 
   @action stageFile(file) {
     const blob = this.workingDirectory.tree.get(file);
+    const stagedBlob = this.stagingArea.tree.get(file);
 
     if (blob == null) {
       // File does not exist in the working directory, so also remove it from the staging area.
       this.stagingArea.tree = this.stagingArea.tree.remove(file);
     } else {
+      if (blob === stagedBlob) {
+        throw new Error('Cannot stage unmodified file.');
+      }
+
       this.stagingArea.tree = this.stagingArea.tree.set(file, blob);
     }
   }
