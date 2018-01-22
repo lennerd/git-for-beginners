@@ -1,7 +1,6 @@
-import { computed, observable, action/*, reaction*/ } from "mobx";
+import { computed, action } from "mobx";
 import { Set } from "immutable";
 import sortBy from 'lodash/sortBy';
-import uniqBy from 'lodash/uniqBy';
 
 import Visualisation from "./Visualisation";
 import VisualisationArea from "./VisualisationArea";
@@ -214,6 +213,10 @@ class RepositoryVisualisation extends VisualisationArea {
     this.height = 10;
     this.width = 10;
   }
+
+  @computed get commits() {
+    return this.filter(object => object.isCommit);
+  }
 }
 
 class GitVisualisation extends Visualisation {
@@ -275,10 +278,9 @@ class GitVisualisation extends Visualisation {
   }
 
   getVersions(visFile) {
-    // @TODO Optimize!
-    return uniqBy(this.filter(object => (
+    return this.filter(object => (
       object.isFile && object !== visFile && object.file === visFile.file
-    )), object => object.parent);
+    ));
   }
 
   addFile() {

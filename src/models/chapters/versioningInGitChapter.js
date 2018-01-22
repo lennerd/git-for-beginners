@@ -160,68 +160,24 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
     );
   },
   [addFile]() {
-    /*const file = File.create();
-
-    this.repo.workingDirectory.addFile(file);
-
-    return file;*/
-
     return this.vis.addFile();
   },
   [stageFile](fileIndex) {
-    /*const file = this.vis.files[fileIndex];
-
-    this.repo.stageFile(file);
-
-    return file;*/
-
     return this.vis.stageFile(fileIndex);
   },
   [unstageFile](fileIndex) {
-    /*const file = this.vis.files[fileIndex];
-
-    this.repo.unstageFile(file);
-
-    return file;*/
-
     return this.vis.unstageFile(fileIndex);
   },
   [deleteFile](fileIndex) {
-    /*const file = this.vis.files[fileIndex];
-
-    this.repo.workingDirectory.removeFile(file);
-
-    return file;*/
-
     return this.vis.deleteFile(fileIndex);
   },
   [modifyFile](fileIndex) {
-    /*const file = this.vis.files[fileIndex];
-
-    file.modify();
-
-    this.repo.workingDirectory.addFile(file);
-
-    return file;*/
-
     return this.vis.modifyFile(fileIndex);
   },
   [createCommit]() {
-    /*return this.repo.createCommit();*/
-
     return this.vis.createCommit();
   },
   [revertCommit](commitChecksum) {
-    /*const commit = this.repo.commits.find(commit => commit.checksum === commitChecksum);
-
-    if (commit == null) {
-      console.error('Missing commit');
-      return;
-    }
-
-    this.repo.revertCommit(commit);
-
-    return commit;*/
     return this.vis.revertCommit(commitChecksum);
   },
   get sections() {
@@ -233,21 +189,21 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
       )),
       new ChapterTask(() => (
         <Fragment>Add files to the <Tooltip name="stagingArea">staging area</Tooltip>.</Fragment>
-      ), true),//this.stagingAreaFileList.files.length > 0 || this.repository.commits.length > 0),
+      ), this.vis.stagingArea.fileList.files.length > 0 || this.vis.repository.commits.length > 0),
       new ChapterText(() => (
         <Fragment>
           Did you see how files moved from the <Tooltip name="workingDirectory">working directory</Tooltip> to the staging area? These files changes are ready to be part of the next version, the next commit. <em>You can add more files, if you want. The stage is yours, actually.</em>
         </Fragment>
       ), { skip: true }),
-      new ChapterTask(() => 'Create a new commit.', true),//this.repository.commits.length > 0),
+      new ChapterTask(() => 'Create a new commit.', this.vis.repository.commits.length > 0),
       new ChapterText(() => (
         <Fragment>
           Perfect. A new commit was created and added to the <Tooltip name="repository">repository</Tooltip>. Like we said, each commit has a unique identifier, so we can reference it for example in the interactive menu below the visualisation.
         </Fragment>
       ), { skip: true }),
-      new ChapterTask(() => 'Create at least two more commits.', true),//this.repository.commits.length > 2),
+      new ChapterTask(() => 'Create at least two more commits.', this.vis.repository.commits.length > 2),
       new ChapterText(() => 'Now that we have a few more versions of our project, let’s take a look at how to restore an older version.', { skip: true }),
-      new ChapterTask(() => 'Revert changes from a commit.', true),//this.hasRevertedCommit),
+      new ChapterTask(() => 'Revert changes from a commit.', this.hasRevertedCommit),
       new ChapterText(() => (
         <Fragment>
           Well done! A few commits were created and an older version of your project restored. <em>Go ahead and play around with your git powered project a little more.</em> Or jump directly to the …
