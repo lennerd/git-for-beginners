@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { action, reaction } from 'mobx';
 import { observer } from 'mobx-react';
 import { withTheme } from 'styled-components';
-import { value, tween } from 'popmotion';
+import { value, tween, easing } from 'popmotion';
 
 import VisualisationObject3D from './VisualisationObject3D';
 import { CELL_HEIGHT, CELL_WIDTH, LEVEL_HEIGHT } from '../theme';
@@ -51,7 +51,7 @@ class VisualisationCommit extends Component {
     this.disposePosition = reaction(
       () => commit.position,
       position => {
-        tween({ from: this.position.get(), to: position, duration: 1400 }).start(this.position);
+        tween({ from: this.position.get(), to: position, duration: 1400, ease: easing.easeInOut }).start(this.position);
       }
     );
 

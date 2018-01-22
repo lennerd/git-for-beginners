@@ -1,5 +1,6 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { observer } from 'mobx-react';
+import { TransitionGroup } from 'react-transition-group';
 
 import Chapter, { ChapterMain } from './Chapter';
 import ChapterHeader from './ChapterHeader';
@@ -27,12 +28,14 @@ class TutorialChapter extends Component {
             {commit.isCommit && <VisualisationPopup font={fontRegular} level={commit.height} content={commit.commit.checksumShort} />}
           </VisualisationCommit>
         ))}
-        {chapter.vis.visFiles.map(file => (
-          <VisualisationFile key={file.id} vis={chapter.vis} file={file}>
-            <VisualisationFileStatus font={fontBlack} file={file} vis={chapter.vis} />
-            {file.name != null && <VisualisationFileName font={fontRegular} name={file.name} />}
-          </VisualisationFile>
-        ))}
+        <TransitionGroup component={Fragment}>
+          {chapter.vis.visFiles.map(file => (
+            <VisualisationFile key={file.id} vis={chapter.vis} file={file}>
+              <VisualisationFileStatus font={fontBlack} file={file} vis={chapter.vis} />
+              {file.name != null && <VisualisationFileName font={fontRegular} name={file.name} />}
+            </VisualisationFile>
+          ))}
+        </TransitionGroup>
         {chapter.vis.visAreas.map(area => (
           <VisualisationArea area={area} key={area.id}>
             <VisualisationAreaName font={fontRegularCaps} area={area} />

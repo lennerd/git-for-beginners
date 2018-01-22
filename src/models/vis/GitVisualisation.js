@@ -1,6 +1,7 @@
 import { computed, observable, action/*, reaction*/ } from "mobx";
 import { Set } from "immutable";
 import sortBy from 'lodash/sortBy';
+import uniqBy from 'lodash/uniqBy';
 
 import Visualisation from "./Visualisation";
 import VisualisationArea from "./VisualisationArea";
@@ -216,9 +217,7 @@ class RepositoryVisualisation extends VisualisationArea {
 }
 
 class GitVisualisation extends Visualisation {
-  @observable useWorkingDirectory = true;
-  @observable useStagingArea = true;
-  @observable useRepository = true;
+  isGit = true;
 
   constructor(repo) {
     super();
@@ -237,6 +236,30 @@ class GitVisualisation extends Visualisation {
     this.add(this.repository);
   }
 
+  toggleWorkingDirectory() {
+    if (this.workingDirectory.parent == null) {
+      this.add(this.workingDirectory);
+    } else {
+      this.remove(this.workingDirectory);
+    }
+  }
+
+  toggleStagingArea() {
+    if (this.stagingArea.parent == null) {
+      this.add(this.stagingArea);
+    } else {
+      this.remove(this.stagingArea);
+    }
+  }
+
+  toggleRepository() {
+    if (this.repository.parent == null) {
+      this.add(this.repository);
+    } else {
+      this.remove(this.repository);
+    }
+  }
+
   @computed get files() {
     let files = Set.fromKeys(this.repo.workingDirectory.tree);
 
@@ -251,8 +274,11 @@ class GitVisualisation extends Visualisation {
     return sortBy(files.toArray(), file => file.name);
   }
 
-  getVersions(file) {
-    return this.filter(object => object.isFile && object !== file && object.file.blob === file.file.blob);
+  getVersions(visFile) {
+    // @TODO Optimize!
+    return uniqBy(this.filter(object => (
+      object.isFile && object !== visFile && object.file === visFile.file
+    )), object => object.parent);
   }
 
   addFile() {
@@ -279,7 +305,7 @@ class GitVisualisation extends Visualisation {
       const stagedVisFiles = this.stagingArea.filter(object => object.isFile && object.file === file);
 
       // Remove also all the files from the staging area if it is added
-      if (stagedVisFiles[0].status === STATUS_DELETED) {
+      if (stagedVisFiles.length > 0 && stagedVisFiles[0].status === STATUS_DELETED) {
         this.stagingArea.fileList.remove(...stagedVisFiles);
       }
     // Create a copy in the working directory if needed
@@ -292,10 +318,11 @@ class GitVisualisation extends Visualisation {
     this.stagingArea.fileList.add(visFiles[0]);
 
     const stagedVisFiles = this.stagingArea.filter(object => object.isFile && object.file === file);
+    const committedVisFile = this.repository.find(object => object.isFile && object.file === file);
 
     // Remove all the files from the staging are, if there are deleted.
     // @TODO Check if parent tree exists. So this is a deletion to the next version.
-    if (stagedVisFiles[0].status === STATUS_DELETED) {
+    if (committedVisFile == null && stagedVisFiles[0].status === STATUS_DELETED) {
       this.stagingArea.fileList.remove(...stagedVisFiles);
     }
 
@@ -340,6 +367,11 @@ class GitVisualisation extends Visualisation {
   modifyFile(fileIndex) { // Done
     const file = this.files[fileIndex];
 
+    if (file == null) {
+      console.error('Missing file.');
+      return;
+    }
+
     file.modify();
     this.repo.workingDirectory.addFile(file);
 
@@ -363,6 +395,7 @@ class GitVisualisation extends Visualisation {
       // Wait, do not copy all the files! Only the one, not present in the staging area.
       const parentVisFiles = parentVisCommit.filter(object => object.isFile).filter(
         parentVisFile => (
+          parentVisFile.status !== STATUS_DELETED &&
           !stagedVisFiles.some(stagedVisFile => stagedVisFile.file === parentVisFile.file)
         )
       );
@@ -390,6 +423,14 @@ class GitVisualisation extends Visualisation {
       return;
     }
 
+    // We essentially reset to the parent before, due to simplified rules for this vis.
+    // This is the first commit, so reset the working directory
+    /*if (commit.parent == null) {
+      this.workingDirectory.fileList.remove(...this.workingDirectory.fileList.files());
+
+      return;
+    }*/
+
     // Get commit vis.
     const visCommit = this.repository.find(object => object.isCommit && object.commit === commit);
 
@@ -398,17 +439,15 @@ class GitVisualisation extends Visualisation {
       object.isFile && object.status !== STATUS_UNMODIFIED
     ));
 
-    // Copy all changed files from the commit.
+    // Copy all changed files from the commit as visualisation backups.
     for (let changedVisFile of changedVisFiles) {
       visCommit.add(new FileVisualisation(changedVisFile.file));
     }
 
-    console.log(changedVisFiles);
-
     // Move them into the working directory
-    this.workingDirectory.fileList.add(...changedVisFiles);
+    this.workingDirectory.fileList.set(...changedVisFiles);
 
-    //this.repo.revertCommit(commit);
+    this.repo.revertCommit(commit.parent);
 
     return commit;
   }

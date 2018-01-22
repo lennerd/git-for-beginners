@@ -3,7 +3,7 @@ import { computed, observable, action, reaction } from "mobx";
 import Visualisation from "./Visualisation";
 import VisualisationArea from "./VisualisationArea";
 import VisualisationFile from "./VisualisationFile";
-import { STATUS_DELETED, STATUS_ADDED, STATUS_MODIFIED } from "../../constants";
+import { STATUS_DELETED, STATUS_ADDED, STATUS_MODIFIED, STATUS_UNMODIFIED } from "../../constants";
 
 const FILE_NAME_VARIANTS = [
   '_final',
@@ -125,6 +125,7 @@ class VersionDatabaseVisualisation extends Visualisation {
 
   addFile() {
     const file = new FileVisualisation(this, this.nameIndex++);
+    file.status = STATUS_UNMODIFIED;
 
     this.files.unshift(file);
   }

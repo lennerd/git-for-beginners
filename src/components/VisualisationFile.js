@@ -2,17 +2,52 @@ import React, { Component } from 'react';
 import { withTheme } from 'styled-components';
 import { observer } from 'mobx-react';
 import { action, computed, reaction } from 'mobx';
-import { value, tween } from 'popmotion';
+import { value, tween, timeline, easing } from 'popmotion';
+import { Transition } from 'react-transition-group';
 
 import VisualisationObject3D from './VisualisationObject3D';
 import { LEVEL_HEIGHT, CELL_HEIGHT, CELL_WIDTH } from '../theme';
-import { STATUS_DELETED, STATUS_ADDED, STATUS_MODIFIED } from '../constants';
+import { STATUS_DELETED, STATUS_ADDED, STATUS_MODIFIED, STATUS_UNMODIFIED } from '../constants';
 
 export const FILE_SIZE_RATIO = 1 / Math.sqrt(2);
 export const FILE_HEIGHT = LEVEL_HEIGHT / 2;
 export const FILE_WIDTH = FILE_HEIGHT * 10;
 export const FILE_DEPTH = FILE_WIDTH * FILE_SIZE_RATIO;
 export const FILE_OUTLINE = 0.03;
+
+function moveTo({ from, to, duration }) {
+  const { level: fromLevel, column: fromColumn, row: fromRow } = from;
+  const { level: toLevel, column: toColumn, row: toRow } = to;
+
+  const halfDuration = duration / 2;
+  const quarterDuration = halfDuration / 2;
+
+  if (fromColumn === toColumn && fromRow === toRow) {
+    return tween({ from, to, duration: halfDuration, ease: easing.easeInOut });
+  }
+
+  if (fromLevel === toLevel) {
+    return tween({ from, to, duration: duration, ease: easing.easeInOut });
+  }
+
+  const halfWayColumn = fromColumn + ((toColumn - fromColumn) / 2);
+  const halfWayRow = fromRow + ((toRow - fromRow) / 2);
+
+
+  return timeline([
+    [
+      { track: 'row', from: fromRow, to: halfWayRow, duration: halfDuration, ease: easing.easeInOut },
+      { track: 'column', from: fromColumn, to: halfWayColumn, duration: halfDuration, ease: easing.easeInOut },
+    ],
+    `-${quarterDuration}`,
+    { track: 'level', from: fromLevel, to: toLevel, duration: halfDuration, ease: easing.easeInOut },
+    `-${quarterDuration}`,
+    [
+      { track: 'row', from: halfWayRow, to: toRow, duration: halfDuration, ease: easing.easeInOut },
+      { track: 'column', from: halfWayColumn, to: toColumn, duration: halfDuration, ease: easing.easeInOut },
+    ],
+  ]);
+}
 
 @withTheme
 @observer
@@ -73,24 +108,47 @@ class VisualisationFile extends Component {
   componentDidMount() {
     const { file } = this.props;
 
-    if (file.prevPosition != null) {
-      tween({ from: file.prevPosition, to: this.position.get(), duration: 1400 }).start(this.position);
-    }
 
     this.disposePosition = reaction(
       () => file.position,
       position => {
-        tween({ from: this.position.get(), to: position, duration: 1400 }).start(this.position);
+        moveTo({ from: this.position.get(), to: position, duration: 1400, ease: easing.easeInOut }).start(this.position);
       }
     );
 
     this.disposeHoverOpacity = reaction(
-      () => file.active ? 1 : file.hover ? 0.7 : this.versionsHovered || this.versionsActive ? 0.3 : 0,
+      () => file.active ? 1 : file.hover ? 0.7 : (this.versionsHovered || this.versionsActive) ? 0.3 : 0,
       opacity => {
         tween({ from: this.hoverOpacity.get(), to: opacity, duration: 200 }).start(this.hoverOpacity);
       }
     );
   }
+
+  handleEnter = () => {
+    const { file } = this.props;
+
+    if (file.prevPosition != null) {
+      moveTo({ from: file.prevPosition, to: this.position.get(), duration: 1400 }).start(this.position);
+
+      this.tweenValue = this.position;
+    }
+  };
+
+  handleExit = () => {
+    //this.tween = tween({ from: 1, to: 0, duration: 700 });
+  };
+
+  addEndListener = (node, complete) => {
+    if (this.tweenValue == null) {
+      return complete();
+    }
+
+    this.tweenValue.subscribe({
+      complete,
+    });
+
+    this.tweenValue = null;
+  };
 
   componentWillUnmount() {
     this.disposePosition();
@@ -139,7 +197,7 @@ class VisualisationFile extends Component {
   }
 
   render() {
-    const { children, file, theme } = this.props;
+    const { children, file, theme, ...props } = this.props;
 
     this.fileObject.visible = file.visible;
 
@@ -155,19 +213,27 @@ class VisualisationFile extends Component {
 
     // Add small offset when for not new or deleted files so no artefacts appear between colors.
     this.fileMesh.material.polygonOffset = true;
-    this.fileMesh.material.polygonOffsetFactor = file.status === STATUS_MODIFIED ? -0.01 : 0;
+    this.fileMesh.material.polygonOffsetFactor =
+      (file.status === STATUS_UNMODIFIED || file.status === STATUS_MODIFIED) ? -0.01 : 0;
 
     this.fileMesh.material.needsUpdate = true;
 
     return (
-      <VisualisationObject3D
-        object3D={this.fileObject}
-        onClick={this.handleClick}
-        onMouseEnter={this.handleMouseEnter}
-        onMouseLeave={this.handleMouseLeave}
+      <Transition
+        {...props}
+        onEnter={this.handleEnter}
+        onExit={this.handleExit}
+        addEndListener={this.addEndListener}
       >
-        {children}
-      </VisualisationObject3D>
+        <VisualisationObject3D
+          object3D={this.fileObject}
+          onClick={this.handleClick}
+          onMouseEnter={this.handleMouseEnter}
+          onMouseLeave={this.handleMouseLeave}
+        >
+          {children}
+        </VisualisationObject3D>
+      </Transition>
     );
   }
 }

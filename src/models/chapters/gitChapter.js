@@ -8,37 +8,39 @@ import Repository from "../Repository";
 import File from "../File";
 
 const introductionChapter = createChapter('Git', {
+  useWorkingDirectory: false,
+  useStagingArea: false,
+  useRepository: false,
+
   [init]() {
     this.repo = new Repository();
     this.vis = new GitVisualisation(this.repo);
 
     this.files = [
-      File.create(),
-      File.create(),
-      File.create()
+      this.vis.addFile(),
+      this.vis.addFile(),
+      this.vis.addFile()
     ];
 
-    for (let file of this.files) {
-      this.repo.workingDirectory.addFile(file);
-    }
-
-    this.vis.useRepository = false;
-    this.vis.useStagingArea = false;
-    this.vis.useWorkingDirectory = false;
+    this.vis.toggleWorkingDirectory()
+    this.vis.toggleStagingArea();
+    this.vis.toggleRepository();
   },
   [readOn]() {
-    if (!this.vis.useWorkingDirectory) {
-      this.vis.useWorkingDirectory = true;
-    } else if(!this.vis.useStagingArea) {
-      this.vis.useStagingArea = true;
+    if (!this.useWorkingDirectory) {
+      this.vis.toggleWorkingDirectory();
+      this.useWorkingDirectory = true;
+    } else if(!this.useStagingArea) {
+      this.vis.toggleStagingArea();
+      this.useStagingArea = true;
+      this.vis.stageFile(0);
+      this.vis.stageFile(1);
+      this.vis.stageFile(2);
+    } else if(!this.useRepository) {
+      this.vis.toggleRepository();
+      this.useRepository = true;
 
-      for (let file of this.files) {
-        this.repo.stageFile(file);
-      }
-    } else if(!this.vis.useRepository) {
-      this.vis.useRepository = true;
-
-      this.repo.createCommit();
+      this.vis.createCommit();
     } else {
       const commit = this.vis.repository.find(object => object.isCommit);
 
