@@ -15,38 +15,48 @@ import Console, {
   ConsoleTitle,
   ConsoleInput
 } from './Console';
+import ConsoleBody from './ConsoleBody';
+import ConsoleError from '../models/ConsoleError';
 
 @observer
 class ChapterConsoleHistory extends Component {
   render() {
     const { chapter } = this.props;
 
-    return chapter.console.history.map(log => {
-      let message = log.command.message;
+    if (chapter.console.history.length === 0) {
+      return null;
+    }
 
-      if (log.error != null) {
-        message = log.error;
-      }
+    return (
+      <ConsoleBody back limit>
+        {chapter.console.history.map(log => {
+          let message = log.command.message;
 
-      return (
-        <ConsoleSection key={log.id}>
-          {
-            log.command.parent != null && !log.command.parent.isConsole &&
-            <ConsoleLabel>{log.command.parent.name}</ConsoleLabel>
+          if (log.error != null) {
+            message = log.error.message;
           }
-          <ConsoleLog>
-            <ConsoleTitle>
-              {log.command.icon !== '' && <ConsoleIcon>{log.command.icon}</ConsoleIcon>}
-              {log.command.textOnly && '$ '}
-              {log.command.name}
-            </ConsoleTitle>
-            {message != null && <ConsoleMessage>
-              <span>{message(log)}</span>
-            </ConsoleMessage>}
-          </ConsoleLog>
-        </ConsoleSection>
-      );
-    });
+
+          return (
+            <ConsoleSection key={log.id} error={log.error}>
+              {
+                log.command.parent != null && !log.command.parent.isConsole &&
+                <ConsoleLabel>{log.command.parent.name}</ConsoleLabel>
+              }
+              <ConsoleLog>
+                <ConsoleTitle>
+                  {log.command.icon !== '' && <ConsoleIcon>{log.command.icon}</ConsoleIcon>}
+                  {log.command.textOnly && '$ '}
+                  {log.command.name}
+                </ConsoleTitle>
+                {message != null && <ConsoleMessage>
+                  <span>{message(log)}</span>
+                </ConsoleMessage>}
+              </ConsoleLog>
+            </ConsoleSection>
+          );
+        })}
+      </ConsoleBody>
+    );
   }
 }
 
@@ -70,7 +80,6 @@ class ChapterConsoleInput extends Component {
     const command = chapter.console.getCommand(event.target.value);
 
     if (command == null) {
-      console.error('Unknown command.');
       return;
     }
 
@@ -102,22 +111,6 @@ class ChapterConsoleInput extends Component {
 
 @observer
 class ChapterConsole extends Component {
-  componentDidMount() {
-    this.scrollToBottom();
-  }
-
-  componentDidUpdate() {
-    this.scrollToBottom();
-  }
-
-  scrollToBottom() {
-    if (this.console == null) {
-      return;
-    }
-
-    this.console.scrollTop = this.console.scrollHeight;
-  }
-
   @action.bound runCommand(command) {
     const { chapter } = this.props;
 
@@ -127,7 +120,7 @@ class ChapterConsole extends Component {
   renderVisibleCommands() {
     const { chapter } = this.props;
 
-    if (chapter.console.visibleCommands.length === 0) {
+    if (chapter.console.visibleCommands.length === 0 && !chapter.console.useInput) {
       return (
         <ConsoleSection>
           <ConsoleMessage>Nothing selected.</ConsoleMessage>
@@ -176,10 +169,12 @@ class ChapterConsole extends Component {
     }
 
     return (
-      <Console className={className} innerRef={(ref) => { this.console = ref; }}>
+      <Console className={className}>
         <ChapterConsoleHistory chapter={chapter} />
-        {this.renderVisibleCommands()}
-        {chapter.console.useInput && <ChapterConsoleInput chapter={chapter} onEnter={this.runCommand} />}
+        <ConsoleBody>
+          {this.renderVisibleCommands()}
+          {chapter.console.useInput && <ChapterConsoleInput chapter={chapter} onEnter={this.runCommand} />}
+        </ConsoleBody>
       </Console>
     );
   }
@@ -192,118 +187,3 @@ export default styled(ChapterConsole)`
   position: relative;
   z-index: 1;
 `;
-
-/*import React, { Component } from 'react';
-import { inject, observer } from 'mobx-react';
-
-import Console, {
-  ConsoleSection,
-  ConsoleInput,
-  ConsoleCommand,
-} from './Console';
-
-@inject('tutorial')
-@observer
-class ChapterConsole extends Component {
-  state = {
-    history: [{ prompt: '' }],
-    currentIndex: 0,
-  };
-
-  handleConsoleInputChange = (event) => {
-    const { history } = this.state;
-    const { value } = event.target;
-
-    this.setState({
-      history: [
-        ...history.slice(0, -1),
-        { prompt: value.substring(2) },
-      ],
-      currentIndex: history.length - 1,
-    });
-  }
-
-  handleConsoleInputKeyDown = (event) => {
-    const { history, currentIndex } = this.state;
-
-    if(event.key === 'ArrowUp' || event.key === 'ArrowDown' || event.key === 'Enter') {
-      event.preventDefault();
-    }
-
-    if (event.key === 'ArrowUp') {
-      const newIndex = currentIndex - 1;
-
-      if (newIndex > -1) {
-        this.setState({
-          currentIndex: newIndex,
-        });
-      }
-
-      return;
-    }
-
-    if (event.key === 'ArrowDown') {
-      const newIndex = currentIndex + 1;
-
-      if (newIndex < history.length) {
-        this.setState({
-          currentIndex: newIndex,
-        });
-      }
-
-      return;
-    }
-
-    if (event.key === 'Enter') {
-      const newHistory = [
-        ...history.slice(0, -1),
-        history[currentIndex],
-        { prompt: '' },
-      ];
-
-      this.setState({
-        history: newHistory,
-        currentIndex: newHistory.length - 1,
-      });
-
-      return;
-    }
-  }
-
-  componentDidMount() {
-    this.scrollToBottom();
-  }
-
-  componentDidUpdate() {
-    this.scrollToBottom();
-  }
-
-  scrollToBottom() {
-    this.console.scrollTop = this.console.scrollHeight;
-  }
-
-  render() {
-    const { history, currentIndex } = this.state;
-    const current = history[currentIndex];
-
-    return (
-      <Console innerRef={(ref) => { this.console = ref; }}>
-        {history.slice(0, -1).map((command, index) => {
-          return (
-            <ConsoleSection key={index}>
-              <ConsoleCommand>$ {command.prompt}</ConsoleCommand>
-            </ConsoleSection>
-          );
-        })}
-        <ConsoleSection>
-          <ConsoleInput
-            value={`$ ${current.prompt}`}
-            onChange={this.handleConsoleInputChange}
-            onKeyDown={this.handleConsoleInputKeyDown} />
-        </ConsoleSection>
-      </Console>
-    );
-  }
-}
-
-export default ChapterConsole;*/

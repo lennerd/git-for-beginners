@@ -9,6 +9,7 @@ import ConsoleCommand from "../ConsoleCommand";
 import { createAction } from "../Action";
 import { createStatusMessage, createCommitMessage } from "../vis/GitVisualisation";
 import { STATUS_UNMODIFIED } from "../../constants";
+import ConsoleError from "../ConsoleError";
 
 const addFile = createAction('ADD_FILE');
 const stageFile = createAction('STAGE_FILE');
@@ -133,14 +134,19 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
         action: createCommit,
         payloadCreator: () => this.activeFileIndex,
       }),
-      new ConsoleCommand('Add new file.', {
-        icon: '+',
-        message: ({ data }) => (
-          <Fragment>
-            A new <VisualisationFileReference vis={this.vis} file={data}>file</VisualisationFileReference> was added.
-          </Fragment>
-        ),
-        action: addFile,
+      new ConsoleCommand('Working Directory', {
+        available: () => this.vis.workingDirectory.active,
+        commands: [
+          new ConsoleCommand('Add new file.', {
+            icon: '+',
+            message: ({ data }) => (
+              <Fragment>
+                A new <VisualisationFileReference vis={this.vis} file={data}>file</VisualisationFileReference> was added.
+              </Fragment>
+            ),
+            action: addFile,
+          }),
+        ],
       }),
       new ConsoleCommand('File', {
         available: () => this.vis.workingDirectory.active,
@@ -175,6 +181,10 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
     return this.vis.addFile();
   },
   [stageFile](fileIndex) {
+    if (fileIndex < 0) {
+      throw new ConsoleError('You need to select a file you want to stage.')
+    };
+
     return this.vis.stageFile(fileIndex);
   },
   [createCommit]() {

@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { observer } from "mobx-react";
 
 import Console, { ConsoleMessage, ConsoleSection } from "./Console";
+import ConsoleBody from "./ConsoleBody";
 
 @observer
 class Commandline extends Component {
@@ -12,22 +13,24 @@ class Commandline extends Component {
     return (
       <div className={className}>
         <Console>
-          <ConsoleSection>
-            <ConsoleMessage>
-              <CommandlinePart>
-                <CommandlinePartLabel active={chapter.hasPrompt}>Prompt</CommandlinePartLabel>
-                path/to/project $
-              </CommandlinePart>
-              <CommandlinePart>
-                <CommandlinePartLabel active={chapter.hasCommand}>Command<br />Program</CommandlinePartLabel>
-                git
-              </CommandlinePart>
-              <CommandlinePart>
-                <CommandlinePartLabel active={chapter.hasParameters}>Subcommands<br/>Options</CommandlinePartLabel>
-                commit -m "Commit name"
-              </CommandlinePart>
-            </ConsoleMessage>
-          </ConsoleSection>
+          <ConsoleBody>
+            <ConsoleSection>
+              <ConsoleMessage>
+                <CommandlinePart>
+                  <CommandlinePartLabel active={chapter.hasPrompt}>Prompt</CommandlinePartLabel>
+                  path/to/project $
+                </CommandlinePart>
+                <CommandlinePart>
+                  <CommandlinePartLabel active={chapter.hasCommand}>Command<br />Program</CommandlinePartLabel>
+                  git
+                </CommandlinePart>
+                <CommandlinePart>
+                  <CommandlinePartLabel active={chapter.hasParameters}>Subcommands<br/>Options</CommandlinePartLabel>
+                  commit -m "Commit name"
+                </CommandlinePart>
+              </ConsoleMessage>
+            </ConsoleSection>
+          </ConsoleBody>
         </Console>
       </div>
     );

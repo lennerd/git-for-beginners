@@ -64,6 +64,22 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
           }),
         ],
       }),*/
+      new ConsoleCommand('Working Directory', {
+        available: () => this.vis.workingDirectory.active,
+        commands: [
+          new ConsoleCommand('Add new file.', {
+            icon: '+',
+            message: ({ data }) => {
+              return (
+              <Fragment>
+                A new <VisualisationFileReference vis={this.vis} file={data}>file</VisualisationFileReference> was added.
+              </Fragment>
+              );
+            },
+            action: addFile,
+          }),
+        ],
+      }),
       new ConsoleCommand('File', {
         available: () => this.vis.workingDirectory.active,
         commands: [
@@ -145,17 +161,6 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
             payloadCreator: () => this.activeCommit.checksum,
           }),
         ],
-      }),
-      new ConsoleCommand('Add new file.', {
-        icon: '+',
-        message: ({ data }) => {
-          return (
-          <Fragment>
-            A new <VisualisationFileReference vis={this.vis} file={data}>file</VisualisationFileReference> was added.
-          </Fragment>
-          );
-        },
-        action: addFile,
       }),
     );
   },

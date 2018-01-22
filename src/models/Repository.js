@@ -3,6 +3,7 @@ import { Record, Map, OrderedSet } from 'immutable';
 import sha1 from 'js-sha1';
 
 import chance from './chance';
+import ConsoleError from './ConsoleError';
 
 class Repository {
   workingDirectory = new WorkingDirectory();
@@ -28,8 +29,7 @@ class Repository {
       this.stagingArea.tree = this.stagingArea.tree.remove(file);
     } else {
       if (blob === stagedBlob) {
-        console.error('Cannot stage unmodified file.');
-        return;
+        throw new ConsoleError('Cannot stage unmodified file.');
       }
 
       this.stagingArea.tree = this.stagingArea.tree.set(file, blob);

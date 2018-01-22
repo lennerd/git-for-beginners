@@ -1,18 +1,11 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 const Console = styled.div`
   ${props => props.theme.mixins.monospaced};
-  background-color: white;
-  border-radius: ${props => props.theme.borderRadius.large};
-  max-height: ${props => props.theme.spacing(10)};
-  overflow: auto;
-  overflow-x: hidden;
   line-height: ${props => props.theme.spacing(1.1)};
-  display: flex;
-  flex-direction: column;
 
-  > * + * {
-    border-top: 1px solid ${props => props.theme.color.highlight.alpha(0.1)};
+  & > * + * {
+    border-top: 1px solid ${props => props.theme.color.highlight.alpha(0.2)};
   }
 `;
 
@@ -27,6 +20,8 @@ export const ConsoleSection = styled.div`
     content: '\00a0';
     flex-shrink: 0;
   }
+
+  ${props => props.error && css`background-color: ${props => props.theme.color.fileDeleted.alpha(0.1)}`};
 `;
 
 export const ConsoleLog = styled.div`
@@ -65,6 +60,7 @@ export const ConsoleLabel = styled.div`
   display: flex;
   padding: ${props => props.theme.spacing(0.25)} 0;
   color: grey;
+  white-space: nowrap;
 
   &:before,
   &:after {
@@ -122,7 +118,7 @@ export const ConsoleInput = styled.div`
     color: ${props => props.theme.color.interactive};
 
     &::placeholder {
-      color: gray;
+      color: ${props => props.theme.color.interactive.alpha(0.5)};
     }
   }
 

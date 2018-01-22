@@ -4,11 +4,10 @@ import takeWhile from 'lodash/takeWhile';
 import { SECTION_TASK, SECTION_TEXT } from '../constants';
 import { createAction } from './Action';
 import TutorialChapter from '../components/TutorialChapter';
+import ConsoleError from './ConsoleError';
 
 export const readOn = createAction('READ_ON');
 export const init = createAction('INIT');
-
-class ConsoleError extends Error {}
 
 class Chapter {
   sections = [];
