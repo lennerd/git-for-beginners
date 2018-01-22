@@ -10,7 +10,7 @@ import VisualisationFileList from "./VisualisationFileList";
 import VisualisationFile from "./VisualisationFile";
 import { STATUS_ADDED, STATUS_MODIFIED, STATUS_UNMODIFIED, STATUS_DELETED } from "../../constants";
 import File from "../File";
-import { VisualisationFileReference } from "../../components/VisualisationObjectReference";
+import { VisualisationFileReference, VisualisationCommitReference } from "../../components/VisualisationObjectReference";
 
 class FileVisualisation extends VisualisationFile {
   constructor(vis, file, prevPosition) {
@@ -529,7 +529,7 @@ function createUnstagedStatus(vis, unstaged) {
   return react`Changes not staged for commit:${unstaged.map(file => react`\n${createFileStatus(vis, file)}`)}`;
 }
 
-export function createStatus(vis, status) {
+export function createStatusMessage(vis, status) {
   return react`${
     status.staged != null ? createStagedStatus(vis, status.staged) : ''
   }${
@@ -537,6 +537,11 @@ export function createStatus(vis, status) {
   }${
     status.unstaged != null ? createUnstagedStatus(vis, status.unstaged) : ''
   }`;
+}
+
+export function createCommitMessage(vis, data) {
+  return react`[master ${<VisualisationCommitReference vis={vis} commit={data} />}] Commit message
+18 files changed, 387 insertions(+), 116 deletions(-)`;
 }
 
 export default GitVisualisation;

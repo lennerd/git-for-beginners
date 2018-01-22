@@ -7,7 +7,7 @@ import Console from "../Console";
 import { VisualisationFileReference } from "../../components/VisualisationObjectReference";
 import ConsoleCommand from "../ConsoleCommand";
 import { createAction } from "../Action";
-import { createStatus } from "../vis/GitVisualisation";
+import { createStatusMessage, createCommitMessage } from "../vis/GitVisualisation";
 
 const addFile = createAction('ADD_FILE');
 const stageFile = createAction('STAGE_FILE');
@@ -82,7 +82,7 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
         textOnly: true,
         message: ({ data }) => (
           <pre>
-            {createStatus(this.vis, data)}
+            {createStatusMessage(this.vis, data)}
           </pre>
         ),
         action: getStatus,
@@ -90,7 +90,9 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
       new ConsoleCommand('git commit', {
         textOnly: true,
         message: ({ data }) => (
-          null
+          <pre>
+            {createCommitMessage(this.vis, data)}
+          </pre>
         ),
         action: createCommit,
         payloadCreator: () => this.activeFileIndex,
@@ -124,11 +126,7 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
     return this.vis.createCommit();
   },
   [getStatus]() {
-    const status = this.vis.getStatus();
-
-    console.log(createStatus(this.vis, status));
-
-    return status;
+    return this.vis.getStatus();
   },
 });
 
