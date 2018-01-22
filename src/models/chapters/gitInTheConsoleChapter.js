@@ -8,6 +8,7 @@ import { VisualisationFileReference } from "../../components/VisualisationObject
 import ConsoleCommand from "../ConsoleCommand";
 import { createAction } from "../Action";
 import { createStatusMessage, createCommitMessage } from "../vis/GitVisualisation";
+import { STATUS_UNMODIFIED } from "../../constants";
 
 const addFile = createAction('ADD_FILE');
 const stageFile = createAction('STAGE_FILE');
@@ -42,22 +43,55 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
 
     return this.activeVisCommit.commit;
   },
-  sections: [
-    new ChapterText(() => (
-      <Fragment>
-        Let’s create a few more <Tooltip name="commit">commits</Tooltip>. This time we use the console.
-      </Fragment>
-    )),
-    new ChapterTask(() => (
-      <Fragment>Select a file and use <code>git add</code> to add it to the <Tooltip name="stagingArea">staging area</Tooltip>.</Fragment>
-    ), false, {
-      tip: () => (
+  get hasModifiedFiles() {
+    return this.vis.workingDirectory.some(object => object.isFile && object.status !== STATUS_UNMODIFIED);
+  },
+  get hasFiledStaged() {
+    return this.vis.stagingArea.some(object => object.isFile);
+  },
+  get hasCreatedCommit() {
+    return this.state.has(createCommit);
+  },
+  get sections() {
+    return [
+      new ChapterText(() => (
         <Fragment>
-          The normal console won’t give you the visualisation you have here. No worries though. With <code>git status</code> you are able to see similar text based output.
+          Let’s create a few more <Tooltip name="commit">commits</Tooltip>. This time we use the console.
         </Fragment>
-      ),
-    }),
-  ],
+      )),
+      new ChapterTask(() => (
+        <Fragment>First create a new file or modify an existing one like in the chapters before.</Fragment>
+      ), this.hasModifiedFiles || this.hasFiledStaged || this.hasCreatedCommit),
+      new ChapterTask(() => (
+        <Fragment>Select a file and use <code>git add</code> to add it to the <Tooltip name="stagingArea">staging area</Tooltip>.</Fragment>
+      ), this.hasFiledStaged || this.hasCreatedCommit, {
+        tip: () => (
+          <Fragment>
+            The normal console won’t give you the visualisation you have here. No worries though. With <code>git status</code> you are able to see similar text based output.
+          </Fragment>
+        ),
+      }),
+      new ChapterTask(() => (
+        <Fragment>Create a new commit via <code>git commit -m "Your message"</code>.</Fragment>
+      ), this.hasCreatedCommit, {
+        tip: () => (
+          <Fragment>
+            Do not forget to add quotes in front of and behind your message to signal a complete string. <em>Use the message string to summarize your changes to others.</em>
+          </Fragment>
+        ),
+      }),
+      new ChapterText(() => (
+        <Fragment>
+          Wow, that wasn’t so difficult right? The console is nothing more than before. A text based menu of options with a nice history of what you have done before. Again you are free to explora and play around.
+        </Fragment>
+      ), { skip: true }),
+      new ChapterText(() => (
+        <Fragment>
+          Let‘s look at one final topic, where Git can really help you out.
+        </Fragment>
+      ), { skip: true }),
+    ];
+  },
   get vis() {
     return this.parent.vis;
   },
@@ -97,14 +131,6 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
           </pre>
         ),
         action: createCommit,
-        payloadCreator: () => this.activeFileIndex,
-      }),
-      new ConsoleCommand('git revert', {
-        textOnly: true,
-        message: ({ data }) => (
-          null
-        ),
-        action: revertCommit,
         payloadCreator: () => this.activeFileIndex,
       }),
       new ConsoleCommand('Add new file.', {

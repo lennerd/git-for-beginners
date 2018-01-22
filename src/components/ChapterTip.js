@@ -6,7 +6,7 @@ import { ChapterCheckbox } from './Chapter';
 function ChapterTip({ className, children }) {
   return (
     <div className={className}>
-      <em>Tip</em> <span>{children}</span>
+      <strong>Tip</strong> <span>{children}</span>
     </div>
   )
 }
@@ -20,15 +20,14 @@ export default styled(ChapterTip)`
   &:before {
     content: '';
     position: absolute;
-    width: ${props => props.theme.spacing(2)};
-    left: ${props => props.theme.spacing(-1)};
+    width: ${props => props.theme.spacing(1.75)};
+    left: 0;
     top: 0;
     height: 2px;
     background-color: ${props => props.theme.color.highlight.alpha(0.3)};
   }
 
-  em {
-    font-style: normal;
+  & > strong {
     width: ${props => props.theme.spacing(1.75)};
     color: ${props => props.theme.color.highlight};
     flex-shrink: 0;
@@ -36,5 +35,9 @@ export default styled(ChapterTip)`
 
   ${ChapterCheckbox} + & {
     margin-top: ${props => props.theme.spacing(0.75)};
+  }
+
+  & + * {
+    padding-top: ${props => props.theme.spacing(2)};
   }
 `;
