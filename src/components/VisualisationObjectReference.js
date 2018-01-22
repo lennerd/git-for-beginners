@@ -44,12 +44,6 @@ class VisualisationObjectReference extends Component {
   render() {
     const { object, children } = this.props;
 
-    if (object == null) {
-      console.error('missing object');
-
-      return children;
-    }
-
     return (
       <VisualisationReference
         active={object.active}
@@ -69,16 +63,9 @@ export class VisualisationCommitReference extends Component {
   render() {
     const { commit, vis } = this.props;
 
-    if (commit == null) {
-      console.error('missing commit');
-
-      return null;
-    }
-
-
     return (
       <VisualisationObjectReference object={commit} vis={vis}>
-        {commit.checksumShort}
+        {commit.commit.checksumShort}
       </VisualisationObjectReference>
     )
   }

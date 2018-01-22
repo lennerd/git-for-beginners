@@ -288,9 +288,10 @@ class GitVisualisation extends Visualisation {
     this.repo.workingDirectory.addFile(file);
 
     // Create a new file vis
-    this.workingDirectory.fileList.add(new FileVisualisation(this, file));
+    const visFile = new FileVisualisation(this, file);
+    this.workingDirectory.fileList.add(visFile);
 
-    return file;
+    return visFile;
   }
 
   stageFile(fileIndex) {
@@ -327,7 +328,7 @@ class GitVisualisation extends Visualisation {
       this.stagingArea.fileList.remove(...stagedVisFiles);
     }
 
-    return file;
+    return visFiles[0];
   }
 
   unstageFile(fileIndex) {
@@ -346,7 +347,7 @@ class GitVisualisation extends Visualisation {
       this.stagingArea.fileList.remove(...stagedVisFiles);
     }
 
-    return file;
+    return stagedVisFiles[0];
   }
 
   deleteFile(fileIndex) {
@@ -362,7 +363,7 @@ class GitVisualisation extends Visualisation {
 
     this.repo.workingDirectory.removeFile(file);
 
-    return file;
+    return visFiles[0];
   }
 
   modifyFile(fileIndex) { // Done
@@ -376,7 +377,7 @@ class GitVisualisation extends Visualisation {
     file.modify();
     this.repo.workingDirectory.addFile(file);
 
-    return file;
+    return this.workingDirectory.find(object => object.isFile && object.file === file);
   }
 
   createCommit() {
@@ -413,7 +414,7 @@ class GitVisualisation extends Visualisation {
     // Move commit to repository
     this.repository.add(visCommit);
 
-    return commit;
+    return visCommit;
   }
 
   revertCommit(commitChecksum) {
@@ -450,7 +451,7 @@ class GitVisualisation extends Visualisation {
 
     this.repo.revertCommit(commit);
 
-    return commit;
+    return visCommit;
   }
 }
 

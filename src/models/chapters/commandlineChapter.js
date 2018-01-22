@@ -20,8 +20,6 @@ const commandlineChapter = createChapter('Commandline', {
   [readOn]() {
     this.readOn++;
 
-    console.log(this.readOn);
-
     if (this.readOn >= 2) {
       this.hasPrompt = true;
     }

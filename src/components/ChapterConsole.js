@@ -5,6 +5,7 @@ import { action } from 'mobx';
 
 import Console, { ConsoleSection, ConsoleMessage, ConsoleIcon, ConsoleCommand, ConsoleLabel, ConsoleCommandList, ConsoleLog, ConsoleTitle } from './Console';
 
+@observer
 class ChapterConsoleHistory extends Component {
   render() {
     const { chapter } = this.props;
