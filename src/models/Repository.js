@@ -28,7 +28,8 @@ class Repository {
       this.stagingArea.tree = this.stagingArea.tree.remove(file);
     } else {
       if (blob === stagedBlob) {
-        throw new Error('Cannot stage unmodified file.');
+        console.error('Cannot stage unmodified file.');
+        return;
       }
 
       this.stagingArea.tree = this.stagingArea.tree.set(file, blob);
@@ -68,7 +69,6 @@ class Repository {
     const commit = new Commit({
       author: chance.name(),
       message,
-      time: Date.now(),
       tree: this.stagingArea.tree,
       parent: this.head.commit,
     });
@@ -103,7 +103,6 @@ class StagingArea {
 class Commit extends Record({
   author: null,
   message: null,
-  time: null,
   tree: null,
   parent: null,
 }) {
