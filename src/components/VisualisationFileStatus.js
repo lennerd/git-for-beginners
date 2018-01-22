@@ -7,7 +7,7 @@ import { STATUS_ADDED, STATUS_DELETED, STATUS_MODIFIED } from '../constants';
 import { FILE_WIDTH, FILE_DEPTH, FILE_HEIGHT } from './VisualisationFile';
 
 const CHANGE_SIGNS = 4;
-const CHANGE_FONT_SIZE = 0.11;
+const CHANGE_FONT_SIZE = 0.1;
 const PLUS_FACES = 10;
 
 @withTheme
