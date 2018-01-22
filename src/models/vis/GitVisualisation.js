@@ -539,9 +539,25 @@ export function createStatusMessage(vis, status) {
   }`;
 }
 
-export function createCommitMessage(vis, data) {
-  return react`[master ${<VisualisationCommitReference vis={vis} commit={data} />}] Commit message
-18 files changed, 387 insertions(+), 116 deletions(-)`;
+function createCommitDiff(visCommit) {
+  const visFiles = visCommit.filter(object => (
+    object.isFile && object.status !== STATUS_UNMODIFIED
+  ));
+
+  const diff = visFiles.reduce((diff, visFile) => {
+    diff.added = visFile.diff.added;
+    diff.removed = visFile.diff.removed;
+
+    return diff;
+  }, { added: 0, removed: 0 });
+
+  return `${visFiles.length} file${visFiles.length !== 1 ? 's' : ''} changed, ${diff.added} insertions(+), ${diff.removed} deletions(-)`;
+}
+
+export function createCommitMessage(vis, visCommit) {
+  return react`[master ${<VisualisationCommitReference key={visCommit.id}  vis={vis} commit={visCommit} />}] Commit message
+${createCommitDiff(visCommit)}
+`;
 }
 
 export default GitVisualisation;

@@ -14,6 +14,8 @@ const stageFile = createAction('STAGE_FILE');
 const getStatus = createAction('GET_STATUS');
 const createCommit = createAction('CREATE_COMMIT');
 const revertCommit = createAction('REVERT_COMMIT');
+const modifyFile = createAction('MODIFY_FILE');
+const deleteFile = createAction('DELETE_FILE');
 
 const gitInTheConsoleChapter = createChapter('Git in the Console', {
   inheritFrom: 'Versioning in Git',
@@ -114,6 +116,33 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
         ),
         action: addFile,
       }),
+      new ConsoleCommand('File', {
+        available: () => this.vis.workingDirectory.active,
+        commands: [
+          new ConsoleCommand('Modify', {
+            available: () => this.activeFile != null,
+            icon: '+-',
+            message: ({ data }) => (
+              <Fragment>
+                <VisualisationFileReference vis={this.vis} file={data}>File</VisualisationFileReference> was modified.
+              </Fragment>
+            ),
+            action: modifyFile,
+            payloadCreator: () => this.activeFileIndex,
+          }),
+          new ConsoleCommand('Delete', {
+            available: () => this.activeFile != null,
+            icon: '×',
+            message: ({ data }) => (
+              <Fragment>
+                <VisualisationFileReference vis={this.vis} file={data}>File</VisualisationFileReference> was deleted.
+              </Fragment>
+            ),
+            action: deleteFile,
+            payloadCreator: () => this.activeFileIndex,
+          })
+        ],
+      }),
     );
   },
   [addFile]() {
@@ -127,6 +156,12 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
   },
   [getStatus]() {
     return this.vis.getStatus();
+  },
+  [deleteFile](fileIndex) {
+    return this.vis.deleteFile(fileIndex);
+  },
+  [modifyFile](fileIndex) {
+    return this.vis.modifyFile(fileIndex);
   },
 });
 
