@@ -35,7 +35,7 @@ export const NavigationItem = styled.li`
   align-items: center;
 `;
 
-const activeIndicator = css`
+const completedIndicator = css`
   border-radius: 0;
   transform: rotate(-45deg);
   background-color: ${props => props.theme.color.highlight};
@@ -49,10 +49,11 @@ export const NavigationIndicator = styled.div`
   transform: rotate(0);
   background-color: ${props => props.theme.color.interactive};
 
-  ${props => props.active && activeIndicator}
+  ${props => props.completed && completedIndicator}
 `;
 
 export const NavigationLabel = styled.div`
+  will-change: opacity, transform;
   transition: opacity 400ms, transform 400ms;
   position: absolute;
   transform: translateX(${props => props.theme.spacing(1)});
@@ -78,7 +79,17 @@ export const NavigationLink = Link.extend`
     }
 
     ${NavigationIndicator} {
-      ${activeIndicator}
+      ${completedIndicator}
+    }
+  }
+
+  &.active {
+    ${NavigationLabel} {
+      color: ${props => props.theme.color.interactive};
+    }
+
+    ${NavigationIndicator} {
+      background-color: ${props => props.theme.color.interactive};
     }
   }
 `;

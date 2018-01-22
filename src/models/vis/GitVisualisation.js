@@ -11,6 +11,7 @@ import VisualisationFile from "./VisualisationFile";
 import { STATUS_ADDED, STATUS_MODIFIED, STATUS_UNMODIFIED, STATUS_DELETED } from "../../constants";
 import File from "../File";
 import { VisualisationFileReference, VisualisationCommitReference } from "../../components/VisualisationObjectReference";
+import ConsoleError from "../ConsoleError";
 
 class FileVisualisation extends VisualisationFile {
   constructor(vis, file, prevPosition) {
@@ -302,6 +303,10 @@ class GitVisualisation extends Visualisation {
 
     // Get the file vis from the working directory
     const visFiles = this.workingDirectory.filter(object => object.isFile && object.file === file);
+
+    if (visFiles.length === 0) {
+      throw new ConsoleError('Cannot stage. File is missing.');
+    }
 
     // Remove all the copies from the working directory if the status was deleted
     if (visFiles[0].status === STATUS_DELETED) {

@@ -32,8 +32,13 @@ class TutorialNavigation extends Component {
         <NavigationList>
           {chapters.map((chapter, index) => (
             <NavigationItem key={index}>
-              <NavigationLink onClick={() => this.handleNavigationLinkClick(chapter)}>
-                <NavigationIndicator active={(index / (chapters.length - 1)) <= progress} />
+              <NavigationLink
+                onClick={() => this.handleNavigationLinkClick(chapter)}
+                className={currentChapter === chapter ? 'active' : null}
+              >
+                <NavigationIndicator
+                  completed={(index / (chapters.length - 1)) <= progress}
+                />
                 <NavigationLabel>
                   {chapter.id}<br />
                   <Title minor>{index + 1} / {chapters.length}</Title>
