@@ -43,6 +43,7 @@ const CommandlinePart = styled.div`
 `;
 
 const CommandlinePartLabel = styled.div`
+  transition: opacity 400ms;
   position: absolute;
   bottom: calc(100% + ${props => props.theme.spacing(1.25)});
   width: 100%;
