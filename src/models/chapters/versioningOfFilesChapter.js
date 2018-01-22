@@ -137,7 +137,7 @@ const versioningOfFilesChapter = createChapter('Versioning of Files', {
     this.vis.copyFile(fileIndex);
   },
   [deleteFile](fileIndex) {
-    this.vis.deleteFile();
+    this.vis.deleteFile(fileIndex);
   },
   [addVersionDatabase]() {
     this.vis.useVersionDatabase = true;
