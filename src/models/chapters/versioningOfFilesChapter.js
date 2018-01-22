@@ -24,7 +24,7 @@ const versioningOfFilesChapter = createChapter('Versioning of Files', {
     return [
       new ChapterText(() => 'So let’s start by asking: what is a version?', { skip: true }),
       new ChapterTask(() => 'Create a new file.', this.hasFiles),
-      new ChapterTask(() => 'Modify the new file.', this.hasModifiedFiles, { tip: 'Select the new file to see more available options.', }),
+      new ChapterTask(() => 'Modify the new file.', this.hasModifiedFiles, { tip: () => 'Select the new file to see more available options.', }),
       new ChapterTask(() => 'Make a copy of the file.', this.hasCopiedFile),
       new ChapterText(() => 'And there it is, a backup file, an older version of our file. As you can see, we can use filenames to distinguish between them.', { skip: true }),
       new ChapterTask(() => 'Create a few more backups.', this.hasBackups),

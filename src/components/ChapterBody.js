@@ -43,7 +43,7 @@ class ChapterBody extends Component {
                 {createElement(section.text)}
                 </ChapterCheckbox>
                 {
-                  section.tip != null && <ChapterTip>{section.tip}</ChapterTip>
+                  section.tip != null && <ChapterTip>{createElement(section.tip)}</ChapterTip>
                 }
               </ChapterSectionTransition>
             );
@@ -104,7 +104,7 @@ export default styled(ChapterBody)`
     white-space: nowrap;
     background-color: white;
     padding: ${props => props.theme.spacing(0.1)} ${props => props.theme.spacing(0.3)};
-    margin: 0 ${props => props.theme.spacing(-0.25)};
+    //margin: 0 ${props => props.theme.spacing(-0.25)};
     border-radius: ${props => props.theme.borderRadius.large};
   }
 `;

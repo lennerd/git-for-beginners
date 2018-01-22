@@ -6,7 +6,7 @@ import { ChapterCheckbox } from './Chapter';
 function ChapterTip({ className, children }) {
   return (
     <div className={className}>
-      <em>Tip:</em> {children}
+      <em>Tip:</em> <span>{children}</span>
     </div>
   )
 }
@@ -28,10 +28,10 @@ export default styled(ChapterTip)`
   }
 
   em {
-    display: inline-block;
     font-style: normal;
     width: ${props => props.theme.spacing(1.75)};
     color: ${props => props.theme.color.highlight};
+    flex-shrink: 0;
   }
 
   ${ChapterCheckbox} + & {
