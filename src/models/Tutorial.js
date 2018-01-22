@@ -102,6 +102,10 @@ class Tutorial {
       return;
     }
 
+    if (this.currentChapter.vis != null) {
+      this.currentChapter.vis.active = false;
+    }
+
     this.currentChapter = chapter;
   }
 }
