@@ -446,9 +446,9 @@ class GitVisualisation extends Visualisation {
     }
 
     // Move them into the working directory
-    this.workingDirectory.fileList.set(...changedVisFiles);
+    this.workingDirectory.fileList.add(...changedVisFiles);
 
-    this.repo.revertCommit(commit.parent);
+    this.repo.revertCommit(commit);
 
     return commit;
   }
