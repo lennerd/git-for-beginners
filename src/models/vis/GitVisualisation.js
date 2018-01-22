@@ -10,9 +10,10 @@ import { STATUS_ADDED, STATUS_MODIFIED, STATUS_UNMODIFIED, STATUS_DELETED } from
 import File from "../File";
 
 class FileVisualisation extends VisualisationFile {
-  constructor(file, prevPosition) {
+  constructor(vis, file, prevPosition) {
     super();
 
+    this.vis = vis;
     this.file = file;
     this.prevPosition = prevPosition;
   }
@@ -88,17 +89,16 @@ class FileVisualisation extends VisualisationFile {
   }
 
   @computed get changeRelatedFiles() {
-    return [];
-    /*if (this.parent.isCommit) {
+    if (this.parent.isCommit) {
       // File belongs to commit.
-      return this.parent.children;
+      return this.parent.files;
     }
 
     // File belongs to Staging Area or Working Directory
     return [
       ...this.vis.stagingArea.fileList.children,
       ...this.vis.workingDirectory.fileList.children,
-    ];*/
+    ];
   }
 
   @computed get changes() {
@@ -106,10 +106,9 @@ class FileVisualisation extends VisualisationFile {
   }
 
   @computed get maxChanges() {
-    return this.changes;
-    /*return Math.max(
+    return Math.max(
       ...this.changeRelatedFiles.map(file => file.changes),
-    );*/
+    );
   }
 
   @action copy() {
@@ -289,7 +288,7 @@ class GitVisualisation extends Visualisation {
     this.repo.workingDirectory.addFile(file);
 
     // Create a new file vis
-    this.workingDirectory.fileList.add(new FileVisualisation(file));
+    this.workingDirectory.fileList.add(new FileVisualisation(this, file));
 
     return file;
   }
@@ -312,7 +311,7 @@ class GitVisualisation extends Visualisation {
       }
     // Create a copy in the working directory if needed
     } else if (visFiles.length === 1) {
-      this.workingDirectory.fileList.add(new FileVisualisation(file));
+      this.workingDirectory.fileList.add(new FileVisualisation(this, file));
     }
 
     // Move it into the staging area
@@ -404,7 +403,7 @@ class GitVisualisation extends Visualisation {
 
       // Create copy of all the files in the parent commit
       for (let parentVisFile of parentVisFiles) {
-        parentVisCommit.add(new FileVisualisation(parentVisFile.file, parentVisFile.position));
+        parentVisCommit.add(new FileVisualisation(this, parentVisFile.file, parentVisFile.position));
       }
 
       // Finally copy all the files from the parent commit into our new one.
@@ -443,7 +442,7 @@ class GitVisualisation extends Visualisation {
 
     // Copy all changed files from the commit as visualisation backups.
     for (let changedVisFile of changedVisFiles) {
-      visCommit.add(new FileVisualisation(changedVisFile.file));
+      visCommit.add(new FileVisualisation(this, changedVisFile.file));
     }
 
     // Move them into the working directory
