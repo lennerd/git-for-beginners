@@ -15,14 +15,24 @@ class Chapter {
   console = null;
   vis = null;
   component = TutorialChapter;
+  inheritFrom = null;
 
-  constructor(id, state) {
+  constructor(id, state, tutorial) {
     this.id = id;
     this.state = state;
+    this.tutorial = tutorial;
   }
 
   toString() {
     return this.id;
+  }
+
+  @computed get parent() {
+    if (this.inheritFrom == null) {
+      return null;
+    }
+
+    return this.tutorial.chapters.find(chapter => chapter.id === this.inheritFrom);
   }
 
   @computed get numberOfVisibleTextSections() {
@@ -142,7 +152,7 @@ class Chapter {
 }
 
 export function createChapter(id, props) {
-  const chapterCreator = state => extendObservable(new Chapter(id, state), props);
+  const chapterCreator = (state, ...args) => extendObservable(new Chapter(id, state, ...args), props);
   chapterCreator.id = id;
 
   return chapterCreator;

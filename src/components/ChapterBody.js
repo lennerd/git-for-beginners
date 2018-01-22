@@ -1,4 +1,4 @@
-import React, { Component, createElement, Fragment } from 'react';
+import React, { Component, Fragment } from 'react';
 import styled from 'styled-components';
 import { observer } from 'mobx-react';
 import { action } from 'mobx';
@@ -30,7 +30,7 @@ class ChapterBody extends Component {
             return (
               <ChapterSectionTransition key={index}>
                 <ChapterText>
-                  {createElement(section.text)}
+                  {section.text()}
                 </ChapterText>
               </ChapterSectionTransition>
             );
@@ -40,10 +40,10 @@ class ChapterBody extends Component {
             return (
               <ChapterSectionTransition key={index}>
                 <ChapterCheckbox checked={section.done}>
-                {createElement(section.text)}
+                {section.text()}
                 </ChapterCheckbox>
                 {
-                  section.tip != null && <ChapterTip>{createElement(section.tip)}</ChapterTip>
+                  section.tip != null && <ChapterTip>{section.tip()}</ChapterTip>
                 }
               </ChapterSectionTransition>
             );
@@ -103,7 +103,7 @@ export default styled(ChapterBody)`
     ${props => props.theme.mixins.monospaced};
     white-space: nowrap;
     background-color: white;
-    padding: ${props => props.theme.spacing(0.1)} ${props => props.theme.spacing(0.3)};
+    padding: ${props => props.theme.spacing(0.15)} ${props => props.theme.spacing(0.3)};
     //margin: 0 ${props => props.theme.spacing(-0.25)};
     border-radius: ${props => props.theme.borderRadius.large};
   }

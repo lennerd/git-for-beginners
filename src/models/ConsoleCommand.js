@@ -8,6 +8,7 @@ class ConsoleCommand extends ConsoleObject {
   @observable icon = '';
   @observable action;
   @observable payloadCreator = () => {};
+  @observable textOnly = false;
 
   constructor(name, { commands, ...options }) {
     super();

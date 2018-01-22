@@ -7,7 +7,7 @@ class ConsoleObject extends BaseObject {
 
   @computed get visibleCommands() {
     return this.commands.filter(command => {
-      if (!command.available()) {
+      if (!command.available() || command.textOnly) {
         return false;
       }
 

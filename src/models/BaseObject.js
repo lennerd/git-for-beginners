@@ -1,27 +1,47 @@
 import uuid from 'uuid/v4';
-import { observable, computed, action } from "mobx";
-import sortBy from 'lodash/sortBy';
-
-class CopyId {}
+import { computed, action, observable } from "mobx";
 
 class BaseObject {
-  id = uuid();
-
-  @observable parent;
   @observable children = [];
-  @observable copyId = new CopyId();
+  @observable parent = null;
 
-  @computed get nestedIndex() {
-    const nestedIndex = [];
+  @computed get id() {
+    return this.getId();
+  }
 
-    if (this.parent == null) {
-      return nestedIndex;
+  @action set(...children) {
+    this.remove(...this.children);
+    this.add(...children);
+  }
+
+  @action add(...children) {
+    for (let child of children) {
+      if (this.children.includes(child)) {
+        continue;
+      }
+
+      if (child.parent != null) {
+        child.parent.remove(child);
+      }
+
+      child.parent = this;
+      this.children.push(child);
     }
+  }
 
-    return [
-      ...this.parent.nestedIndex,
-      this.index,
-    ];
+  @action remove(...children) {
+    for (let child of children) {
+      if (!this.children.includes(child)) {
+        continue;
+      }
+
+      child.parent = null;
+      this.children.remove(child);
+    }
+  }
+
+  getId() {
+    return uuid();
   }
 
   @computed get index() {
@@ -92,76 +112,8 @@ class BaseObject {
     return null;
   }
 
-  findCopies(object = this) {
-    return this.filter(copy => copy !== object && copy.copyId === object.copyId);
-  }
-
-  at(currentIndex, ...nestedIndex) {
-    if (currentIndex == null) {
-      return this;
-    }
-
-    return this.children[currentIndex].at(...nestedIndex);
-  }
-
-  has(object) {
-    if (this.children.includes(object)) {
-      return true;
-    }
-
-    for (let child of this.children) {
-      if (child.has(object)) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  @action add(...objects) {
-    for (let object of objects) {
-      if (this.children.includes(object)) {
-        continue;
-      }
-
-      if (object.parent != null) {
-        object.parent.remove(object);
-      }
-
-      object.parent = this;
-      this.children.push(object);
-    }
-  }
-
-  @action remove(...objects) {
-    for (let object of objects) {
-      const childIndex = this.children.indexOf(object);
-
-      if (childIndex < 0) {
-        continue;
-      }
-
-      object.parent = null;
-      this.children.splice(childIndex, 1);
-    }
-  }
-
-  @action sortBy(iteratees) {
-    this.children = sortBy(this.children, iteratees);
-  }
-
-  @action copy(recursive = true) {
-    const copy = new this.constructor();
-
-    copy.copyId = this.copyId;
-
-    if (recursive) {
-      this.children.forEach(object => {
-        copy.add(object.copy());
-      });
-    }
-
-    return copy;
+  @action copy(...args) {
+    return new this.constructor(...args);
   }
 }
 

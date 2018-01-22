@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import Textarea from "react-autosize-textarea";
 
 const Console = styled.div`
   ${props => props.theme.mixins.monospaced};
@@ -56,6 +55,10 @@ export const ConsoleMessage = styled.div`
   &:after {
     content: '\00a0';
   }
+
+  pre {
+    margin: 0;
+  }
 `;
 
 export const ConsoleLabel = styled.div`
@@ -105,10 +108,33 @@ export const ConsoleIcon = styled.strong`
   }
 `;
 
-export const ConsoleInput = styled(Textarea)`
+export const ConsoleInput = styled.div`
   width: 100%;
-  color: ${props => props.theme.color.interactive};
-  white-space: nowrap;
+  padding: ${props => props.theme.spacing(0.25)} 0;
+  display: flex;
+
+  &:before,
+  &:after {
+    content: '\00a0';
+  }
+
+  input {
+    color: ${props => props.theme.color.interactive};
+
+    &::placeholder {
+      color: gray;
+    }
+  }
+
+  span:first-child {
+    color: ${props => props.theme.color.interactive};
+  }
+
+  & > * + * {
+    &:before {
+      content: '\00a0';
+    }
+  }
 `;
 
 export default Console;

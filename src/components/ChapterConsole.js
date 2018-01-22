@@ -1,9 +1,20 @@
-import React, { Component, createElement } from 'react';
+import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import styled from 'styled-components';
-import { action } from 'mobx';
+import { action, observable } from 'mobx';
+import AutosizeInput from 'react-input-autosize';
 
-import Console, { ConsoleSection, ConsoleMessage, ConsoleIcon, ConsoleCommand, ConsoleLabel, ConsoleCommandList, ConsoleLog, ConsoleTitle } from './Console';
+import Console, {
+  ConsoleSection,
+  ConsoleMessage,
+  ConsoleIcon,
+  ConsoleCommand,
+  ConsoleLabel,
+  ConsoleCommandList,
+  ConsoleLog,
+  ConsoleTitle,
+  ConsoleInput
+} from './Console';
 
 @observer
 class ChapterConsoleHistory extends Component {
@@ -26,15 +37,66 @@ class ChapterConsoleHistory extends Component {
           <ConsoleLog>
             <ConsoleTitle>
               {log.command.icon !== '' && <ConsoleIcon>{log.command.icon}</ConsoleIcon>}
+              {log.command.textOnly && '$ '}
               {log.command.name}
             </ConsoleTitle>
-            <ConsoleMessage>
-              <span>{createElement(message, { ...log })}</span>
-            </ConsoleMessage>
+            {message != null && <ConsoleMessage>
+              <span>{message(log)}</span>
+            </ConsoleMessage>}
           </ConsoleLog>
         </ConsoleSection>
       );
     });
+  }
+}
+
+@observer
+class ChapterConsoleInput extends Component {
+  @observable inputValue = '';
+
+  @action.bound handleChange(event) {
+    this.inputValue = event.target.value;
+  }
+
+  @action.bound handleKeyDown(event) {
+    const { onEnter, chapter } = this.props;
+
+    if (event.key !== 'Enter') {
+      return;
+    }
+
+    event.preventDefault();
+
+    const command = chapter.console.getCommand(event.target.value);
+
+    if (command == null) {
+      console.error('Unknown command.');
+      return;
+    }
+
+    onEnter(command);
+    this.inputValue = '';
+  }
+
+  render() {
+    const { chapter } = this.props;
+
+    return (
+      <ConsoleSection>
+        <ConsoleInput>
+          <span>$</span>
+          <AutosizeInput
+            placeholder="Your command …"
+            value={this.inputValue}
+            onChange={this.handleChange}
+            onKeyDown={this.handleKeyDown}
+          />
+          <span>
+            {chapter.console.payloadElement()}
+          </span>
+        </ConsoleInput>
+      </ConsoleSection>
+    );
   }
 }
 
@@ -56,7 +118,7 @@ class ChapterConsole extends Component {
     this.console.scrollTop = this.console.scrollHeight;
   }
 
-  @action runCommand(command, parentCommand = null) {
+  @action.bound runCommand(command) {
     const { chapter } = this.props;
 
     chapter.dispatch(command.action(command.payloadCreator()));
@@ -95,7 +157,7 @@ class ChapterConsole extends Component {
           <ConsoleCommandList>
             {command.visibleCommands.map(command => (
               command.available &&
-              <ConsoleCommand key={command.id} onClick={() => this.runCommand(command, command)}>
+              <ConsoleCommand key={command.id} onClick={() => this.runCommand(command)}>
                 <ConsoleIcon offset={iconMaxLength - command.icon.length}>{command.icon}</ConsoleIcon>
                 {command.name}
               </ConsoleCommand>
@@ -117,6 +179,7 @@ class ChapterConsole extends Component {
       <Console className={className} innerRef={(ref) => { this.console = ref; }}>
         <ChapterConsoleHistory chapter={chapter} />
         {this.renderVisibleCommands()}
+        {chapter.console.useInput && <ChapterConsoleInput chapter={chapter} onEnter={this.runCommand} />}
       </Console>
     );
   }

@@ -1,6 +1,8 @@
 import { computed, action } from "mobx";
+import React from "react";
 import { Set } from "immutable";
 import sortBy from 'lodash/sortBy';
+import padEnd from 'lodash/padEnd';
 
 import Visualisation from "./Visualisation";
 import VisualisationArea from "./VisualisationArea";
@@ -8,6 +10,7 @@ import VisualisationFileList from "./VisualisationFileList";
 import VisualisationFile from "./VisualisationFile";
 import { STATUS_ADDED, STATUS_MODIFIED, STATUS_UNMODIFIED, STATUS_DELETED } from "../../constants";
 import File from "../File";
+import { VisualisationFileReference } from "../../components/VisualisationObjectReference";
 
 class FileVisualisation extends VisualisationFile {
   constructor(vis, file, prevPosition) {
@@ -357,7 +360,7 @@ class GitVisualisation extends Visualisation {
     const visFiles = this.workingDirectory.filter(object => object.isFile && object.file === file);
 
     // Remove the file if it is newly added.
-    if (visFiles[0].status === STATUS_ADDED) {
+    if (visFiles.length > 0 && visFiles[0].status === STATUS_ADDED) {
       this.workingDirectory.fileList.remove(...visFiles);
     }
 
@@ -453,6 +456,87 @@ class GitVisualisation extends Visualisation {
 
     return visCommit;
   }
+
+  getStatus() {
+    const status = { unstaged: [], staged: [], branch: this.repo.head.name };
+
+    this.files.forEach(file => {
+      const stagedVisFile = this.stagingArea.find(object => (
+        object.isFile && object.file === file && object.status !== STATUS_UNMODIFIED
+      ));
+
+      if (stagedVisFile != null) {
+        status.staged.push({ visFile: stagedVisFile, status: stagedVisFile.status });
+
+        return;
+      }
+
+      const unstagedVisFile = this.workingDirectory.find(object => (
+        object.isFile && object.file === file && object.status !== STATUS_UNMODIFIED
+      ));
+
+      if (unstagedVisFile != null) {
+        status.unstaged.push({ visFile: unstagedVisFile, status: unstagedVisFile.status });
+
+        return;
+      }
+    });
+
+    if (status.unstaged.length === 0) {
+      status.unstaged = null;
+    }
+
+    if (status.staged.length === 0) {
+      status.staged = null;
+    }
+
+    return status;
+  }
+}
+
+const FILE_STATUS_SPACES = 11;
+
+function react(pieces, ...substitutions) {
+  const children = [pieces[0]];
+
+  for (var i = 0; i < substitutions.length; ++i) {
+    children.push(substitutions[i]);
+    children.push(pieces[i + 1]);
+  }
+
+  return children;
+}
+
+function createFileStatus(vis, file) {
+  let status = 'modified';
+
+  if (file.status === STATUS_ADDED) {
+    status = 'added';
+  } else if (file.status === STATUS_DELETED) {
+    status = 'deleted';
+  }
+
+  return react`${padEnd(status, FILE_STATUS_SPACES)}${
+    <VisualisationFileReference key={file.visFile.id} vis={vis} file={file.visFile}>file</VisualisationFileReference>
+  }`;
+}
+
+function createStagedStatus(vis, staged) {
+  return react`Changes to be committed:${staged.map(file => react`\n${createFileStatus(vis, file)}`)}`;
+}
+
+function createUnstagedStatus(vis, unstaged) {
+  return react`Changes not staged for commit:${unstaged.map(file => react`\n${createFileStatus(vis, file)}`)}`;
+}
+
+export function createStatus(vis, status) {
+  return react`${
+    status.staged != null ? createStagedStatus(vis, status.staged) : ''
+  }${
+    status.staged != null && status.unstaged != null ? '\n\n' : ''
+  }${
+    status.unstaged != null ? createUnstagedStatus(vis, status.unstaged) : ''
+  }`;
 }
 
 export default GitVisualisation;

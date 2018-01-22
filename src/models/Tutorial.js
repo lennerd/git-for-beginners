@@ -15,12 +15,16 @@ class Tutorial {
   @action init(chapterCreators) {
     this.chapterCreators = chapterCreators;
 
+    // Create chapters
     this.chapters = chapterCreators.map(chapterCreator => {
-      const chapterState = this.state.chapterStates.find(chapterState => (
-        chapterState.chapterId === chapterCreator.id
-      ));
+      return chapterCreator(new ChapterState(chapterCreator.id), this);
+    });
 
-      const chapter = chapterCreator(new ChapterState(chapterCreator.id));
+    // Intialise chapter states
+    this.state.chapterStates = this.chapters.map((chapter, index) => {
+      const chapterState = this.state.chapterStates.find(chapterState => (
+        chapterState.chapterId === chapter.id
+      ));
 
       if (chapterState != null) {
         chapterState.actions.forEach(action => {
@@ -30,11 +34,10 @@ class Tutorial {
         chapter.dispatch(init());
       }
 
-      return chapter;
+      return chapter.state;
     });
 
-    this.state.chapterStates = this.chapters.map(chapter => chapter.state);
-
+    // Set a default chapter
     if (this.state.currentChapterId == null) {
       this.state.currentChapterId = this.chapters[0].id;
     }
@@ -84,7 +87,7 @@ class Tutorial {
         return this.chapters[index];
       }
 
-      const chapter = chapterCreator(new ChapterState(chapterCreator.id));
+      const chapter = chapterCreator(new ChapterState(chapterCreator.id), this);
       chapter.dispatch(init());
 
       return chapter;

@@ -15,7 +15,7 @@ const VisualisationReference = styled.a`
   white-space: nowrap;
   cursor: pointer;
   z-index: 1;
-  border-bottom: 2px solid ${props => props.theme.color.highlight.alpha(0.5)};
+  border-bottom: 2px solid ${props => props.theme.color.highlight.alpha(0.3)};
   ${props => (props.hover || props.active) && hover};
   ${props => props.active && active};
 `;
@@ -62,6 +62,11 @@ class VisualisationObjectReference extends Component {
 export class VisualisationCommitReference extends Component {
   render() {
     const { commit, vis } = this.props;
+
+    if (commit == null) {
+      console.error('missing commit');
+      return null;
+    }
 
     return (
       <VisualisationObjectReference object={commit} vis={vis}>

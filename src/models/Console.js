@@ -1,5 +1,5 @@
 import uuid from 'uuid/v4';
-import { observable, action } from 'mobx';
+import { observable, action, computed } from 'mobx';
 
 import ConsoleObject from './ConsoleObject';
 
@@ -17,6 +17,13 @@ class ConsoleLog {
 
 class Console extends ConsoleObject {
   isConsole = true;
+  payloadElement = () => {};
+
+  constructor(data) {
+    super();
+
+    Object.assign(this, data);
+  }
 
   @observable history = [];
 
@@ -36,6 +43,14 @@ class Console extends ConsoleObject {
     }
 
     this.history.push(new ConsoleLog(action, command, { ...data }));
+  }
+
+  @computed get useInput() {
+    return this.children.some(command => command.textOnly);
+  }
+
+  getCommand(input) {
+    return this.children.find(command => command.name === input.trim());
   }
 }
 

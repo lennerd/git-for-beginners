@@ -213,7 +213,7 @@ class Tooltip extends Component {
           <TooltipTitleLink onClick={this.hide}>Close <strong>×</strong></TooltipTitleLink>
         </TooltipTitle>
         <TooltipBody>
-          {createElement(this.term.text)}
+          {this.term.text()}
         </TooltipBody>
         <Arrow component={TooltipArrow} />
       </Popper>

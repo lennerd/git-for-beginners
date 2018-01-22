@@ -1,5 +1,5 @@
 import { observable, computed, action } from "mobx";
-import BaseObject from './BaseObject';
+import BaseObject from '../BaseObject';
 
 class VisualisationObject extends BaseObject {
   isObject = true;

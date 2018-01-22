@@ -36,6 +36,7 @@ class Commandline extends Component {
 
 const CommandlinePart = styled.div`
   position: relative;
+  white-space: nowrap;
 
   & + & {
     margin-left: ${props => props.theme.spacing(0.5)};

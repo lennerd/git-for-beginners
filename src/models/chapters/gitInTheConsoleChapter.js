@@ -1,26 +1,135 @@
 import React, { Fragment } from "react";
 
-import { createChapter } from "../Chapter";
-import { ChapterText } from "../ChapterSection";
+import { createChapter, init } from "../Chapter";
+import { ChapterText, ChapterTask } from "../ChapterSection";
+import Tooltip from "../../components/Tooltip";
+import Console from "../Console";
+import { VisualisationFileReference } from "../../components/VisualisationObjectReference";
+import ConsoleCommand from "../ConsoleCommand";
+import { createAction } from "../Action";
+import { createStatus } from "../vis/GitVisualisation";
+
+const addFile = createAction('ADD_FILE');
+const stageFile = createAction('STAGE_FILE');
+const getStatus = createAction('GET_STATUS');
+const createCommit = createAction('CREATE_COMMIT');
+const revertCommit = createAction('REVERT_COMMIT');
 
 const gitInTheConsoleChapter = createChapter('Git in the Console', {
+  inheritFrom: 'Versioning in Git',
+  get activeVisFile() {
+    return this.vis.visFiles.find(visFile => visFile.active);
+  },
+  get activeFile() {
+    if (this.activeVisFile == null) {
+      return null;
+    }
+
+    return this.activeVisFile.file;
+  },
+  get activeFileIndex() {
+    return this.vis.files.indexOf(this.activeFile);
+  },
+  get activeVisCommit() {
+    return this.vis.repository.find(object => object.isCommit && object.active);
+  },
+  get activeCommit() {
+    if (this.activeVisCommit == null) {
+      return null;
+    }
+
+    return this.activeVisCommit.commit;
+  },
   sections: [
     new ChapterText(() => (
-      'Over the passed decades computer in different shape and sizes changed our daily life enormously. Together we create huge amount of data in form of files everyday to store everything from invoices to love letters, from code to illustrations and designs.'
-    )),
-    new ChapterText(() => (
       <Fragment>
-        To prevent data loss we create backups and use clouds to store files and share data with others. Two people working on the same file is often impossible though. And after all, data is lost, because we accidentily deleted an old file or have overwritten a file a college had changed a few minutes before. <strong>No matter how hard we work on file name conventions and how many channels we use to communicate in our team, mistakes are made.</strong>
+        Let’s create a few more <Tooltip name="commit">commits</Tooltip>. This time we use the console.
       </Fragment>
     )),
-    new ChapterText(() => (
-      'But not everything is lost (pun intended). Special version control systems can help to store versions of our project more effectily and give our team a better way of working on files together.'
-    )),
-    new ChapterText(() => (
-      <strong>Welcome to “Git for Beginners” – an interactive tutorial to learn and understand Git, a popular version control system to help you and your team to not loose data again.</strong>
-    )),
-    new ChapterText(() => 'But let’s start by taking a look at …'),
+    new ChapterTask(() => (
+      <Fragment>Select a file and use <code>git add</code> to add it to the <Tooltip name="stagingArea">staging area</Tooltip>.</Fragment>
+    ), false, {
+      tip: () => (
+        <Fragment>
+          The normal console won’t give you the visualisation you have here. No worries though. With <code>git status</code> you are able to see similar text based output.
+        </Fragment>
+      ),
+    }),
   ],
+  get vis() {
+    return this.parent.vis;
+  },
+  [init]() {
+    this.console = new Console({
+      payloadElement: () => {
+        if (this.activeVisFile != null) {
+          return (
+            <VisualisationFileReference vis={this.vis} file={this.activeVisFile}>file</VisualisationFileReference>
+          );
+        }
+
+        return null;
+      },
+    });
+
+    this.console.add(
+      new ConsoleCommand('git add', {
+        textOnly: true,
+        action: stageFile,
+        payloadCreator: () => this.activeFileIndex,
+      }),
+      new ConsoleCommand('git status', {
+        textOnly: true,
+        message: ({ data }) => (
+          <pre>
+            {createStatus(this.vis, data)}
+          </pre>
+        ),
+        action: getStatus,
+      }),
+      new ConsoleCommand('git commit', {
+        textOnly: true,
+        message: ({ data }) => (
+          null
+        ),
+        action: createCommit,
+        payloadCreator: () => this.activeFileIndex,
+      }),
+      new ConsoleCommand('git revert', {
+        textOnly: true,
+        message: ({ data }) => (
+          null
+        ),
+        action: revertCommit,
+        payloadCreator: () => this.activeFileIndex,
+      }),
+      new ConsoleCommand('Add new file.', {
+        icon: '+',
+        message: ({ data }) => (
+          <Fragment>
+            A new <VisualisationFileReference vis={this.vis} file={data}>file</VisualisationFileReference> was added.
+          </Fragment>
+        ),
+        action: addFile,
+      }),
+    );
+  },
+  [addFile]() {
+    return this.vis.addFile();
+  },
+  [stageFile](fileIndex) {
+    return this.vis.stageFile(fileIndex);
+  },
+  [createCommit]() {
+    return this.vis.createCommit();
+  },
+  [getStatus]() {
+    const status = this.vis.getStatus();
+
+    console.log(createStatus(this.vis, status));
+
+    return status;
+  },
 });
 
 export default gitInTheConsoleChapter;
