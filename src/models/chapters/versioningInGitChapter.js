@@ -194,19 +194,19 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
       )),
       new ChapterTask(() => (
         <Fragment>Add files to the <Tooltip name="stagingArea">staging area</Tooltip>.</Fragment>
-      ), this.vis.stagingArea.fileList.files.length > 0 || this.vis.repository.commits.length > 0),
+      ), this.vis.stagingArea.fileList.files.length > 0 || this.vis.repository.visCommits.length > 0),
       new ChapterText(() => (
         <Fragment>
           Did you see how files moved from the <Tooltip name="workingDirectory">working directory</Tooltip> to the staging area? These files changes are ready to be part of the next version, the next commit. <em>You can add more files, if you want. The stage is yours, actually.</em>
         </Fragment>
       ), { skip: true }),
-      new ChapterTask(() => 'Create a new commit.', this.vis.repository.commits.length > 0),
+      new ChapterTask(() => 'Create a new commit.', this.vis.repository.visCommits.length > 0),
       new ChapterText(() => (
         <Fragment>
           Perfect. A new commit was created and added to the <Tooltip name="repository">repository</Tooltip>. Like we said, each commit has a unique identifier, so we can reference it for example in the interactive menu below the visualisation.
         </Fragment>
       ), { skip: true }),
-      new ChapterTask(() => 'Create at least two more commits.', this.vis.repository.commits.length > 2),
+      new ChapterTask(() => 'Create at least two more commits.', this.vis.repository.visCommits.length > 2),
       new ChapterText(() => 'Now that we have a few more versions of our project, let’s take a look at how to restore an older version.', { skip: true }),
       new ChapterTask(() => 'Revert changes from a commit.', this.hasRevertedCommit),
       new ChapterText(() => (

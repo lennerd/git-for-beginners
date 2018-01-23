@@ -6,10 +6,11 @@ class CommitVisualisation extends VisualisationFileList {
   isContainer = true;
   isCommit = true;
 
-  constructor(vis, commit) {
+  constructor(vis, branch, commit) {
     super();
 
     this.vis = vis;
+    this.branch = branch;
     this.commit = commit;
   }
 
@@ -21,6 +22,10 @@ class CommitVisualisation extends VisualisationFileList {
     );
 
     return position;
+  }
+
+  @computed get visParent() {
+    return this.parent.find(object => object.isCommit && object.commit === this.commit.parent);
   }
 
   @computed get tree() {

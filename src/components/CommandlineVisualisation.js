@@ -78,7 +78,7 @@ export default styled(Commandline)`
   align-self: center;
   justify-self: center;
 
-  ${Console} {
+  ${ConsoleBody} {
     font-size: ${props => props.theme.spacing(0.8)};
     overflow: visible;
   }

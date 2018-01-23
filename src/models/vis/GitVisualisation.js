@@ -185,7 +185,7 @@ class GitVisualisation extends Visualisation {
     const commit = this.repo.createCommit();
 
     // Create a new commit vis
-    const visCommit = new CommitVisualisation(this.vis, commit);
+    const visCommit = new CommitVisualisation(this.vis, this.repo.head, commit);
 
     // Move all the files from the staging area to the commit
     const stagedVisFiles = this.stagingArea.filter(object => object.isFile);
@@ -213,7 +213,7 @@ class GitVisualisation extends Visualisation {
     }
 
     // Move commit to repository
-    this.repository.add(visCommit);
+    this.repository.head.add(visCommit);
 
     return visCommit;
   }
