@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { action, reaction } from 'mobx';
+import { action } from 'mobx';
 import { observer } from 'mobx-react';
 import { withTheme } from 'styled-components';
 import { value, tween, easing } from 'popmotion';
@@ -43,29 +43,11 @@ class VisualisationCommit extends Component {
     this.hoverOpacity = value(0, opacity => {
       this.hoverMesh.material.opacity = opacity;
     });
-  }
 
-  componentDidMount() {
-    const { commit } = this.props;
-
-    this.disposePosition = reaction(
-      () => commit.position,
-      position => {
-        tween({ from: this.position.get(), to: position, duration: 1400, ease: easing.easeInOut }).start(this.position);
-      }
-    );
-
-    this.disposeHoverOpacity = reaction(
-      () => commit.active ? 0.3 : commit.hover ? 0.1 : 0,
-      opacity => {
-        tween({ from: this.hoverOpacity.get(), to: opacity, duration: 200 }).start(this.hoverOpacity);
-      }
-    );
-  }
-
-  componentWillUnmount() {
-    this.disposePosition();
-    this.disposeHoverOpacity();
+    this.height = value(0, height => {
+      this.hoverMesh.scale.y = height + COMMIT_OUTLINE;
+      this.hoverMesh.position.y = height / 2 - COMMIT_OUTLINE;
+    });
   }
 
   @action.bound handleClick(event) {
@@ -95,9 +77,30 @@ class VisualisationCommit extends Component {
     this.commitObject.visible = commit.visible;
 
     const height = commit.height * FILE_HEIGHT + (commit.height - 1) * (LEVEL_HEIGHT - FILE_HEIGHT);
+    const opacity = commit.active ? 0.3 : commit.hover ? 0.1 : 0;
 
     this.hoverMesh.scale.y = height + COMMIT_OUTLINE;
     this.hoverMesh.position.y = height / 2 - COMMIT_OUTLINE;
+
+    tween({
+      from: this.position.get(),
+      to: commit.position,
+      duration: 1400,
+      ease: easing.easeInOut
+    }).start(this.position);
+
+    tween({
+      from: this.hoverOpacity.get(),
+      to: opacity,
+      duration: 200
+    }).start(this.hoverOpacity);
+
+    tween({
+      from: this.height.get(),
+      to: height,
+      duration: 700,
+      ease: easing.easeInOut
+    }).start(this.height);
 
     return (
       <VisualisationObject3D

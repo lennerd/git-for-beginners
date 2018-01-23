@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withTheme } from 'styled-components';
 import { observer } from 'mobx-react';
-import { action, computed, reaction } from 'mobx';
+import { action, computed } from 'mobx';
 import { value, tween, timeline, easing } from 'popmotion';
 import { Transition } from 'react-transition-group';
 
@@ -103,25 +103,11 @@ class VisualisationFile extends Component {
     this.hoverOpacity = value(0, opacity => {
       this.hoverMesh.material.opacity = opacity;
     });
-  }
 
-  componentDidMount() {
-    const { file } = this.props;
-
-
-    this.disposePosition = reaction(
-      () => file.position,
-      position => {
-        moveTo({ from: this.position.get(), to: position, duration: 1400, ease: easing.easeInOut }).start(this.position);
-      }
-    );
-
-    this.disposeHoverOpacity = reaction(
-      () => file.active ? 1 : file.hover ? 0.7 : (this.versionsHovered || this.versionsActive) ? 0.3 : 0,
-      opacity => {
-        tween({ from: this.hoverOpacity.get(), to: opacity, duration: 200 }).start(this.hoverOpacity);
-      }
-    );
+    this.size = value(1, size => {
+      this.fileObject.scale.x = size;
+      this.fileObject.scale.z = size;
+    });
   }
 
   handleEnter = () => {
@@ -129,13 +115,20 @@ class VisualisationFile extends Component {
 
     if (file.prevPosition != null) {
       moveTo({ from: file.prevPosition, to: this.position.get(), duration: 1400 }).start(this.position);
-
       this.tweenValue = this.position;
+    } else if (file.status === STATUS_ADDED) {
+      tween({ from: 0, to: this.height.get(), duration: 700, ease: easing.easeInOut }).start(this.height);
+      this.tweenValue = this.height;
     }
   };
 
   handleExit = () => {
-    //this.tween = tween({ from: 1, to: 0, duration: 700 });
+    const { file } = this.props;
+
+    if (file.status === STATUS_DELETED) {
+      tween({ from: this.height.get(), to: 0, duration: 700, ease: easing.easeInOut }).start(this.height);
+      this.tweenValue = this.height;
+    }
   };
 
   addEndListener = (node, complete) => {
@@ -149,11 +142,6 @@ class VisualisationFile extends Component {
 
     this.tweenValue = null;
   };
-
-  componentWillUnmount() {
-    this.disposePosition();
-    this.disposeHoverOpacity();
-  }
 
   @action.bound handleClick(event) {
     const { file, vis } = this.props;
@@ -197,7 +185,7 @@ class VisualisationFile extends Component {
   }
 
   render() {
-    const { children, file, theme, ...props } = this.props;
+    const { children, file, theme, in: inProp, ...props } = this.props;
 
     this.fileObject.visible = file.visible;
 
@@ -208,6 +196,23 @@ class VisualisationFile extends Component {
     } else if (file.status === STATUS_DELETED) {
       color = theme.color.fileDeleted;
     }
+
+    const opacity = !inProp ? 0 : file.active ? 1 : file.hover ? 0.7 : (this.versionsHovered || this.versionsActive) ? 0.3 : 0;
+
+    if (inProp) {
+      moveTo({
+        from: this.position.get(),
+        to: file.position,
+        duration: 1400,
+        ease: easing.easeInOut
+      }).start(this.position);
+    }
+
+    tween({
+      from: this.hoverOpacity.get(),
+      to: opacity,
+      duration: 200
+    }).start(this.hoverOpacity);
 
     this.fileMesh.material.color = color;
 
@@ -221,6 +226,7 @@ class VisualisationFile extends Component {
     return (
       <Transition
         {...props}
+        in={inProp}
         onEnter={this.handleEnter}
         onExit={this.handleExit}
         addEndListener={this.addEndListener}
