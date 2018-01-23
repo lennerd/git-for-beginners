@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import styled from 'styled-components';
 import { observer } from 'mobx-react';
-import { action } from 'mobx';
+import { action, computed } from 'mobx';
 import { TransitionGroup } from 'react-transition-group';
 
 import ChapterHeader from './ChapterHeader';
@@ -17,7 +17,13 @@ class ChapterBody extends Component {
   @action.bound readOn() {
     const { chapter } = this.props;
 
-    chapter.dispatch(readOn());
+    chapter.dispatch(this.lastSection.action());
+  }
+
+  @computed get lastSection() {
+    const { chapter } = this.props;
+
+    return chapter.visibleSections[chapter.visibleSections.length - 1];
   }
 
   renderSections() {
@@ -57,11 +63,10 @@ class ChapterBody extends Component {
 
   renderReadOn() {
     const { chapter } = this.props;
-    const lastSection = chapter.visibleSections[chapter.visibleSections.length - 1];
 
     if (
-      lastSection == null ||
-      !lastSection.is(SECTION_TEXT) ||
+      this.lastSection == null ||
+      !this.lastSection.is(SECTION_TEXT) ||
       chapter.completed
     ) {
       return null;

@@ -34,4 +34,10 @@ export default new Glossary({
       <p>Here you add, modify or delete files with other software like you are used to.</p>
     </Fragment>
   )),
+  cloud: new GlossaryTerm('Cloud', () => (
+    <Fragment>
+      <p>A cloud is an external storage in the internet, where you can upload and download files and exchange them with others.</p>
+      <p>Cloud providers often also provide software, which you can use to automatically upload and download changes to and from the cloud.</p>
+    </Fragment>
+  )),
 });

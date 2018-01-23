@@ -38,8 +38,8 @@ class Tutorial {
     });
 
     // Set a default chapter
-    if (this.state.currentChapterId == null) {
-      this.state.currentChapterId = this.chapters[0].id;
+    if (this.currentChapter == null) {
+      this.navigate(this.chapters[0]);
     }
   }
 
@@ -102,7 +102,7 @@ class Tutorial {
       return;
     }
 
-    if (this.currentChapter.vis != null) {
+    if (this.currentChapter != null && this.currentChapter.vis != null) {
       this.currentChapter.vis.active = false;
     }
 

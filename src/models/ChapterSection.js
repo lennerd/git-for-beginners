@@ -1,4 +1,5 @@
 import { SECTION_TEXT, SECTION_TASK } from "../constants";
+import { readOn } from "./Chapter";
 
 class ChapterSection {
   is(type) {
@@ -9,6 +10,7 @@ class ChapterSection {
 export class ChapterText extends ChapterSection {
   type = SECTION_TEXT;
   skip = false;
+  action = readOn;
 
   constructor(text, data) {
     super();

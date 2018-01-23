@@ -100,7 +100,6 @@ class VersionDatabaseVisualisation extends Visualisation {
   }
 
   @action.bound handleVersionDatabase() {
-    console.log();
     if (this.useVersionDatabase) {
       this.add(this.versionDatabase);
     } else {
@@ -133,8 +132,8 @@ class VersionDatabaseVisualisation extends Visualisation {
   modifyFile(fileIndex, diff) {
     const file = this.files[fileIndex];
 
-    file.diff.added += diff.added;
-    file.diff.removed += diff.removed;
+    file.diff.added = Math.max(0, file.diff.added + diff.added);
+    file.diff.removed += Math.max(0, file.diff.removed + diff.removed);
   }
 
   copyFile(fileIndex) {

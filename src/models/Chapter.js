@@ -111,9 +111,7 @@ class Chapter {
     let data;
 
     try {
-      if (this[action.type]) {
-        data = this[action.type](action.payload);
-      }
+      data = this.call(action);
     } catch (error) {
       if (!(error instanceof ConsoleError)) {
         throw error;
@@ -133,6 +131,16 @@ class Chapter {
     }
 
     this.state.actions.push(action);
+
+    return data;
+  }
+
+  @action call(action) {
+    let data;
+
+    if (this[action.type]) {
+      data = this[action.type](action.payload);
+    }
 
     return data;
   }

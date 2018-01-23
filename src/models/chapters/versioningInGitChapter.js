@@ -65,7 +65,7 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
         ],
       }),*/
       new ConsoleCommand('Working Directory', {
-        available: () => this.vis.workingDirectory.active,
+        available: () => this.activeFile == null || this.vis.workingDirectory.active,
         commands: [
           new ConsoleCommand('Add new file.', {
             icon: '+',

@@ -18,8 +18,8 @@ export function reset() {
   chance.mixin({
     diff() {
       return {
-        added: this.natural(),
-        removed: this.natural()
+        added: this.natural({ min: 0, max: 2000 }) - 1000,
+        removed: this.natural({ min: 0, max: 2000 }) - 1000
       };
     },
 
