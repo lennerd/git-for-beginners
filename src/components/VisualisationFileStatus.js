@@ -3,7 +3,7 @@ import { withTheme } from 'styled-components';
 import { observer } from 'mobx-react';
 
 import VisualisationObject3D from './VisualisationObject3D';
-import { STATUS_ADDED, STATUS_DELETED, STATUS_MODIFIED } from '../constants';
+import { STATUS_ADDED, STATUS_DELETED } from '../constants';
 import { FILE_WIDTH, FILE_DEPTH, FILE_HEIGHT } from './VisualisationFile';
 
 const CHANGE_SIGNS = 4;

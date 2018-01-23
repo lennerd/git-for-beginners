@@ -16,7 +16,6 @@ import Console, {
   ConsoleInput
 } from './Console';
 import ConsoleBody from './ConsoleBody';
-import ConsoleError from '../models/ConsoleError';
 
 @observer
 class ChapterConsoleHistory extends Component {

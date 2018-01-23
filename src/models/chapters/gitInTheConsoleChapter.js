@@ -15,7 +15,6 @@ const addFile = createAction('ADD_FILE');
 const stageFile = createAction('STAGE_FILE');
 const getStatus = createAction('GET_STATUS');
 const createCommit = createAction('CREATE_COMMIT');
-const revertCommit = createAction('REVERT_COMMIT');
 const modifyFile = createAction('MODIFY_FILE');
 const deleteFile = createAction('DELETE_FILE');
 
@@ -99,7 +98,7 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
   [init]() {
     this.console = new Console({
       payloadElement: () => {
-        if (this.activeVisFile != null) {
+        if (this.vis.workingDirectory.active && this.activeVisFile != null) {
           return (
             <VisualisationFileReference vis={this.vis} file={this.activeVisFile} />
           );

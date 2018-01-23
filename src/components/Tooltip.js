@@ -1,4 +1,4 @@
-import React, { Component, createElement } from 'react';
+import React, { Component } from 'react';
 import { observable, action, computed } from 'mobx';
 import { createPortal } from 'react-dom';
 import { Manager, Target, Popper, Arrow } from 'react-popper';

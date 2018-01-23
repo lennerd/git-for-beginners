@@ -5,9 +5,8 @@ import { ChapterText } from "../ChapterSection";
 import Tooltip from "../../components/Tooltip";
 import GitVisualisation from "../vis/GitVisualisation";
 import Repository from "../Repository";
-import File from "../File";
 
-const introductionChapter = createChapter('Git', {
+const gitChapter = createChapter('Git', {
   useWorkingDirectory: false,
   useStagingArea: false,
   useRepository: false,
@@ -82,4 +81,4 @@ const introductionChapter = createChapter('Git', {
   ],
 });
 
-export default introductionChapter;
+export default gitChapter;
