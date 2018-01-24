@@ -1,6 +1,6 @@
-import Chance from "chance";
+import Chance from 'chance';
 
-const STORAGE_KEY = "chanceSeed";
+const STORAGE_KEY = 'chanceSeed';
 
 let serializedSeed = JSON.parse(localStorage.getItem(STORAGE_KEY));
 
@@ -22,11 +22,11 @@ export function reset() {
       const newDiff = { added, removed };
 
       while (added === newDiff.added && removed === newDiff.removed) {
-        newDiff.added = Math.min(
+        newDiff.added = Math.max(
           0,
           newDiff.added + this.natural({ min: 0, max: 2000 }) - 1000,
         );
-        newDiff.removed = Math.min(
+        newDiff.removed = Math.max(
           0,
           newDiff.removed + this.natural({ min: 0, max: 2000 }) - 1000,
         );

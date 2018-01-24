@@ -147,7 +147,7 @@ const workingInATeamChapter = createChapter('Working in a Team', {
       this.actionQueue.add(
         loop(
           this.downloadToUserA,
-          delay(2000),
+          delay(1000),
           this.toggleUserFileA,
           this.modify,
           delay(1000),

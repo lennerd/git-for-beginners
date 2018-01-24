@@ -1,14 +1,14 @@
 import React, { Fragment } from 'react';
 import { action } from 'mobx';
-import { action as popmotionAction } from 'popmotion';
+import { action as popmotionAction, chain } from 'popmotion';
 
-import { createChapter, init } from '../Chapter';
+import { createChapter, init, readOn } from '../Chapter';
 import { ChapterText } from '../ChapterSection';
 import Visualisation from '../vis/Visualisation';
 import VisualisationArea from '../vis/VisualisationArea';
 import { STATUS_ADDED } from '../../constants';
 import SimpleFileVisualisation from '../vis/SimpleFileVisualisation';
-import { loop, delay } from './utils';
+import { loop, delay, actionQueue } from './utils';
 
 const versioningInATeam = createChapter('Versioning in a Team', {
   sections: [
@@ -27,15 +27,24 @@ const versioningInATeam = createChapter('Versioning in a Team', {
         uploads the file again. <em>A second version is created.</em>
       </Fragment>
     )),
-    new ChapterText(() => 'Again this can go on, and on, and on …'),
+    new ChapterText(() => <em>Again this can go on, and on, and on …</em>),
+    new ChapterText(
+      () =>
+        'Nice. Now new changes are stored in a new version of the file. But one problem is still not solved. Both users cannot change content at the same time and need to wait for the other one to upload his changes.',
+    ),
     new ChapterText(() => (
-      <strong>
-        Welcome to “Git for Beginners” – an interactive tutorial to learn and
-        understand Git, a popular version control system to help you and your
-        team to not loose data again.
-      </strong>
+      <Fragment>
+        That is why version databases are able to merge changes from different
+        users into a single version.{' '}
+        <em>
+          Watch how both users are now able to make changes at the sam time.
+        </em>
+      </Fragment>
     )),
-    new ChapterText(() => 'But let’s start by taking a look at …'),
+    new ChapterText(
+      () =>
+        'Since the basics are covered now, it’s time to jump back to Git and the way how they enable the work in the team.',
+    ),
   ],
   [init]() {
     this.vis = new Visualisation();
@@ -53,9 +62,9 @@ const versioningInATeam = createChapter('Versioning in a Team', {
     this.visFile = new SimpleFileVisualisation();
     this.visFile.status = STATUS_ADDED;
     this.visUserFileA = new SimpleFileVisualisation();
-    this.visUserFileA.visible = true;
+    this.visUserFileA.visible = false;
     this.visUserFileB = new SimpleFileVisualisation();
-    this.visUserFileB.visible = true;
+    this.visUserFileB.visible = false;
 
     this.visUserA.add(this.visUserFileA);
     this.visUserB.add(this.visUserFileB);
@@ -63,42 +72,61 @@ const versioningInATeam = createChapter('Versioning in a Team', {
     this.currentUser = this.visUserA;
     this.otherUser = this.visUserB;
 
+    this.visSecondFile = new SimpleFileVisualisation();
+
     this.switchUser = popmotionAction(
       action(({ complete }) => {
-        const otherUser = this.otherUser;
-        this.otherUser = this.currentUser;
-        this.currentUser = otherUser;
-        this.currentUser.row = 0;
+        if (!this.loopNonlinear) {
+          const otherUser = this.otherUser;
+          this.otherUser = this.currentUser;
+          this.currentUser = otherUser;
+          this.currentUser.row = 0;
+        }
+
         complete();
       }),
     );
 
-    this.downloadToUserA = popmotionAction(
+    this.downloadToCurrentUser = popmotionAction(
       action(({ complete }) => {
-        this.visUserA.add(this.visFile);
-        complete();
-      }),
-    );
-
-    this.downloadToUserB = popmotionAction(
-      action(({ complete }) => {
-        this.visUserB.add(this.visFile);
+        if (!this.loopNonlinear) {
+          this.visFile.reset();
+          this.currentUser.add(this.visFile);
+        } else {
+          this.visFile.reset();
+          this.visSecondFile.reset();
+          this.currentUser.add(this.visFile);
+          this.otherUser.add(this.visSecondFile);
+        }
         complete();
       }),
     );
 
     this.modify = popmotionAction(({ complete }) => {
       this.visFile.modify();
+
+      if (this.loopNonlinear) {
+        this.visSecondFile.modify();
+      }
       complete();
     });
 
     this.uploadToVersionDatabase = popmotionAction(({ complete }) => {
       this.visVersionDatabase.add(this.visFile);
+
+      if (this.loopNonlinear) {
+        this.visVersionDatabase.add(this.visSecondFile);
+      }
       complete();
     });
 
     this.toggleCurrentFile = popmotionAction(({ complete }) => {
       this.currentUser.find(object => object.isFile).toggle();
+
+      if (this.loopNonlinear) {
+        this.otherUser.find(object => object.isFile).toggle();
+      }
+
       complete();
     });
 
@@ -112,6 +140,16 @@ const versioningInATeam = createChapter('Versioning in a Team', {
         .forEach(version => this.visVersionDatabase.remove(version));
       this.versions.unshift(version);
       version.name = `Version ${++this.versionsCounter}`;
+
+      if (this.loopNonlinear) {
+        version.diff = {
+          added: this.visFile.diff.added + this.visSecondFile.diff.added,
+          removed: this.visFile.diff.removed + this.visSecondFile.diff.removed,
+        };
+      }
+
+      this.visFile.reset();
+      this.visSecondFile.reset();
       this.visVersionDatabase.add(version);
       complete();
     });
@@ -122,41 +160,75 @@ const versioningInATeam = createChapter('Versioning in a Team', {
           object => object.isFile && object.row++,
         );
         this.visVersionDatabase.height = this.versions.length + 1;
-        this.otherUser.row++;
+
+        if (!this.loopNonlinear) {
+          this.otherUser.row++;
+        }
         complete();
       }),
     );
 
     this.visUserA.add(this.visFile);
+    this.actionQueue = actionQueue().start();
+  },
+  [readOn]() {
+    if (!this.firstVersion) {
+      this.firstVersion = true;
 
-    loop(
-      this.toggleCurrentFile,
-      delay(1000),
-      this.modify,
-      delay(1000),
-      this.toggleCurrentFile,
-      this.uploadToVersionDatabase,
-      delay(1000),
-      this.createVersion,
-      this.switchUser,
-      delay(1000),
-      this.downloadToUserB,
-      delay(1000),
-      this.shiftVersions,
-      this.toggleCurrentFile,
-      delay(1000),
-      this.modify,
-      delay(1000),
-      this.toggleCurrentFile,
-      this.uploadToVersionDatabase,
-      delay(1000),
-      this.createVersion,
-      this.switchUser,
-      delay(1000),
-      this.downloadToUserA,
-      delay(1000),
-      this.shiftVersions,
-    ).start();
+      this.actionQueue.add(
+        delay(1000),
+        this.modify,
+        delay(1000),
+        this.toggleCurrentFile,
+        this.uploadToVersionDatabase,
+        delay(1000),
+        this.createVersion,
+      );
+    } else if (!this.secondVersion) {
+      this.secondVersion = true;
+
+      this.actionQueue.add(
+        this.switchUser,
+        delay(1000),
+        this.downloadToCurrentUser,
+        delay(1000),
+        this.shiftVersions,
+        delay(1000),
+        this.modify,
+        delay(1000),
+        this.toggleCurrentFile,
+        this.uploadToVersionDatabase,
+        delay(1000),
+        this.createVersion,
+      );
+    } else if (!this.loopLinear) {
+      this.loopLinear = true;
+      this.loop = loop(
+        this.switchUser,
+        delay(1000),
+        this.downloadToCurrentUser,
+        delay(1000),
+        this.shiftVersions,
+        delay(1000),
+        this.toggleCurrentFile,
+        this.modify,
+        delay(1000),
+        this.toggleCurrentFile,
+        this.uploadToVersionDatabase,
+        delay(1000),
+        this.createVersion,
+      );
+
+      this.actionQueue.add(this.loop);
+    } else if (!this.loopNonlinear) {
+      this.loopNonlinear = true;
+
+      this.visUserFileA.visible = true;
+      this.visUserFileB.visible = true;
+
+      this.visFile.reset();
+      this.visSecondFile.reset();
+    }
   },
 });
 

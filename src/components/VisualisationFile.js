@@ -1,18 +1,18 @@
-import React, { Component } from "react";
-import { withTheme } from "styled-components";
-import { observer } from "mobx-react";
-import { action, computed, reaction, comparer } from "mobx";
-import { value, tween, timeline, easing, spring } from "popmotion";
-import { Transition } from "react-transition-group";
+import React, { Component } from 'react';
+import { withTheme } from 'styled-components';
+import { observer } from 'mobx-react';
+import { action, computed, reaction, comparer } from 'mobx';
+import { value, tween, timeline, easing, spring } from 'popmotion';
+import { Transition } from 'react-transition-group';
 
-import VisualisationObject3D from "./VisualisationObject3D";
-import { LEVEL_HEIGHT, CELL_HEIGHT, CELL_WIDTH } from "../theme";
+import VisualisationObject3D from './VisualisationObject3D';
+import { LEVEL_HEIGHT, CELL_HEIGHT, CELL_WIDTH } from '../theme';
 import {
   STATUS_DELETED,
   STATUS_ADDED,
   STATUS_MODIFIED,
   STATUS_UNMODIFIED,
-} from "../constants";
+} from '../constants';
 
 export const FILE_SIZE_RATIO = 1 / Math.sqrt(2);
 export const FILE_HEIGHT = LEVEL_HEIGHT / 2;
@@ -41,14 +41,14 @@ function moveTo({ from, to, duration }) {
   return timeline([
     [
       {
-        track: "row",
+        track: 'row',
         from: fromRow,
         to: halfWayRow,
         duration: halfDuration,
         ease: easing.easeInOut,
       },
       {
-        track: "column",
+        track: 'column',
         from: fromColumn,
         to: halfWayColumn,
         duration: halfDuration,
@@ -57,7 +57,7 @@ function moveTo({ from, to, duration }) {
     ],
     `-${quarterDuration}`,
     {
-      track: "level",
+      track: 'level',
       from: fromLevel,
       to: toLevel,
       duration: halfDuration,
@@ -66,14 +66,14 @@ function moveTo({ from, to, duration }) {
     `-${quarterDuration}`,
     [
       {
-        track: "row",
+        track: 'row',
         from: halfWayRow,
         to: toRow,
         duration: halfDuration,
         ease: easing.easeInOut,
       },
       {
-        track: "column",
+        track: 'column',
         from: halfWayColumn,
         to: toColumn,
         duration: halfDuration,
@@ -193,7 +193,13 @@ class VisualisationFile extends Component {
         return { added, removed };
       },
       () => {
-        spring({ from: this.size.get(), to: 1, velocity: 3 }).start(this.size);
+        const { file } = this.props;
+
+        if (file.status === STATUS_MODIFIED) {
+          spring({ from: this.size.get(), to: 1, velocity: 3 }).start(
+            this.size,
+          );
+        }
       },
       { equals: comparer.structural },
     );

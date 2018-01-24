@@ -1,15 +1,18 @@
-import React, { Fragment } from "react";
+import React, { Fragment } from 'react';
 
-import { createChapter, init } from "../Chapter";
-import { ChapterText, ChapterTask } from "../ChapterSection";
-import Tooltip from "../../components/Tooltip";
-import Console from "../Console";
-import { VisualisationFileReference } from "../../components/VisualisationObjectReference";
-import ConsoleCommand from "../ConsoleCommand";
-import { createAction } from "../Action";
-import { createStatusMessage, createCommitMessage } from "../vis/GitVisualisation";
-import { STATUS_UNMODIFIED } from "../../constants";
-import ConsoleError from "../ConsoleError";
+import { createChapter, init } from '../Chapter';
+import { ChapterText, ChapterTask } from '../ChapterSection';
+import Tooltip from '../../components/Tooltip';
+import Console from '../Console';
+import { VisualisationFileReference } from '../../components/VisualisationObjectReference';
+import ConsoleCommand from '../ConsoleCommand';
+import { createAction } from '../Action';
+import {
+  createStatusMessage,
+  createCommitMessage,
+} from '../vis/GitVisualisation';
+import { STATUS_UNMODIFIED } from '../../constants';
+import ConsoleError from '../ConsoleError';
 
 const addFile = createAction('ADD_FILE');
 const stageFile = createAction('STAGE_FILE');
@@ -44,7 +47,9 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
     return this.activeVisCommit.commit;
   },
   get hasModifiedFiles() {
-    return this.vis.workingDirectory.some(object => object.isFile && object.status !== STATUS_UNMODIFIED);
+    return this.vis.workingDirectory.some(
+      object => object.isFile && object.status !== STATUS_UNMODIFIED,
+    );
   },
   get hasFiledStaged() {
     return this.vis.stagingArea.some(object => object.isFile);
@@ -56,40 +61,75 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
     return [
       new ChapterText(() => (
         <Fragment>
-          Let’s create a few more <Tooltip name="commit">commits</Tooltip>. This time we use the console.
+          Let’s create a few more <Tooltip name="commit">commits</Tooltip>. This
+          time we use the console.
         </Fragment>
       )),
-      new ChapterTask(() => (
-        <Fragment>First create a new file or modify an existing one like in the chapters before.</Fragment>
-      ), this.hasModifiedFiles || this.hasFiledStaged || this.hasCreatedCommit),
-      new ChapterTask(() => (
-        <Fragment>Select a file and use <code>git add</code> to add it to the <Tooltip name="stagingArea">staging area</Tooltip>.</Fragment>
-      ), this.hasFiledStaged || this.hasCreatedCommit, {
-        tip: () => (
+      new ChapterTask(
+        () => (
           <Fragment>
-            The normal console won’t give you the visualisation you have here. No worries though. With <code>git status</code> you are able to see similar text based output.
+            First create a new file or modify an existing one like in the
+            chapters before.
           </Fragment>
         ),
-      }),
-      new ChapterTask(() => (
-        <Fragment>Create a new commit via <code>git commit -m "Your message"</code>.</Fragment>
-      ), this.hasCreatedCommit, {
-        tip: () => (
+        this.hasModifiedFiles || this.hasFiledStaged || this.hasCreatedCommit,
+      ),
+      new ChapterTask(
+        () => (
           <Fragment>
-            Do not forget to add quotes in front of and behind your message to signal a complete string. <em>Use the message string to summarize your changes to others.</em>
+            Select a file and use <code>git add</code> to add it to the{' '}
+            <Tooltip name="stagingArea">staging area</Tooltip>.
           </Fragment>
         ),
-      }),
-      new ChapterText(() => (
-        <Fragment>
-          Wow, that wasn’t so difficult right? The console is nothing more than before. A text based menu of options with a nice history of what you have done before. Again you are free to explora and play around.
-        </Fragment>
-      ), { skip: true }),
-      new ChapterText(() => (
-        <Fragment>
-          Let‘s look at one final topic, where Git can really help you out.
-        </Fragment>
-      ), { skip: true }),
+        this.hasFiledStaged || this.hasCreatedCommit,
+        {
+          tip: () => (
+            <Fragment>
+              The normal console won’t give you the visualisation you have here.
+              No worries though. With <code>git status</code> you are able to
+              see similar text based output.
+            </Fragment>
+          ),
+        },
+      ),
+      new ChapterTask(
+        () => (
+          <Fragment>
+            Create a new commit via <code>git commit -m "Your message"</code>.
+          </Fragment>
+        ),
+        this.hasCreatedCommit,
+        {
+          tip: () => (
+            <Fragment>
+              Do not forget to add quotes in front of and behind your message to
+              signal a complete string.{' '}
+              <em>
+                Use the message string to summarize your changes to others.
+              </em>
+            </Fragment>
+          ),
+        },
+      ),
+      new ChapterText(
+        () => (
+          <Fragment>
+            Wow, that wasn’t so difficult right? The console is nothing more
+            than before. A text based menu of options with a nice history of
+            what you have done before. Again you are free to explore and play
+            around.
+          </Fragment>
+        ),
+        { skip: true },
+      ),
+      new ChapterText(
+        () => (
+          <Fragment>
+            Let‘s look at one final topic, where Git can really help you out.
+          </Fragment>
+        ),
+        { skip: true },
+      ),
     ];
   },
   get vis() {
@@ -100,7 +140,10 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
       payloadElement: () => {
         if (this.vis.workingDirectory.active && this.activeVisFile != null) {
           return (
-            <VisualisationFileReference vis={this.vis} file={this.activeVisFile} />
+            <VisualisationFileReference
+              vis={this.vis}
+              file={this.activeVisFile}
+            />
           );
         }
 
@@ -116,20 +159,12 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
       }),
       new ConsoleCommand('git status', {
         textOnly: true,
-        message: ({ data }) => (
-          <pre>
-            {createStatusMessage(this.vis, data)}
-          </pre>
-        ),
+        message: ({ data }) => <pre>{createStatusMessage(this.vis, data)}</pre>,
         action: getStatus,
       }),
       new ConsoleCommand('git commit', {
         textOnly: true,
-        message: ({ data }) => (
-          <pre>
-            {createCommitMessage(this.vis, data)}
-          </pre>
-        ),
+        message: ({ data }) => <pre>{createCommitMessage(this.vis, data)}</pre>,
         action: createCommit,
         payloadCreator: () => this.activeFileIndex,
       }),
@@ -140,7 +175,9 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
             icon: '+',
             message: ({ data }) => (
               <Fragment>
-                A new file <VisualisationFileReference vis={this.vis} file={data} /> was added.
+                A new file{' '}
+                <VisualisationFileReference vis={this.vis} file={data} /> was
+                added.
               </Fragment>
             ),
             action: addFile,
@@ -155,7 +192,8 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
             icon: '+-',
             message: ({ data }) => (
               <Fragment>
-                File <VisualisationFileReference vis={this.vis} file={data} /> was modified.
+                File <VisualisationFileReference vis={this.vis} file={data} />{' '}
+                was modified.
               </Fragment>
             ),
             action: modifyFile,
@@ -166,12 +204,13 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
             icon: '×',
             message: ({ data }) => (
               <Fragment>
-                File <VisualisationFileReference vis={this.vis} file={data} /> was deleted.
+                File <VisualisationFileReference vis={this.vis} file={data} />{' '}
+                was deleted.
               </Fragment>
             ),
             action: deleteFile,
             payloadCreator: () => this.activeFileIndex,
-          })
+          }),
         ],
       }),
     );
@@ -181,8 +220,8 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
   },
   [stageFile](fileIndex) {
     if (fileIndex < 0) {
-      throw new ConsoleError('You need to select a file you want to stage.')
-    };
+      throw new ConsoleError('You need to select a file you want to stage.');
+    }
 
     return this.vis.stageFile(fileIndex);
   },

@@ -30,6 +30,12 @@ class SimpleFileVisualisation extends VisualisationFile {
     copy.diff = { ...this.diff };
     return copy;
   }
+
+  @action
+  reset() {
+    this.diff = { added: 0, removed: 0 };
+    this.status = STATUS_UNMODIFIED;
+  }
 }
 
 export default SimpleFileVisualisation;
