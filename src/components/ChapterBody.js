@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { observer } from 'mobx-react';
 import { action, computed } from 'mobx';
 import { TransitionGroup } from 'react-transition-group';
+import { delay } from 'popmotion';
 
 import ChapterHeader from './ChapterHeader';
 import { ChapterText, ChapterReadOn, ChapterCheckbox } from './Chapter';
@@ -17,7 +18,12 @@ class ChapterBody extends Component {
   @action.bound readOn() {
     const { chapter } = this.props;
 
-    chapter.dispatch(this.lastSection.action());
+    delay(this.lastSection.delay)
+      .start({
+        complete: () => {
+          chapter.dispatch(this.lastSection.action());
+        }
+      });
   }
 
   @computed get lastSection() {

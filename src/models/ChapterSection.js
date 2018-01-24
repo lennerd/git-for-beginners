@@ -11,6 +11,7 @@ export class ChapterText extends ChapterSection {
   type = SECTION_TEXT;
   skip = false;
   action = readOn;
+  delay = 100;
 
   constructor(text, data) {
     super();
