@@ -9,24 +9,24 @@ import ChapterHeader from './ChapterHeader';
 import { ChapterText, ChapterReadOn, ChapterCheckbox } from './Chapter';
 import { SECTION_TEXT, SECTION_TASK } from '../constants';
 import ChapterTip from './ChapterTip';
-import { readOn } from '../models/Chapter';
 import ChapterSectionTransition from './ChapterSectionTransition';
 import HeightTransition from './HeightTransition';
 
 @observer
 class ChapterBody extends Component {
-  @action.bound readOn() {
+  @action.bound
+  readOn() {
     const { chapter } = this.props;
 
-    delay(this.lastSection.delay)
-      .start({
-        complete: () => {
-          chapter.dispatch(this.lastSection.action());
-        }
-      });
+    delay(this.lastSection.delay).start({
+      complete: () => {
+        chapter.dispatch(this.lastSection.action());
+      },
+    });
   }
 
-  @computed get lastSection() {
+  @computed
+  get lastSection() {
     const { chapter } = this.props;
 
     return chapter.visibleSections[chapter.visibleSections.length - 1];
@@ -41,9 +41,7 @@ class ChapterBody extends Component {
           if (section.is(SECTION_TEXT)) {
             return (
               <ChapterSectionTransition key={index}>
-                <ChapterText>
-                  {section.text()}
-                </ChapterText>
+                <ChapterText>{section.text()}</ChapterText>
               </ChapterSectionTransition>
             );
           }
@@ -52,11 +50,11 @@ class ChapterBody extends Component {
             return (
               <ChapterSectionTransition key={index}>
                 <ChapterCheckbox checked={section.done}>
-                {section.text()}
+                  {section.text()}
                 </ChapterCheckbox>
-                {
-                  section.tip != null && <ChapterTip>{section.tip()}</ChapterTip>
-                }
+                {section.tip != null && (
+                  <ChapterTip>{section.tip()}</ChapterTip>
+                )}
               </ChapterSectionTransition>
             );
           }
@@ -114,7 +112,8 @@ export default styled(ChapterBody)`
     ${props => props.theme.mixins.monospaced};
     white-space: nowrap;
     background-color: white;
-    padding: ${props => props.theme.spacing(0.15)} ${props => props.theme.spacing(0.3)};
+    padding: ${props => props.theme.spacing(0.15)} ${props =>
+  props.theme.spacing(0.3)};
     //margin: 0 ${props => props.theme.spacing(-0.25)};
     border-radius: ${props => props.theme.borderRadius.large};
   }

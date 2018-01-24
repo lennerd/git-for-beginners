@@ -1,25 +1,20 @@
-import { computed, observable, action, reaction } from "mobx";
+import { computed, observable, action, reaction } from 'mobx';
 
-import Visualisation from "./Visualisation";
-import VisualisationArea from "./VisualisationArea";
-import VisualisationFile from "./VisualisationFile";
-import {
-  STATUS_DELETED,
-  STATUS_ADDED,
-  STATUS_MODIFIED,
-  STATUS_UNMODIFIED,
-} from "../../constants";
+import Visualisation from './Visualisation';
+import VisualisationArea from './VisualisationArea';
+import VisualisationFile from './VisualisationFile';
+import { STATUS_DELETED, STATUS_ADDED, STATUS_MODIFIED } from '../../constants';
 
 const FILE_NAME_VARIANTS = [
-  "_final",
-  "_final_final",
-  "_final_v2_final",
-  "_final_forreal",
-  "_finaaal",
-  "_finalalal",
-  "_final_hahaha",
-  "_final_ineedhelp",
-  "_final_itsatrap",
+  '_final',
+  '_final_final',
+  '_final_v2_final',
+  '_final_forreal',
+  '_finaaal',
+  '_finalalal',
+  '_final_hahaha',
+  '_final_ineedhelp',
+  '_final_itsatrap',
 ];
 
 class FileVisualisation extends VisualisationFile {
@@ -55,14 +50,14 @@ class FileVisualisation extends VisualisationFile {
   get name() {
     if (this.vis.useVersionDatabase) {
       if (this.vis.files.indexOf(this) === 0) {
-        return "file";
+        return 'file';
       }
 
       return `Version ${this.parent.children.length - this.index}`;
     }
 
     if (this.nameIndex === 0) {
-      return "file";
+      return 'file';
     }
 
     return `file${
@@ -98,7 +93,7 @@ class VersionDatabaseVisualisation extends Visualisation {
   constructor() {
     super();
 
-    this.versionDatabase = new VisualisationArea("Version Database");
+    this.versionDatabase = new VisualisationArea('Version Database');
     this.versionDatabase.column = 1;
     this.versionDatabase.height = 10;
 

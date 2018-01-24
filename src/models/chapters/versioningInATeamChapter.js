@@ -1,15 +1,14 @@
-import React, { Fragment } from "react";
-import { observable, action, computed } from "mobx";
-import { action as popmotionAction, delay, chain } from "popmotion";
+import React, { Fragment } from 'react';
+import { observable, action, computed } from 'mobx';
+import { action as popmotionAction } from 'popmotion';
 
-import { createChapter, init } from "../Chapter";
-import { ChapterText } from "../ChapterSection";
-import Visualisation from "../vis/Visualisation";
-import VisualisationArea from "../vis/VisualisationArea";
-import VisualisationFile from "../vis/VisualisationFile";
-import { STATUS_UNMODIFIED, STATUS_MODIFIED } from "../../constants";
-import chance from "../chance";
-import { loop } from "./utils";
+import { createChapter, init } from '../Chapter';
+import { ChapterText } from '../ChapterSection';
+import Visualisation from '../vis/Visualisation';
+import VisualisationArea from '../vis/VisualisationArea';
+import VisualisationFile from '../vis/VisualisationFile';
+import { STATUS_UNMODIFIED, STATUS_MODIFIED } from '../../constants';
+import chance from '../chance';
 
 class FileVisualisation extends VisualisationFile {
   @observable diff = { added: 0, removed: 0 };
@@ -27,9 +26,9 @@ class FileVisualisation extends VisualisationFile {
   }
 }
 
-const versioningInATeam = createChapter("Versioning in a Team", {
+const versioningInATeam = createChapter('Versioning in a Team', {
   sections: [
-    new ChapterText(() => "Let’s replace the cloud with a version database.", {
+    new ChapterText(() => 'Let’s replace the cloud with a version database.', {
       skip: true,
     }),
     new ChapterText(() => (
@@ -44,7 +43,7 @@ const versioningInATeam = createChapter("Versioning in a Team", {
         uploads the file again. <em>A second version is created.</em>
       </Fragment>
     )),
-    new ChapterText(() => "Again this can go on, and on, and on …"),
+    new ChapterText(() => 'Again this can go on, and on, and on …'),
     new ChapterText(() => (
       <strong>
         Welcome to “Git for Beginners” – an interactive tutorial to learn and
@@ -52,15 +51,15 @@ const versioningInATeam = createChapter("Versioning in a Team", {
         team to not loose data again.
       </strong>
     )),
-    new ChapterText(() => "But let’s start by taking a look at …"),
+    new ChapterText(() => 'But let’s start by taking a look at …'),
   ],
   [init]() {
     this.vis = new Visualisation();
 
-    this.visUserA = new VisualisationArea("User A");
-    this.visVersionDatabase = new VisualisationArea("Version Database");
+    this.visUserA = new VisualisationArea('User A');
+    this.visVersionDatabase = new VisualisationArea('Version Database');
     this.visVersionDatabase.column = 1;
-    this.visUserB = new VisualisationArea("User B");
+    this.visUserB = new VisualisationArea('User B');
     this.visUserB.column = 2;
 
     this.vis.add(this.visUserA);

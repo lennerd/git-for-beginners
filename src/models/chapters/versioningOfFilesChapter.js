@@ -1,47 +1,47 @@
-import { createChapter, init } from "../Chapter";
-import { ChapterText, ChapterTask } from "../ChapterSection";
-import { createAction } from "../Action";
-import ConsoleCommand from "../ConsoleCommand";
-import Console from "../Console";
-import React, { Fragment } from "react";
-import VersionDatabaseVisualisation from "../vis/VersionDatabaseVisualisation";
-import chance from "../chance";
+import { createChapter, init } from '../Chapter';
+import { ChapterText, ChapterTask } from '../ChapterSection';
+import { createAction } from '../Action';
+import ConsoleCommand from '../ConsoleCommand';
+import Console from '../Console';
+import React, { Fragment } from 'react';
+import VersionDatabaseVisualisation from '../vis/VersionDatabaseVisualisation';
+import chance from '../chance';
 
-const addVersionDatabase = createAction("ADD_VERSION_DATABASE");
-const restoreFile = createAction("RESTORE_FILE");
-const modifyFile = createAction("MODIFY_FILE", ({ fileIndex, diff }) => {
+const addVersionDatabase = createAction('ADD_VERSION_DATABASE');
+const restoreFile = createAction('RESTORE_FILE');
+const modifyFile = createAction('MODIFY_FILE', ({ fileIndex, diff }) => {
   return {
     fileIndex,
     diff: chance.diff(diff),
   };
 });
-const addFile = createAction("ADD_FILE");
-const copyFile = createAction("COPY_FILE");
-const deleteFile = createAction("DELETE_FILE");
+const addFile = createAction('ADD_FILE');
+const copyFile = createAction('COPY_FILE');
+const deleteFile = createAction('DELETE_FILE');
 
-const versioningOfFilesChapter = createChapter("Versioning of Files", {
+const versioningOfFilesChapter = createChapter('Versioning of Files', {
   get sections() {
     return [
-      new ChapterText(() => "So let’s start by asking: what is a version?", {
+      new ChapterText(() => 'So let’s start by asking: what is a version?', {
         skip: true,
       }),
-      new ChapterTask(() => "Create a new file.", this.hasFiles),
-      new ChapterTask(() => "Modify the new file.", this.hasModifiedFiles, {
-        tip: () => "Select the new file to see more available options.",
+      new ChapterTask(() => 'Create a new file.', this.hasFiles),
+      new ChapterTask(() => 'Modify the new file.', this.hasModifiedFiles, {
+        tip: () => 'Select the new file to see more available options.',
       }),
-      new ChapterTask(() => "Make a copy of the file.", this.hasCopiedFile),
+      new ChapterTask(() => 'Make a copy of the file.', this.hasCopiedFile),
       new ChapterText(
         () =>
-          "And there it is, a backup file, an older version of our file. As you can see, we can use filenames to distinguish between them.",
+          'And there it is, a backup file, an older version of our file. As you can see, we can use filenames to distinguish between them.',
         { skip: true },
       ),
-      new ChapterTask(() => "Create a few more backups.", this.hasBackups),
+      new ChapterTask(() => 'Create a few more backups.', this.hasBackups),
       new ChapterText(
         () =>
-          "Do you see the problem? Data is lost easily. And the developer of this tutorial, like many people out there, was too lazy to come up with a good way of naming your files. Idiot.",
+          'Do you see the problem? Data is lost easily. And the developer of this tutorial, like many people out there, was too lazy to come up with a good way of naming your files. Idiot.',
         { skip: true },
       ),
-      new ChapterTask(() => "Add a version database.", this.hasVersionDatabase),
+      new ChapterTask(() => 'Add a version database.', this.hasVersionDatabase),
       new ChapterText(
         () => (
           <Fragment>
@@ -52,11 +52,11 @@ const versioningOfFilesChapter = createChapter("Versioning of Files", {
         { skip: true },
       ),
       new ChapterTask(
-        () => "Restore a file from the version database.",
+        () => 'Restore a file from the version database.',
         this.hasRestoredFiles,
       ),
       new ChapterText(
-        () => "You still there? Nice! Let’s finally start with the real thing.",
+        () => 'You still there? Nice! Let’s finally start with the real thing.',
         { skip: true },
       ),
     ];
@@ -91,7 +91,7 @@ const versioningOfFilesChapter = createChapter("Versioning of Files", {
     this.console = new Console();
 
     this.console.add(
-      new ConsoleCommand("Version", {
+      new ConsoleCommand('Version', {
         available: () => {
           return (
             this.activeFile != null &&
@@ -100,62 +100,62 @@ const versioningOfFilesChapter = createChapter("Versioning of Files", {
           );
         },
         commands: [
-          new ConsoleCommand("Restore", {
-            icon: "↙",
-            message: () => "Version was was restored.",
+          new ConsoleCommand('Restore', {
+            icon: '↙',
+            message: () => 'Version was was restored.',
             action: restoreFile,
             payloadCreator: () => this.activeFileIndex,
           }),
         ],
       }),
-      new ConsoleCommand("File", {
+      new ConsoleCommand('File', {
         available: () =>
           this.activeFile != null &&
           (!this.hasVersionDatabase || this.activeFileIndex === 0),
         commands: [
-          new ConsoleCommand("Modify", {
-            icon: "+-",
-            message: () => "File was changed.",
+          new ConsoleCommand('Modify', {
+            icon: '+-',
+            message: () => 'File was changed.',
             action: modifyFile,
             payloadCreator: () => ({
               fileIndex: this.activeFileIndex,
               diff: this.activeFile.diff,
             }),
           }),
-          new ConsoleCommand("Backup", {
-            icon: "↗",
-            message: () => "Version was created.",
+          new ConsoleCommand('Backup', {
+            icon: '↗',
+            message: () => 'Version was created.',
             available: () => this.hasVersionDatabase,
             action: copyFile,
             payloadCreator: () => this.activeFileIndex,
           }),
-          new ConsoleCommand("Save & Copy", {
-            icon: "↗",
-            message: () => "File was copied.",
+          new ConsoleCommand('Save & Copy', {
+            icon: '↗',
+            message: () => 'File was copied.',
             available: () =>
               !this.hasVersionDatabase && this.activeFileIndex === 0,
             action: copyFile,
             payloadCreator: () => this.activeFileIndex,
           }),
-          new ConsoleCommand("Delete", {
-            icon: "×",
-            message: () => "File was deleted.",
+          new ConsoleCommand('Delete', {
+            icon: '×',
+            message: () => 'File was deleted.',
             action: deleteFile,
             payloadCreator: () => this.activeFileIndex,
           }),
         ],
       }),
-      new ConsoleCommand("Add new file.", {
-        icon: "+",
+      new ConsoleCommand('Add new file.', {
+        icon: '+',
         available: () => !this.hasFiles,
-        message: () => "A new file was created.",
+        message: () => 'A new file was created.',
         action: addFile,
       }),
-      new ConsoleCommand("Add version database.", {
-        icon: "+",
+      new ConsoleCommand('Add version database.', {
+        icon: '+',
         available: () =>
           this.hasModifiedFiles && this.hasBackups && !this.hasVersionDatabase,
-        message: () => "A version database was added.",
+        message: () => 'A version database was added.',
         action: addVersionDatabase,
       }),
     );
