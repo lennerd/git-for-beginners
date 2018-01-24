@@ -1,10 +1,11 @@
-import React, { PureComponent, Children, cloneElement } from "react";
-import { withTheme } from "styled-components";
-import { value, tween, easing } from "popmotion";
-import { Transition } from "react-transition-group";
+import React, { PureComponent, Children, cloneElement } from 'react';
+import { withTheme } from 'styled-components';
+import { value, tween, easing } from 'popmotion';
+import { Transition } from 'react-transition-group';
+import { reaction, comparer } from 'mobx';
 
-import VisualisationObject3D from "./VisualisationObject3D";
-import { CELL_HEIGHT, CELL_WIDTH, LEVEL_HEIGHT } from "../theme";
+import VisualisationObject3D from './VisualisationObject3D';
+import { CELL_HEIGHT, CELL_WIDTH, LEVEL_HEIGHT } from '../theme';
 
 export const AREA_VERTICAL_PADDING = CELL_WIDTH * 0.1;
 export const AREA_HORIZONTAL_PADDING = CELL_HEIGHT * 0.1;
@@ -14,7 +15,7 @@ class VisualisationArea extends PureComponent {
   constructor(props) {
     super();
 
-    const { theme } = props;
+    const { area, theme } = props;
 
     this.areaObject = new THREE.Group();
 
@@ -35,6 +36,62 @@ class VisualisationArea extends PureComponent {
     this.opacity = value(1, opacity => {
       this.planeMesh.material.opacity = opacity * 0.1;
     });
+
+    this.size = value(
+      { width: area.width, height: area.height },
+      ({ width, height }) => {
+        this.planeMesh.scale.y = CELL_WIDTH * width - AREA_VERTICAL_PADDING;
+        this.planeMesh.scale.x = CELL_HEIGHT * height - AREA_HORIZONTAL_PADDING;
+
+        this.planeMesh.position.z = CELL_WIDTH * (width / 2 - 0.5);
+        this.planeMesh.position.x = CELL_HEIGHT * (height / 2 - 0.5);
+      },
+    );
+
+    this.position = value(area.position, position => {
+      this.areaObject.position.set(
+        CELL_HEIGHT * position.row,
+        LEVEL_HEIGHT * position.level,
+        CELL_WIDTH * position.column,
+      );
+    });
+  }
+
+  componentDidMount() {
+    this.disposeSize = reaction(
+      () => {
+        const { area } = this.props;
+
+        return { width: area.width, height: area.height };
+      },
+      size => {
+        tween({
+          from: this.size.get(),
+          to: size,
+          duration: 1000,
+          ease: easing.easeInOut,
+        }).start(this.size);
+      },
+      { equals: comparer.structural },
+    );
+
+    this.disposePosition = reaction(
+      () => this.props.area.position,
+      position => {
+        tween({
+          from: this.position.get(),
+          to: position,
+          duration: 1000,
+          ease: easing.easeInOut,
+        }).start(this.position);
+      },
+      { equals: comparer.structural },
+    );
+  }
+
+  componentWillUnmount() {
+    this.disposeSize();
+    this.disposePosition();
   }
 
   handleEnter = () => {
@@ -72,22 +129,7 @@ class VisualisationArea extends PureComponent {
   };
 
   render() {
-    const { children, area, in: inProp, ...props } = this.props;
-
-    this.planeMesh.scale.set(
-      CELL_HEIGHT * area.height - AREA_HORIZONTAL_PADDING,
-      CELL_WIDTH * area.width - AREA_VERTICAL_PADDING,
-      1,
-    );
-
-    this.planeMesh.position.z = CELL_WIDTH * (area.width / 2 - 0.5);
-    this.planeMesh.position.x = CELL_HEIGHT * (area.height / 2 - 0.5);
-
-    this.areaObject.position.set(
-      CELL_HEIGHT * area.position.row,
-      LEVEL_HEIGHT * area.position.level,
-      CELL_WIDTH * area.position.column,
-    );
+    const { children, in: inProp, ...props } = this.props;
 
     return (
       <Transition

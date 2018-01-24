@@ -1,44 +1,20 @@
-import React, { Fragment } from "react";
-import { observable, action, computed } from "mobx";
-import { action as popmotionAction, delay } from "popmotion";
+import React, { Fragment } from 'react';
+import { action as popmotionAction } from 'popmotion';
 
-import { createChapter, readOn, init } from "../Chapter";
-import { ChapterText } from "../ChapterSection";
-import Tooltip from "../../components/Tooltip";
-import Visualisation from "../vis/Visualisation";
-import VisualisationArea from "../vis/VisualisationArea";
-import VisualisationFile from "../vis/VisualisationFile";
-import chance from "../chance";
-import { STATUS_UNMODIFIED, STATUS_MODIFIED } from "../../constants";
-import { actionQueue, loop } from "./utils";
+import { createChapter, readOn, init } from '../Chapter';
+import { ChapterText } from '../ChapterSection';
+import Tooltip from '../../components/Tooltip';
+import Visualisation from '../vis/Visualisation';
+import VisualisationArea from '../vis/VisualisationArea';
+import { actionQueue, loop, delay } from './utils';
+import SimpleFileVisualisation from '../vis/SimpleFileVisualisation';
 
-class FileVisualisation extends VisualisationFile {
-  @observable diff = { added: 0, removed: 0 };
-  @observable status = STATUS_UNMODIFIED;
-
-  @action
-  modify() {
-    this.diff = chance.diff(this.diff);
-    this.status = STATUS_MODIFIED;
-  }
-
-  @computed
-  get maxChanges() {
-    return this.diff.added + this.diff.removed;
-  }
-
-  @action
-  toggle() {
-    this.visible = !this.visible;
-  }
-}
-
-const workingInATeamChapter = createChapter("Working in a Team", {
+const workingInATeamChapter = createChapter('Working in a Team', {
   sections: [
     new ChapterText(() => (
       <Fragment>
         Most of the time, when working on a project, we work in teams. This
-        means we need to exchange our files, for example by using a{" "}
+        means we need to exchange our files, for example by using a{' '}
         <Tooltip name="cloud">cloud</Tooltip>. Let’s take a closer look on a
         project with one file and two users.
       </Fragment>
@@ -69,16 +45,16 @@ const workingInATeamChapter = createChapter("Working in a Team", {
   [init]() {
     this.vis = new Visualisation();
 
-    this.visUserA = new VisualisationArea("User A");
-    this.visCloud = new VisualisationArea("Cloud");
+    this.visUserA = new VisualisationArea('User A');
+    this.visCloud = new VisualisationArea('Cloud');
     this.visCloud.column = 1;
-    this.visUserB = new VisualisationArea("User B");
+    this.visUserB = new VisualisationArea('User B');
     this.visUserB.column = 2;
 
-    this.visFile = new FileVisualisation();
-    this.visUserFileA = new FileVisualisation();
-    this.visCloudFile = new FileVisualisation();
-    this.visUserFileB = new FileVisualisation();
+    this.visFile = new SimpleFileVisualisation();
+    this.visUserFileA = new SimpleFileVisualisation();
+    this.visCloudFile = new SimpleFileVisualisation();
+    this.visUserFileB = new SimpleFileVisualisation();
 
     this.downloadToUserA = popmotionAction(({ complete }) => {
       this.visUserA.add(this.visFile);

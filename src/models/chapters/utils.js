@@ -1,4 +1,4 @@
-import { action } from "popmotion";
+import { action, everyFrame } from 'popmotion';
 
 export const loop = (...actions) =>
   action(({ update, complete }) => {
@@ -16,14 +16,14 @@ export const loop = (...actions) =>
 
           playCurrent();
         },
-        update
+        update,
       });
     };
 
     playCurrent();
 
     return {
-      stop: () => current != null && current.stop()
+      stop: () => current != null && current.stop(),
     };
   });
 
@@ -51,7 +51,7 @@ export const actionQueue = () =>
             playCurrent();
           }
         },
-        update
+        update,
       });
     };
 
@@ -67,6 +67,20 @@ export const actionQueue = () =>
         if (current != null) {
           current.stop();
         }
-      }
+      },
     };
+  });
+
+export const delay = timeToDelay =>
+  action(({ complete }) => {
+    const frame = everyFrame().start({
+      update(timeSinceStart) {
+        if (timeSinceStart >= timeToDelay) {
+          complete();
+          frame.stop();
+        }
+      },
+    });
+
+    return frame;
   });

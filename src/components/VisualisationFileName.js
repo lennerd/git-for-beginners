@@ -4,7 +4,7 @@ import { withTheme } from 'styled-components';
 import VisualisationObject3D from './VisualisationObject3D';
 import { FILE_WIDTH } from './VisualisationFile';
 
-const FILE_LABEL_SIZE = 0.12;
+const FILE_LABEL_SIZE = 0.11;
 
 @withTheme
 class VisualisationFileName extends PureComponent {
@@ -24,11 +24,11 @@ class VisualisationFileName extends PureComponent {
     this.textMesh = new THREE.Mesh(
       this.textGeometry,
       new THREE.MeshBasicMaterial({
-        color: theme.color.text,
+        color: theme.color.highlight,
       }),
     );
 
-    this.textMesh.position.x = (FILE_WIDTH / -2) - FILE_LABEL_SIZE - 0.2;
+    this.textMesh.position.x = FILE_WIDTH / -2 - FILE_LABEL_SIZE - 0.2;
     this.textMesh.position.y = 0.001;
     this.textMesh.rotation.x = Math.PI / -2;
     this.textMesh.rotation.z = Math.PI / -2;
@@ -48,9 +48,7 @@ class VisualisationFileName extends PureComponent {
 
     this.textGeometry.fromGeometry(geometry);
 
-    return (
-      <VisualisationObject3D object3D={this.fileLabelObject} />
-    );
+    return <VisualisationObject3D object3D={this.fileLabelObject} />;
   }
 }
 

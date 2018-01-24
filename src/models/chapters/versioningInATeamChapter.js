@@ -1,30 +1,14 @@
 import React, { Fragment } from 'react';
-import { observable, action, computed } from 'mobx';
+import { action } from 'mobx';
 import { action as popmotionAction } from 'popmotion';
 
 import { createChapter, init } from '../Chapter';
 import { ChapterText } from '../ChapterSection';
 import Visualisation from '../vis/Visualisation';
 import VisualisationArea from '../vis/VisualisationArea';
-import VisualisationFile from '../vis/VisualisationFile';
-import { STATUS_UNMODIFIED, STATUS_MODIFIED } from '../../constants';
-import chance from '../chance';
-
-class FileVisualisation extends VisualisationFile {
-  @observable diff = { added: 0, removed: 0 };
-  @observable status = STATUS_UNMODIFIED;
-
-  @action
-  modify() {
-    this.diff = chance.diff(this.diff);
-    this.status = STATUS_MODIFIED;
-  }
-
-  @computed
-  get maxChanges() {
-    return this.diff.added + this.diff.removed;
-  }
-}
+import { STATUS_ADDED } from '../../constants';
+import SimpleFileVisualisation from '../vis/SimpleFileVisualisation';
+import { loop, delay } from './utils';
 
 const versioningInATeam = createChapter('Versioning in a Team', {
   sections: [
@@ -66,85 +50,113 @@ const versioningInATeam = createChapter('Versioning in a Team', {
     this.vis.add(this.visVersionDatabase);
     this.vis.add(this.visUserB);
 
-    this.visFile = new FileVisualisation();
+    this.visFile = new SimpleFileVisualisation();
+    this.visFile.status = STATUS_ADDED;
+    this.visUserFileA = new SimpleFileVisualisation();
+    this.visUserFileA.visible = true;
+    this.visUserFileB = new SimpleFileVisualisation();
+    this.visUserFileB.visible = true;
 
-    this.downloadToUserA = popmotionAction(({ complete }) => {
-      this.visUserA.add(this.visFile);
-      complete();
-    });
+    this.visUserA.add(this.visUserFileA);
+    this.visUserB.add(this.visUserFileB);
 
-    this.downloadToUserB = popmotionAction(({ complete }) => {
-      this.visUserB.add(this.visFile);
-      complete();
-    });
+    this.currentUser = this.visUserA;
+    this.otherUser = this.visUserB;
+
+    this.switchUser = popmotionAction(
+      action(({ complete }) => {
+        const otherUser = this.otherUser;
+        this.otherUser = this.currentUser;
+        this.currentUser = otherUser;
+        this.currentUser.row = 0;
+        complete();
+      }),
+    );
+
+    this.downloadToUserA = popmotionAction(
+      action(({ complete }) => {
+        this.visUserA.add(this.visFile);
+        complete();
+      }),
+    );
+
+    this.downloadToUserB = popmotionAction(
+      action(({ complete }) => {
+        this.visUserB.add(this.visFile);
+        complete();
+      }),
+    );
 
     this.modify = popmotionAction(({ complete }) => {
       this.visFile.modify();
       complete();
     });
 
-    /*this.currentUser = this.visUserA;
-    this.otherUser = this.visUserB;
-
-    this.createSlot = popmotionAction(({ complete }) => {
-      this.otherUser.row++;
-      this.versionDatabase.height++;
-      this.versionDatabase.traverse(object => object.isFile && object.row++);
-      complete();
-    });*/
-
-    this.backup = popmotionAction(({ complete }) => {
+    this.uploadToVersionDatabase = popmotionAction(({ complete }) => {
       this.visVersionDatabase.add(this.visFile);
       complete();
     });
 
-    this.createVersion = popmotionAction(({ complete }) => {
-      this.visVersionDatabase.add(new FileVisualisation());
+    this.toggleCurrentFile = popmotionAction(({ complete }) => {
+      this.currentUser.find(object => object.isFile).toggle();
       complete();
     });
 
-    this.currentUser = this.visUserA;
-    this.otherUser = this.visUserB;
+    this.versions = [];
+    this.versionsCounter = 0;
 
-    this.switchVersion = popmotionAction(({ complete }) => {
-      const otherUser = this.currentUser;
-
-      this.otherUser = this.currentUser;
-      this.currentUser = otherUser;
+    this.createVersion = popmotionAction(({ complete }) => {
+      const version = this.visFile.copy();
+      this.versions
+        .splice(6)
+        .forEach(version => this.visVersionDatabase.remove(version));
+      this.versions.unshift(version);
+      version.name = `Version ${++this.versionsCounter}`;
+      this.visVersionDatabase.add(version);
+      complete();
     });
 
-    /*chain(
-      delay(1400),
-      this.downloadToUserA,
-      delay(1400),
-      this.modify,
-      delay(1400),
-      this.backup,
-      delay(1400),
-      this.createVersion,
-      delay(1400),
-      this.switchUser,
-      delay(1400),
-      this.downloadToUserB,
-      delay(1400),
-      this.backup,
-    ).start();*/
+    this.shiftVersions = popmotionAction(
+      action(({ complete }) => {
+        this.visVersionDatabase.traverse(
+          object => object.isFile && object.row++,
+        );
+        this.visVersionDatabase.height = this.versions.length + 1;
+        this.otherUser.row++;
+        complete();
+      }),
+    );
 
-    /*loop(
+    this.visUserA.add(this.visFile);
+
+    loop(
+      this.toggleCurrentFile,
+      delay(1000),
+      this.modify,
+      delay(1000),
+      this.toggleCurrentFile,
+      this.uploadToVersionDatabase,
+      delay(1000),
+      this.createVersion,
+      this.switchUser,
+      delay(1000),
+      this.downloadToUserB,
+      delay(1000),
+      this.shiftVersions,
+      this.toggleCurrentFile,
+      delay(1000),
+      this.modify,
+      delay(1000),
+      this.toggleCurrentFile,
+      this.uploadToVersionDatabase,
+      delay(1000),
+      this.createVersion,
+      this.switchUser,
       delay(1000),
       this.downloadToUserA,
-      delay(2000),
-      this.modify,
-      delay(2000),
-      this.backup,
-      delay(2000),
-      this.downloadToUserB,
-      delay(2000),
-      this.modify,
-      delay(2000),
-      this.backup,
       delay(1000),
-    ).start();*/
+      this.shiftVersions,
+    ).start();
   },
 });
 
