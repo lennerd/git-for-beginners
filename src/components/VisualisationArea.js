@@ -1,5 +1,7 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Children, cloneElement } from 'react';
 import { withTheme } from 'styled-components';
+import { value, tween, easing } from 'popmotion';
+import { Transition } from 'react-transition-group';
 
 import VisualisationObject3D from './VisualisationObject3D';
 import { CELL_HEIGHT, CELL_WIDTH, LEVEL_HEIGHT } from '../theme';
@@ -24,10 +26,38 @@ class VisualisationArea extends PureComponent {
     this.planeMesh.rotation.x = Math.PI / -2;
 
     this.areaObject.add(this.planeMesh);
+
+    this.opacity = value(1, opacity => {
+      this.planeMesh.material.opacity = opacity * 0.1;
+    });
   }
 
+  handleEnter = () => {
+    tween({ from: 0, to: this.opacity.get(), duration: 700, ease: easing.easeInOut }).start(this.opacity);
+
+    this.tweenValue = this.opacity;
+  };
+
+  handleExit = () => {
+    tween({ from: this.opacity.get(), to: 1, duration: 700, ease: easing.easeInOut }).start(this.opacity);
+
+    this.tweenValue = this.opacity;
+  };
+
+  addEndListener = (node, complete) => {
+    if (this.tweenValue == null) {
+      return complete();
+    }
+
+    this.tweenValue.subscribe({
+      complete,
+    });
+
+    this.tweenValue = null;
+  };
+
   render() {
-    const { children, area } = this.props;
+    const { children, area, in: inProp, ...props } = this.props;
 
     this.planeMesh.scale.set(
       CELL_HEIGHT * area.height - AREA_HORIZONTAL_PADDING,
@@ -45,9 +75,19 @@ class VisualisationArea extends PureComponent {
     );
 
     return (
-      <VisualisationObject3D object3D={this.areaObject}>
-        {children}
-      </VisualisationObject3D>
+      <Transition
+        {...props}
+        in={inProp}
+        onEnter={this.handleEnter}
+        onExit={this.handleExit}
+        addEndListener={this.addEndListener}
+      >
+        <VisualisationObject3D object3D={this.areaObject}>
+          {Children.map(children, child => (
+            cloneElement(child, { in: inProp })
+          ))}
+        </VisualisationObject3D>
+      </Transition>
     );
   }
 }

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { action } from 'mobx';
+import { action, reaction, comparer } from 'mobx';
 import { observer } from 'mobx-react';
 import { withTheme } from 'styled-components';
 import { value, tween, easing } from 'popmotion';
@@ -50,6 +50,54 @@ class VisualisationCommit extends Component {
     });
   }
 
+  componentDidMount() {
+    this.disposeHeight = reaction(() => {
+      const { commit } = this.props;
+
+      return commit.height * FILE_HEIGHT + (commit.height - 1) * (LEVEL_HEIGHT - FILE_HEIGHT);
+    }, height => {
+      tween({
+        from: this.height.get(),
+        to: height,
+        duration: 700,
+        ease: easing.easeInOut
+      }).start(this.height);
+    }, true);
+
+    this.disposeOpacity = reaction(() => {
+      const { commit } = this.props;
+
+      return commit.active ? 0.3 : commit.hover ? 0.1 : 0;
+    }, opacity => {
+      tween({
+        from: this.hoverOpacity.get(),
+        to: opacity,
+        duration: 200
+      }).start(this.hoverOpacity);
+    }, true);
+
+    this.disposePosition = reaction(() => {
+      const { commit } = this.props;
+
+      return commit.position;
+    }, position => {
+      const { commit } = this.props;
+
+      tween({
+        from: this.position.get(),
+        to: commit.position,
+        duration: 1400,
+        ease: easing.easeInOut
+      }).start(this.position);
+    }, { equals: comparer.structural });
+  }
+
+  componentWillUnmount() {
+    this.disposeHeight();
+    this.disposeOpacity();
+    this.disposePosition();
+  }
+
   @action.bound handleClick(event) {
     const { commit, vis } = this.props;
 
@@ -75,32 +123,6 @@ class VisualisationCommit extends Component {
     const { children, commit } = this.props;
 
     this.commitObject.visible = commit.visible;
-
-    const height = commit.height * FILE_HEIGHT + (commit.height - 1) * (LEVEL_HEIGHT - FILE_HEIGHT);
-    const opacity = commit.active ? 0.3 : commit.hover ? 0.1 : 0;
-
-    this.hoverMesh.scale.y = height + COMMIT_OUTLINE;
-    this.hoverMesh.position.y = height / 2 - COMMIT_OUTLINE;
-
-    tween({
-      from: this.position.get(),
-      to: commit.position,
-      duration: 1400,
-      ease: easing.easeInOut
-    }).start(this.position);
-
-    tween({
-      from: this.hoverOpacity.get(),
-      to: opacity,
-      duration: 200
-    }).start(this.hoverOpacity);
-
-    tween({
-      from: this.height.get(),
-      to: height,
-      duration: 700,
-      ease: easing.easeInOut
-    }).start(this.height);
 
     return (
       <VisualisationObject3D

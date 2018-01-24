@@ -1,5 +1,8 @@
 import React, { PureComponent } from 'react';
 import { withTheme } from 'styled-components';
+import { value, tween } from 'popmotion';
+import { computed, reaction } from 'mobx';
+import { observer } from 'mobx-react';
 
 import VisualisationObject3D from './VisualisationObject3D';
 import { LEVEL_HEIGHT } from '../theme';
@@ -9,16 +12,17 @@ const PADDING = new THREE.Vector2(0.2, 0.125);
 const ARROW_SIZE = 0.1;
 
 @withTheme
+@observer
 class VisualisationPopup extends PureComponent {
   static defaultProps = {
     level: 0,
-    visible: true,
+    in: false,
   };
 
   constructor(props) {
-    super();
+    super(props);
 
-    const { theme } = props;
+    const { theme, level } = props;
 
     this.popupObject = new THREE.Group();
 
@@ -39,7 +43,6 @@ class VisualisationPopup extends PureComponent {
       new THREE.MeshBasicMaterial({
         color: theme.color.highlight,
         transparent: true,
-        opacity: 1,
       }),
     );
 
@@ -49,10 +52,45 @@ class VisualisationPopup extends PureComponent {
 
     this.popupMesh.add(this.textMesh);
     this.popupObject.add(this.popupMesh);
+
+    this.in = value({ position: LEVEL_HEIGHT * level + 0.2, opacity: 0 }, ({ position, opacity }) => {
+      this.popupObject.position.y = position;
+      this.textMesh.material.opacity = opacity;
+      this.popupMesh.material.opacity = opacity;
+    });
+  }
+
+  componentDidMount() {
+    this.disposeIn = reaction(() => ({
+      position: this.position,
+      opacity: this.opacity
+    }), (inProp) => {
+      tween({
+        from: this.in.get(),
+        to: inProp,
+        duration: 400
+      }).start(this.in);
+    }, true);
+  }
+
+  componentWillUnmount() {
+    this.disposeIn();
+  }
+
+  @computed get position() {
+    const { in: inProp, level } = this.props;
+
+    return LEVEL_HEIGHT * level + (inProp ? 0 : 0.2);
+  }
+
+  @computed get opacity() {
+    const { in: inProp } = this.props;
+
+    return inProp ? 1 : 0;
   }
 
   render() {
-    const { font, level, content, visible } = this.props;
+    const { font, level, content } = this.props;
 
     const shapes = font.generateShapes(content, FONT_SIZE, 2);
     const textGeometry = new THREE.ShapeGeometry(shapes);
@@ -85,9 +123,6 @@ class VisualisationPopup extends PureComponent {
     shapeGeometry.translate(xMidShape, 0, 0);
 
     this.popupGeometry.fromGeometry(shapeGeometry);
-
-    this.popupObject.position.y = LEVEL_HEIGHT * level;
-    this.popupObject.visible = visible;
 
     return (
       <VisualisationObject3D object3D={this.popupObject} />

@@ -24,7 +24,7 @@ class ChapterVisualisation extends Component {
       <Visualisation vis={chapter.vis}>
         {chapter.vis.visFileLists.map(commit => (
           <VisualisationCommit commit={commit} key={commit.id} vis={chapter.vis}>
-            {commit.isCommit && <VisualisationPopup font={fontRegular} level={commit.height} content={commit.commit.checksumShort} />}
+            {commit.isCommit && <VisualisationPopup font={fontRegular} level={commit.height} content={commit.commit.checksumShort} in={commit.active} />}
           </VisualisationCommit>
         ))}
         <TransitionGroup component={Fragment}>
@@ -35,11 +35,13 @@ class ChapterVisualisation extends Component {
             </VisualisationFile>
           ))}
         </TransitionGroup>
-        {chapter.vis.visAreas.map(area => (
-          <VisualisationArea area={area} key={area.id}>
-            <VisualisationAreaName font={fontRegularCaps} area={area} />
-          </VisualisationArea>
-        ))}
+        <TransitionGroup component={Fragment}>
+          {chapter.vis.visAreas.map(area => (
+            <VisualisationArea area={area} key={area.id}>
+              <VisualisationAreaName font={fontRegularCaps} area={area} />
+            </VisualisationArea>
+          ))}
+        </TransitionGroup>
       </Visualisation>
     );
   }
