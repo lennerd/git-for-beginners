@@ -1,10 +1,10 @@
-import React, { PureComponent, Children, cloneElement } from 'react';
-import { withTheme } from 'styled-components';
-import { value, tween, easing } from 'popmotion';
-import { Transition } from 'react-transition-group';
+import React, { PureComponent, Children, cloneElement } from "react";
+import { withTheme } from "styled-components";
+import { value, tween, easing } from "popmotion";
+import { Transition } from "react-transition-group";
 
-import VisualisationObject3D from './VisualisationObject3D';
-import { CELL_HEIGHT, CELL_WIDTH, LEVEL_HEIGHT } from '../theme';
+import VisualisationObject3D from "./VisualisationObject3D";
+import { CELL_HEIGHT, CELL_WIDTH, LEVEL_HEIGHT } from "../theme";
 
 export const AREA_VERTICAL_PADDING = CELL_WIDTH * 0.1;
 export const AREA_HORIZONTAL_PADDING = CELL_HEIGHT * 0.1;
@@ -20,7 +20,12 @@ class VisualisationArea extends PureComponent {
 
     this.planeMesh = new THREE.Mesh(
       new THREE.PlaneBufferGeometry(1, 1),
-      new THREE.MeshBasicMaterial({ color: theme.color.highlight, opacity: 0.1, transparent: true, depthWrite: false }),
+      new THREE.MeshBasicMaterial({
+        color: theme.color.highlight,
+        opacity: 0.1,
+        transparent: true,
+        depthWrite: false,
+      }),
     );
 
     this.planeMesh.rotation.x = Math.PI / -2;
@@ -33,13 +38,23 @@ class VisualisationArea extends PureComponent {
   }
 
   handleEnter = () => {
-    tween({ from: 0, to: this.opacity.get(), duration: 700, ease: easing.easeInOut }).start(this.opacity);
+    tween({
+      from: 0,
+      to: this.opacity.get(),
+      duration: 700,
+      ease: easing.easeInOut,
+    }).start(this.opacity);
 
     this.tweenValue = this.opacity;
   };
 
   handleExit = () => {
-    tween({ from: this.opacity.get(), to: 1, duration: 700, ease: easing.easeInOut }).start(this.opacity);
+    tween({
+      from: this.opacity.get(),
+      to: 0,
+      duration: 700,
+      ease: easing.easeInOut,
+    }).start(this.opacity);
 
     this.tweenValue = this.opacity;
   };
@@ -62,11 +77,11 @@ class VisualisationArea extends PureComponent {
     this.planeMesh.scale.set(
       CELL_HEIGHT * area.height - AREA_HORIZONTAL_PADDING,
       CELL_WIDTH * area.width - AREA_VERTICAL_PADDING,
-      1
+      1,
     );
 
-    this.planeMesh.position.z = CELL_WIDTH * ((area.width / 2) - 0.5);
-    this.planeMesh.position.x = CELL_HEIGHT * ((area.height / 2) - 0.5);
+    this.planeMesh.position.z = CELL_WIDTH * (area.width / 2 - 0.5);
+    this.planeMesh.position.x = CELL_HEIGHT * (area.height / 2 - 0.5);
 
     this.areaObject.position.set(
       CELL_HEIGHT * area.position.row,
@@ -83,9 +98,7 @@ class VisualisationArea extends PureComponent {
         addEndListener={this.addEndListener}
       >
         <VisualisationObject3D object3D={this.areaObject}>
-          {Children.map(children, child => (
-            cloneElement(child, { in: inProp })
-          ))}
+          {Children.map(children, child => cloneElement(child, { in: inProp }))}
         </VisualisationObject3D>
       </Transition>
     );

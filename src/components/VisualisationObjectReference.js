@@ -22,19 +22,22 @@ const VisualisationReference = styled.a`
 
 @observer
 class VisualisationObjectReference extends Component {
-  @action.bound handleMouseEnter() {
+  @action.bound
+  handleMouseEnter() {
     const { object } = this.props;
 
     object.directHover = true;
   }
 
-  @action.bound handleMouseLeave() {
+  @action.bound
+  handleMouseLeave() {
     const { object } = this.props;
 
     object.directHover = false;
   }
 
-  @action.bound handleClick() {
+  @action.bound
+  handleClick() {
     const { object, vis } = this.props;
 
     vis.active = false;
@@ -64,7 +67,7 @@ export class VisualisationCommitReference extends Component {
     const { commit, vis } = this.props;
 
     if (commit == null) {
-      console.error('missing commit');
+      console.error("missing commit");
       return null;
     }
 
@@ -72,7 +75,7 @@ export class VisualisationCommitReference extends Component {
       <VisualisationObjectReference object={commit} vis={vis}>
         {commit.commit.checksumShort}
       </VisualisationObjectReference>
-    )
+    );
   }
 }
 
@@ -81,11 +84,15 @@ export class VisualisationFileReference extends Component {
   render() {
     const { file, vis } = this.props;
 
+    if (file == null) {
+      return "file";
+    }
+
     return (
       <VisualisationObjectReference object={file} vis={vis}>
         {file.file.name}
       </VisualisationObjectReference>
-    )
+    );
   }
 }
 

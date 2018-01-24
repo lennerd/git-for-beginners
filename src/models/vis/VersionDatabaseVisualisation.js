@@ -3,18 +3,23 @@ import { computed, observable, action, reaction } from "mobx";
 import Visualisation from "./Visualisation";
 import VisualisationArea from "./VisualisationArea";
 import VisualisationFile from "./VisualisationFile";
-import { STATUS_DELETED, STATUS_ADDED, STATUS_MODIFIED, STATUS_UNMODIFIED } from "../../constants";
+import {
+  STATUS_DELETED,
+  STATUS_ADDED,
+  STATUS_MODIFIED,
+  STATUS_UNMODIFIED,
+} from "../../constants";
 
 const FILE_NAME_VARIANTS = [
-  '_final',
-  '_final_final',
-  '_final_v2_final',
-  '_final_forreal',
-  '_finaaal',
-  '_finalalal',
-  '_final_hahaha',
-  '_final_ineedhelp',
-  '_final_itsatrap',
+  "_final",
+  "_final_final",
+  "_final_v2_final",
+  "_final_forreal",
+  "_finaaal",
+  "_finalalal",
+  "_final_hahaha",
+  "_final_ineedhelp",
+  "_final_itsatrap",
 ];
 
 class FileVisualisation extends VisualisationFile {
@@ -46,33 +51,37 @@ class FileVisualisation extends VisualisationFile {
     return position;
   }
 
-  @computed get name() {
+  @computed
+  get name() {
     if (this.vis.useVersionDatabase) {
       if (this.vis.files.indexOf(this) === 0) {
-        return 'file';
+        return "file";
       }
 
       return `Version ${this.parent.children.length - this.index}`;
     }
 
     if (this.nameIndex === 0) {
-      return 'file';
+      return "file";
     }
 
-    return `file${FILE_NAME_VARIANTS[(this.nameIndex - 1) % FILE_NAME_VARIANTS.length]}`;
+    return `file${
+      FILE_NAME_VARIANTS[(this.nameIndex - 1) % FILE_NAME_VARIANTS.length]
+    }`;
   }
 
-  @computed get changes() {
+  @computed
+  get changes() {
     return this.diff.added + this.diff.removed;
   }
 
-  @computed get maxChanges() {
-    return Math.max(
-      ...this.vis.files.map(file => file.changes),
-    );
+  @computed
+  get maxChanges() {
+    return Math.max(...this.vis.files.map(file => file.changes));
   }
 
-  @action copy() {
+  @action
+  copy() {
     const copy = super.copy(this.vis, this.nameIndex);
 
     copy.status = STATUS_MODIFIED;
@@ -89,17 +98,22 @@ class VersionDatabaseVisualisation extends Visualisation {
   constructor() {
     super();
 
-    this.versionDatabase = new VisualisationArea('Version Database');
+    this.versionDatabase = new VisualisationArea("Version Database");
     this.versionDatabase.column = 1;
     this.versionDatabase.height = 10;
 
-    reaction(() => ({
-      files: this.files.length,
-      useVersionDatabse: this.useVersionDatabase
-    }), this.handleFiles, true);
+    reaction(
+      () => ({
+        files: this.files.length,
+        useVersionDatabse: this.useVersionDatabase,
+      }),
+      this.handleFiles,
+      true,
+    );
   }
 
-  @action.bound handleVersionDatabase() {
+  @action.bound
+  handleVersionDatabase() {
     if (this.useVersionDatabase) {
       this.add(this.versionDatabase);
     } else {
@@ -107,16 +121,14 @@ class VersionDatabaseVisualisation extends Visualisation {
     }
   }
 
-  @action.bound handleFiles() {
+  @action.bound
+  handleFiles() {
     let children = this.files.slice();
 
     if (this.useVersionDatabase) {
       this.versionDatabase.set(...children.slice(1));
 
-      children = [
-        this.versionDatabase,
-        children[0]
-      ];
+      children = [this.versionDatabase, children[0]];
     }
 
     this.set(...children);
@@ -124,7 +136,7 @@ class VersionDatabaseVisualisation extends Visualisation {
 
   addFile() {
     const file = new FileVisualisation(this, this.nameIndex++);
-    file.status = STATUS_UNMODIFIED;
+    file.status = STATUS_ADDED;
 
     this.files.unshift(file);
   }
@@ -132,8 +144,8 @@ class VersionDatabaseVisualisation extends Visualisation {
   modifyFile(fileIndex, diff) {
     const file = this.files[fileIndex];
 
-    file.diff.added = Math.max(0, file.diff.added + diff.added);
-    file.diff.removed += Math.max(0, file.diff.removed + diff.removed);
+    file.status = STATUS_MODIFIED;
+    file.diff = diff;
   }
 
   copyFile(fileIndex) {
@@ -143,24 +155,32 @@ class VersionDatabaseVisualisation extends Visualisation {
     copy.nameIndex = this.nameIndex++;
 
     this.files.unshift(copy);
+
+    if (file.status === STATUS_DELETED) {
+      copy.visible = false;
+    }
   }
 
   deleteFile(fileIndex) {
     const file = this.files[fileIndex];
+    file.status = STATUS_DELETED;
 
     if (!this.useVersionDatabase) {
       this.files.remove(file);
-    } else {
-      file.status = STATUS_DELETED;
     }
   }
 
   restoreFile(fileIndex) {
     const file = this.files[fileIndex];
-    const current = this.files[0];
+    const copy = file.copy();
+    copy.prevPosition = file.position;
 
-    current.diff = file.diff;
-    current.status = STATUS_MODIFIED;
+    this.files[0].status = STATUS_DELETED;
+    this.files.shift();
+    this.files.unshift(copy);
+
+    copy.diff = file.diff;
+    copy.status = STATUS_MODIFIED;
   }
 }
 

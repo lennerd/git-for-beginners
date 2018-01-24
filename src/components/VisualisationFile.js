@@ -1,13 +1,18 @@
-import React, { Component } from 'react';
-import { withTheme } from 'styled-components';
-import { observer } from 'mobx-react';
-import { action, computed, reaction, comparer } from 'mobx';
-import { value, tween, timeline, easing, spring } from 'popmotion';
-import { Transition } from 'react-transition-group';
+import React, { Component } from "react";
+import { withTheme } from "styled-components";
+import { observer } from "mobx-react";
+import { action, computed, reaction, comparer } from "mobx";
+import { value, tween, timeline, easing, spring } from "popmotion";
+import { Transition } from "react-transition-group";
 
-import VisualisationObject3D from './VisualisationObject3D';
-import { LEVEL_HEIGHT, CELL_HEIGHT, CELL_WIDTH } from '../theme';
-import { STATUS_DELETED, STATUS_ADDED, STATUS_MODIFIED, STATUS_UNMODIFIED } from '../constants';
+import VisualisationObject3D from "./VisualisationObject3D";
+import { LEVEL_HEIGHT, CELL_HEIGHT, CELL_WIDTH } from "../theme";
+import {
+  STATUS_DELETED,
+  STATUS_ADDED,
+  STATUS_MODIFIED,
+  STATUS_UNMODIFIED,
+} from "../constants";
 
 export const FILE_SIZE_RATIO = 1 / Math.sqrt(2);
 export const FILE_HEIGHT = LEVEL_HEIGHT / 2;
@@ -30,21 +35,50 @@ function moveTo({ from, to, duration }) {
     return tween({ from, to, duration: duration, ease: easing.easeInOut });
   }
 
-  const halfWayColumn = fromColumn + ((toColumn - fromColumn) / 2);
-  const halfWayRow = fromRow + ((toRow - fromRow) / 2);
-
+  const halfWayColumn = fromColumn + (toColumn - fromColumn) / 2;
+  const halfWayRow = fromRow + (toRow - fromRow) / 2;
 
   return timeline([
     [
-      { track: 'row', from: fromRow, to: halfWayRow, duration: halfDuration, ease: easing.easeInOut },
-      { track: 'column', from: fromColumn, to: halfWayColumn, duration: halfDuration, ease: easing.easeInOut },
+      {
+        track: "row",
+        from: fromRow,
+        to: halfWayRow,
+        duration: halfDuration,
+        ease: easing.easeInOut,
+      },
+      {
+        track: "column",
+        from: fromColumn,
+        to: halfWayColumn,
+        duration: halfDuration,
+        ease: easing.easeInOut,
+      },
     ],
     `-${quarterDuration}`,
-    { track: 'level', from: fromLevel, to: toLevel, duration: halfDuration, ease: easing.easeInOut },
+    {
+      track: "level",
+      from: fromLevel,
+      to: toLevel,
+      duration: halfDuration,
+      ease: easing.easeInOut,
+    },
     `-${quarterDuration}`,
     [
-      { track: 'row', from: halfWayRow, to: toRow, duration: halfDuration, ease: easing.easeInOut },
-      { track: 'column', from: halfWayColumn, to: toColumn, duration: halfDuration, ease: easing.easeInOut },
+      {
+        track: "row",
+        from: halfWayRow,
+        to: toRow,
+        duration: halfDuration,
+        ease: easing.easeInOut,
+      },
+      {
+        track: "column",
+        from: halfWayColumn,
+        to: toColumn,
+        duration: halfDuration,
+        ease: easing.easeInOut,
+      },
     ],
   ]);
 }
@@ -65,8 +99,17 @@ class VisualisationFile extends Component {
     );
 
     this.hoverMesh = new THREE.Mesh(
-      new THREE.BoxBufferGeometry(FILE_WIDTH + FILE_OUTLINE, FILE_HEIGHT + FILE_OUTLINE, FILE_DEPTH + FILE_OUTLINE),
-      new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, color: theme.color.highlight, side: THREE.BackSide }),
+      new THREE.BoxBufferGeometry(
+        FILE_WIDTH + FILE_OUTLINE,
+        FILE_HEIGHT + FILE_OUTLINE,
+        FILE_DEPTH + FILE_OUTLINE,
+      ),
+      new THREE.MeshBasicMaterial({
+        transparent: true,
+        depthWrite: false,
+        color: theme.color.highlight,
+        side: THREE.BackSide,
+      }),
     );
 
     this.shadowMash = new THREE.Mesh(
@@ -115,39 +158,56 @@ class VisualisationFile extends Component {
   }
 
   componentDidMount() {
-    this.disposePosition = reaction(() => this.props.file.position, position => {
-      const { file, in: inProp } = this.props;
+    this.disposePosition = reaction(
+      () => this.props.file.position,
+      position => {
+        const { file, in: inProp } = this.props;
 
-      if (inProp) {
-        moveTo({
-          from: this.position.get(),
-          to: file.position,
-          duration: 1400,
-          ease: easing.easeInOut
-        }).start(this.position);
-      }
-    }, { equals: comparer.structural });
+        if (inProp) {
+          moveTo({
+            from: this.position.get(),
+            to: file.position,
+            duration: 1000,
+            ease: easing.easeInOut,
+          }).start(this.position);
+        }
+      },
+      { equals: comparer.structural },
+    );
 
-    this.disposeOpacity = reaction(() => this.opacity, opacity => {
-      tween({
-        from: this.hoverOpacity.get(),
-        to: opacity,
-        duration: 200
-      }).start(this.hoverOpacity);
-    });
+    this.disposeOpacity = reaction(
+      () => this.opacity,
+      opacity => {
+        tween({
+          from: this.hoverOpacity.get(),
+          to: opacity,
+          duration: 200,
+        }).start(this.hoverOpacity);
+      },
+    );
 
-    this.disposeSize = reaction(() => this.props.file.diff, () => {
-      spring({ from: this.size.get(), to: 1, velocity: 3 })
-        .start(this.size)
-    }, { equals: comparer.structural });
+    this.disposeSize = reaction(
+      () => {
+        const { added, removed } = this.props.file.diff;
 
-    this.disposeColor = reaction(() => this.statusColor, color => {
-      tween({
-        from: this.color.get(),
-        to: color,
-        duration: 700,
-      }).start(this.color);
-    });
+        return { added, removed };
+      },
+      () => {
+        spring({ from: this.size.get(), to: 1, velocity: 3 }).start(this.size);
+      },
+      { equals: comparer.structural },
+    );
+
+    this.disposeColor = reaction(
+      () => this.statusColor,
+      color => {
+        tween({
+          from: this.color.get(),
+          to: color,
+          duration: 700,
+        }).start(this.color);
+      },
+    );
   }
 
   componentWillUnmount() {
@@ -161,10 +221,19 @@ class VisualisationFile extends Component {
     const { file } = this.props;
 
     if (file.prevPosition != null) {
-      moveTo({ from: file.prevPosition, to: this.position.get(), duration: 1400 }).start(this.position);
+      moveTo({
+        from: file.prevPosition,
+        to: this.position.get(),
+        duration: 1000,
+      }).start(this.position);
       this.tweenValue = this.position;
     } else if (file.status === STATUS_ADDED) {
-      tween({ from: 0, to: this.height.get(), duration: 700, ease: easing.easeInOut }).start(this.height);
+      tween({
+        from: 0,
+        to: this.height.get(),
+        duration: 400,
+        ease: easing.easeInOut,
+      }).start(this.height);
       this.tweenValue = this.height;
     }
   };
@@ -173,7 +242,16 @@ class VisualisationFile extends Component {
     const { file } = this.props;
 
     if (file.status === STATUS_DELETED) {
-      tween({ from: this.height.get(), to: 0, duration: 700, ease: easing.easeInOut }).start(this.height);
+      // Stop position, if we delete the file.
+      this.position.stop();
+
+      tween({
+        from: this.height.get(),
+        to: 0,
+        duration: 400,
+        ease: easing.easeInOut,
+      }).start(this.height);
+
       this.tweenValue = this.height;
     }
   };
@@ -183,35 +261,37 @@ class VisualisationFile extends Component {
       return complete();
     }
 
-    this.tweenValue.subscribe({
-      complete,
-    });
+    this.tweenValue.subscribe({ complete });
 
     this.tweenValue = null;
   };
 
-  @action.bound handleClick(event) {
+  @action.bound
+  handleClick(event) {
     const { file, vis } = this.props;
 
     vis.active = false;
     file.active = !file.active;
 
     event.stopPropagation();
-  };
+  }
 
-  @action.bound handleMouseEnter(event) {
+  @action.bound
+  handleMouseEnter(event) {
     const { file } = this.props;
 
     file.hover = true;
-  };
+  }
 
-  @action.bound handleMouseLeave(event) {
+  @action.bound
+  handleMouseLeave(event) {
     const { file } = this.props;
 
     file.hover = false;
-  };
+  }
 
-  @computed get versionsHovered() {
+  @computed
+  get versionsHovered() {
     const { file, vis } = this.props;
 
     if (!vis.isGit) {
@@ -221,7 +301,8 @@ class VisualisationFile extends Component {
     return vis.getVersions(file).some(file => file.hover);
   }
 
-  @computed get versionsActive() {
+  @computed
+  get versionsActive() {
     const { file, vis } = this.props;
 
     if (!vis.isGit) {
@@ -231,7 +312,8 @@ class VisualisationFile extends Component {
     return vis.getVersions(file).some(file => file.active);
   }
 
-  @computed get statusColor() {
+  @computed
+  get statusColor() {
     const { file, theme } = this.props;
     let color = theme.color.fileDefault;
 
@@ -244,10 +326,17 @@ class VisualisationFile extends Component {
     return color;
   }
 
-  @computed get opacity() {
+  @computed
+  get opacity() {
     const { file, in: inProp } = this.props;
 
-    return !inProp ? 0 : file.active ? 1 : file.hover ? 0.7 : (this.versionsHovered || this.versionsActive) ? 0.3 : 0;
+    return !inProp
+      ? 0
+      : file.active
+        ? 1
+        : file.hover
+          ? 0.7
+          : this.versionsHovered || this.versionsActive ? 0.3 : 0;
   }
 
   render() {
@@ -258,7 +347,9 @@ class VisualisationFile extends Component {
     // Add small offset when for not new or deleted files so no artefacts appear between colors.
     this.fileMesh.material.polygonOffset = true;
     this.fileMesh.material.polygonOffsetFactor =
-      (file.status === STATUS_UNMODIFIED || file.status === STATUS_MODIFIED) ? -0.01 : 0;
+      file.status === STATUS_UNMODIFIED || file.status === STATUS_MODIFIED
+        ? -0.01
+        : 0;
 
     this.fileMesh.material.needsUpdate = true;
 
