@@ -1,5 +1,5 @@
 import { computed } from 'mobx';
-import takeWhile from 'lodash/takeWhile';
+//import takeWhile from 'lodash/takeWhile';
 
 import VisualisationObject from './VisualisationObject';
 
@@ -26,7 +26,7 @@ class BranchVisualisation extends VisualisationObject {
     return commits;
   }
 
-  @computed
+  /*@computed
   get visCommits() {
     const commits = takeWhile(this.commits, commit => {
       if (commit === this.branch.commit) {
@@ -102,7 +102,7 @@ class BranchVisualisation extends VisualisationObject {
     }
 
     return 0;
-  }
+  }*/
 }
 
 export default BranchVisualisation;

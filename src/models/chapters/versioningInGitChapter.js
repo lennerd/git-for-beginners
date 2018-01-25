@@ -1,5 +1,4 @@
 import React, { Fragment } from 'react';
-import { autorun } from 'mobx';
 
 import { createChapter, init } from '../Chapter';
 import { ChapterText, ChapterTask } from '../ChapterSection';
@@ -203,10 +202,6 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
     return this.vis.revertCommit(commitChecksum);
   },
   get sections() {
-    autorun(() => {
-      console.log(this.vis.stagingArea.fileList.files.length);
-    });
-
     return [
       new ChapterText(() => (
         <Fragment>

@@ -260,31 +260,33 @@ class GitVisualisation extends Visualisation {
     visCommit.add(...stagedVisFiles);
 
     // Look for a parent commit and merge the files into our new one.
-    if (commit.parent != null) {
-      const parentVisCommit = this.repository.find(
-        object => object.isCommit && object.commit === commit.parent,
-      );
-
-      // Wait, do not copy all the files! Only the one, not present in the staging area.
-      const parentVisFiles = parentVisCommit
-        .filter(object => object.isFile)
-        .filter(
-          parentVisFile =>
-            parentVisFile.status !== STATUS_DELETED &&
-            !stagedVisFiles.some(
-              stagedVisFile => stagedVisFile.file === parentVisFile.file,
-            ),
+    if (commit.parents.length > 0) {
+      commit.parents.forEach(parent => {
+        const parentVisCommit = this.repository.find(
+          object => object.isCommit && object.commit === parent,
         );
 
-      // Create copy of all the files in the parent commit
-      for (let parentVisFile of parentVisFiles) {
-        parentVisCommit.add(
-          new FileVisualisation(this, parentVisFile.file, parentVisFile),
-        );
-      }
+        // Wait, do not copy all the files! Only the one, not present in the staging area.
+        const parentVisFiles = parentVisCommit
+          .filter(object => object.isFile)
+          .filter(
+            parentVisFile =>
+              parentVisFile.status !== STATUS_DELETED &&
+              !stagedVisFiles.some(
+                stagedVisFile => stagedVisFile.file === parentVisFile.file,
+              ),
+          );
 
-      // Finally copy all the files from the parent commit into our new one.
-      visCommit.add(...parentVisFiles);
+        // Create copy of all the files in the parent commit
+        for (let parentVisFile of parentVisFiles) {
+          parentVisCommit.add(
+            new FileVisualisation(this, parentVisFile.file, parentVisFile),
+          );
+        }
+
+        // Finally copy all the files from the parent commit into our new one.
+        visCommit.add(...parentVisFiles);
+      });
     }
 
     return visCommit;

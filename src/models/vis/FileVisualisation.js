@@ -42,12 +42,12 @@ class FileVisualisation extends VisualisationFile {
   }
 
   @computed
-  get parentTree() {
+  get parentTrees() {
     if (this.container == null) {
-      return null;
+      return [];
     }
 
-    return this.container.parentTree;
+    return this.container.parentTrees;
   }
 
   @computed
@@ -60,12 +60,10 @@ class FileVisualisation extends VisualisationFile {
   }
 
   @computed
-  get parentBlob() {
-    if (this.parentTree == null) {
-      return null;
-    }
-
-    return this.parentTree.get(this.file);
+  get parentBlobs() {
+    return this.parentTrees
+      .map(tree => tree.get(this.file))
+      .filter(blob => blob != null);
   }
 
   @computed
@@ -74,11 +72,17 @@ class FileVisualisation extends VisualisationFile {
       return STATUS_DELETED;
     }
 
-    if (this.parentBlob == null) {
+    this.parentBlobs.forEach(blob => {
+      if (blob == null) {
+        debugger;
+      }
+    });
+
+    if (this.parentBlobs.length === 0) {
       return STATUS_ADDED;
     }
 
-    if (this.blob === this.parentBlob) {
+    if (this.parentBlobs.every(blob => blob === this.blob)) {
       return STATUS_UNMODIFIED;
     }
 
@@ -87,11 +91,21 @@ class FileVisualisation extends VisualisationFile {
 
   @computed
   get diff() {
-    if (this.blob == null || this.parentBlob == null) {
+    if (this.blob == null || this.parentBlobs.length === 0) {
       return { added: 0, removed: 0 };
     }
 
-    return this.blob.diff(this.parentBlob);
+    return this.parentBlobs.reduce(
+      (diff, parentBlob) => {
+        const { added, removed } = this.blob.diff(parentBlob);
+
+        return {
+          added: diff.added + added,
+          removed: diff.removed + removed,
+        };
+      },
+      { added: 0, removed: 0 },
+    );
   }
 
   @computed

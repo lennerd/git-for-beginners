@@ -1,7 +1,7 @@
-import { computed } from "mobx";
+import { computed } from 'mobx';
 
-import VisualisationArea from "./VisualisationArea";
-import VisualisationFileList from "./VisualisationFileList";
+import VisualisationArea from './VisualisationArea';
+import VisualisationFileList from './VisualisationFileList';
 
 class WorkingDirectoryVisualisation extends VisualisationArea {
   isContainer = true;
@@ -16,12 +16,14 @@ class WorkingDirectoryVisualisation extends VisualisationArea {
     this.add(this.fileList);
   }
 
-  @computed get tree() {
+  @computed
+  get tree() {
     return this.repo.workingDirectory.tree;
   }
 
-  @computed get parentTree() {
-    return this.repo.stagingArea.tree;
+  @computed
+  get parentTrees() {
+    return [this.repo.stagingArea.tree];
   }
 }
 

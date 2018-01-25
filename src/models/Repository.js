@@ -99,11 +99,17 @@ class Repository {
 
   @action
   createCommit(message = chance.sentence()) {
+    const parents = [];
+
+    if (this.head.commit != null) {
+      parents.push(this.head.commit);
+    }
+
     const commit = new Commit({
       author: chance.name(),
       message,
       tree: this.stagingArea.tree,
-      parent: this.head.commit,
+      parents,
     });
 
     this.commits = this.commits.add(commit);
@@ -140,7 +146,7 @@ class Commit extends Record({
   author: null,
   message: null,
   tree: null,
-  parent: null,
+  parents: [],
 }) {
   @computed
   get checksum() {

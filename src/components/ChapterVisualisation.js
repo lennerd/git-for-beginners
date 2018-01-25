@@ -62,7 +62,7 @@ class ChapterVisualisation extends Component {
             </VisualisationArea>
           ))}
         </TransitionGroup>
-        {chapter.vis.showBranches &&
+        {/*chapter.vis.showBranches &&
           chapter.vis.visBranches.map(
             branch =>
               branch.lastVisCommit && (
@@ -75,7 +75,7 @@ class ChapterVisualisation extends Component {
                   />
                 </VisualisationBranch>
               ),
-          )}
+          )*/}
       </Visualisation>
     );
   }

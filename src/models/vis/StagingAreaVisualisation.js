@@ -1,7 +1,7 @@
-import { computed } from "mobx";
+import { computed } from 'mobx';
 
-import VisualisationArea from "./VisualisationArea";
-import VisualisationFileList from "./VisualisationFileList";
+import VisualisationArea from './VisualisationArea';
+import VisualisationFileList from './VisualisationFileList';
 
 class StagingAreaVisualisation extends VisualisationArea {
   isContainer = true;
@@ -16,16 +16,18 @@ class StagingAreaVisualisation extends VisualisationArea {
     this.add(this.fileList);
   }
 
-  @computed get tree() {
+  @computed
+  get tree() {
     return this.repo.stagingArea.tree;
   }
 
-  @computed get parentTree() {
+  @computed
+  get parentTrees() {
     if (this.repo.head.commit != null) {
-      return this.repo.head.commit.tree;
+      return [this.repo.head.commit.tree];
     }
 
-    return null;
+    return [];
   }
 }
 

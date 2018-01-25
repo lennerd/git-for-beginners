@@ -16,7 +16,7 @@ class CommitVisualisation extends VisualisationFileList {
   getPosition() {
     const position = super.getPosition();
 
-    if (this.onHead) {
+    /*if (this.onHead) {
       // Vis commit is head of head branch
       if (this.vis.repo.head.commit === this.commit) {
         return position;
@@ -32,7 +32,7 @@ class CommitVisualisation extends VisualisationFileList {
 
     const parentPosition = this.visParentCommit.position;
 
-    // Same branch than parent commit.
+    // Same branch like parent commit.
     if (
       this.visBranches.some(visBranch =>
         this.visParentCommit.visParentCommit.visBranches.includes(visBranch),
@@ -44,12 +44,16 @@ class CommitVisualisation extends VisualisationFileList {
     } else {
       position.row = parentPosition.row - 1;
       position.column = parentPosition.column + 1;
-    }
+    }*/
+
+    position.row +=
+      this.parent.visCommits.length -
+      (this.parent.visCommits.indexOf(this) + 1);
 
     return position;
   }
 
-  @computed
+  /*@computed
   get visParentCommit() {
     if (this.commit.parent == null) {
       return null;
@@ -79,7 +83,7 @@ class CommitVisualisation extends VisualisationFileList {
     return this.visBranches.some(
       visBranch => visBranch.branch === this.vis.repo.head,
     );
-  }
+  }*/
 
   @computed
   get tree() {
@@ -87,12 +91,12 @@ class CommitVisualisation extends VisualisationFileList {
   }
 
   @computed
-  get parentTree() {
-    if (this.commit.parent != null) {
-      return this.commit.parent.tree;
+  get parentTrees() {
+    if (this.commit.parents.length) {
+      return this.commit.parents.map(parent => parent.tree);
     }
 
-    return null;
+    return [];
   }
 }
 
