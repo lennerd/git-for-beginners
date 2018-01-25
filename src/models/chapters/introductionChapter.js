@@ -52,7 +52,9 @@ const introductionChapter = createChapter('Introduction', {
         you and your team to not loose data again.
       </Fragment>
     )),
-    new ChapterText(() => 'Let’s start by taking a look at …'),
+    new ChapterText(
+      () => 'Confused already? No worries. We start with the basics …',
+    ),
   ],
 });
 

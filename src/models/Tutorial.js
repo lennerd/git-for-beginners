@@ -73,7 +73,10 @@ class Tutorial {
 
   @action.bound
   reset() {
-    this.initNestedChapter(this.currentChapter, true);
+    this.chapters.slice(this.currentChapterIndex).forEach(chapter => {
+      this.initNestedChapter(chapter, true);
+    });
+
     this.state.chapterStates = this.chapters.map(chapter => chapter.state);
     reset();
   }

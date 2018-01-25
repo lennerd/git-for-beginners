@@ -1,9 +1,9 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import styled from 'styled-components';
-import { observer } from "mobx-react";
+import { observer } from 'mobx-react';
 
-import Console, { ConsoleMessage, ConsoleSection } from "./Console";
-import ConsoleBody from "./ConsoleBody";
+import Console, { ConsoleMessage, ConsoleSection } from './Console';
+import ConsoleBody from './ConsoleBody';
 
 @observer
 class Commandline extends Component {
@@ -17,15 +17,21 @@ class Commandline extends Component {
             <ConsoleSection>
               <ConsoleMessage>
                 <CommandlinePart>
-                  <CommandlinePartLabel active={chapter.hasPrompt}>Prompt</CommandlinePartLabel>
+                  <CommandlinePartLabel active={chapter.hasPrompt}>
+                    Prompt
+                  </CommandlinePartLabel>
                   path/to/project $
                 </CommandlinePart>
                 <CommandlinePart>
-                  <CommandlinePartLabel active={chapter.hasCommand}>Command<br />Program</CommandlinePartLabel>
+                  <CommandlinePartLabel active={chapter.hasCommand}>
+                    Command<br />Program
+                  </CommandlinePartLabel>
                   git
                 </CommandlinePart>
                 <CommandlinePart>
-                  <CommandlinePartLabel active={chapter.hasParameters}>Subcommands<br/>Options</CommandlinePartLabel>
+                  <CommandlinePartLabel active={chapter.hasParameters}>
+                    Subcommands<br />Options
+                  </CommandlinePartLabel>
                   commit -m "Commit name"
                 </CommandlinePart>
               </ConsoleMessage>
@@ -60,7 +66,8 @@ const CommandlinePartLabel = styled.div`
   font-family: 'Source Sans Pro', sans-serif;
   line-height: ${props => props.theme.baseLineHeight};
   font-size: ${props => props.theme.baseFontSize}px;
-  opacity: ${props => props.active ? 1 : 0};
+  opacity: ${props => (props.active ? 1 : 0)};
+  color: ${props => props.theme.color.highlight};
 
   &:after {
     content: '';

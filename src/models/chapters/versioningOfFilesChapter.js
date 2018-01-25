@@ -56,7 +56,8 @@ const versioningOfFilesChapter = createChapter('Versioning of Files', {
         this.hasRestoredFiles,
       ),
       new ChapterText(
-        () => 'You still there? Nice! Let’s finally start with the real thing.',
+        () =>
+          'Already dreaming about having your own version databse? Nice! Let’s finally start with the real thing.',
         { skip: true },
       ),
     ];

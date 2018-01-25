@@ -50,10 +50,12 @@ class BranchVisualisation extends VisualisationObject {
       return false;
     });
 
-    // To link branches, add one more commit.
-    const lastCommit = commits[commits.length - 1];
-    if (lastCommit.parent != null) {
-      commits.push(lastCommit.parent);
+    if (commits.length > 0) {
+      // To link branches, add one more commit.
+      const lastCommit = commits[commits.length - 1];
+      if (lastCommit.parent != null) {
+        commits.push(lastCommit.parent);
+      }
     }
 
     return this.vis.repository.filter(

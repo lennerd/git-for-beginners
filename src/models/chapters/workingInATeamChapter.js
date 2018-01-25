@@ -35,10 +35,10 @@ const workingInATeamChapter = createChapter('Working in a Team', {
     new ChapterText(() => <em>This goes on and on and on…</em>),
     new ChapterText(() => (
       <Fragment>
-        Sounds easy right? Basically it is. There are some problems though. Both
-        users need to wait until the other one has finished editing the file.
-        Otherwise changes from another user can get lost easily. Versioning to
-        the rescue …
+        Sounds easy right? Basically it is. There is one bigger problem though.
+        Both users need to wait until the other one has finished editing the
+        file. Otherwise changes from another user can get lost easily.
+        Versioning to the rescue …
       </Fragment>
     )),
   ],
@@ -118,7 +118,7 @@ const workingInATeamChapter = createChapter('Working in a Team', {
       this.firstUpload = true;
 
       this.actionQueue.add(
-        delay(1000),
+        delay(400),
         this.toggleUserFileA,
         this.toggleCloudFile,
         this.modify,

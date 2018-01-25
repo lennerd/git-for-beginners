@@ -9,12 +9,21 @@ import VisualisationArea from '../vis/VisualisationArea';
 import { STATUS_ADDED } from '../../constants';
 import SimpleFileVisualisation from '../vis/SimpleFileVisualisation';
 import { loop, delay, actionQueue } from './utils';
+import Tooltip from '../../components/Tooltip';
 
 const versioningInATeam = createChapter('Versioning in a Team', {
   sections: [
-    new ChapterText(() => 'Let’s replace the cloud with a version database.', {
-      skip: true,
-    }),
+    new ChapterText(
+      () => (
+        <Fragment>
+          Let’s replace the cloud with a{' '}
+          <Tooltip name="versionDatabase">version database</Tooltip>.
+        </Fragment>
+      ),
+      {
+        skip: true,
+      },
+    ),
     new ChapterText(() => (
       <Fragment>
         Again User A is creating a new file, adds some changes and uploads the
@@ -28,10 +37,13 @@ const versioningInATeam = createChapter('Versioning in a Team', {
       </Fragment>
     )),
     new ChapterText(() => <em>Again this can go on, and on, and on …</em>),
-    new ChapterText(
-      () =>
-        'Nice. Now new changes are stored in a new version of the file. But one problem is still not solved. Both users cannot change content at the same time and need to wait for the other one to upload his changes.',
-    ),
+    new ChapterText(() => (
+      <Fragment>
+        Nice. Now new changes are stored in a new version of the file. But one
+        problem is still not solved. Both users cannot change content at the
+        same time and need to wait for the other one to upload his changes.
+      </Fragment>
+    )),
     new ChapterText(() => (
       <Fragment>
         That is why version databases are able to merge changes from different
@@ -41,10 +53,12 @@ const versioningInATeam = createChapter('Versioning in a Team', {
         </em>
       </Fragment>
     )),
-    new ChapterText(
-      () =>
-        'Since the basics are covered now, it’s time to jump back to Git and the way how they enable the work in the team.',
-    ),
+    new ChapterText(() => (
+      <Fragment>
+        Since the basics are covered now, it’s time to jump back to Git and look
+        at the way how they enable the work in a team.
+      </Fragment>
+    )),
   ],
   [init]() {
     this.vis = new Visualisation();
@@ -176,7 +190,7 @@ const versioningInATeam = createChapter('Versioning in a Team', {
       this.firstVersion = true;
 
       this.actionQueue.add(
-        delay(1000),
+        delay(400),
         this.modify,
         delay(1000),
         this.toggleCurrentFile,
