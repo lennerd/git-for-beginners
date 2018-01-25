@@ -84,7 +84,7 @@ class VisualisationCommit extends Component {
       () => {
         const { commit } = this.props;
 
-        return commit.active ? 0.3 : commit.hover ? 0.1 : 0;
+        return commit.active ? 0.5 : commit.hover ? 0.1 : 0;
       },
       opacity => {
         tween({
