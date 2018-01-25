@@ -16,14 +16,24 @@ class BranchVisualisation extends VisualisationObject {
   @computed
   get commits() {
     const commits = [];
-    let parent = this.branch.commit;
 
-    while (parent != null) {
-      commits.push(parent);
-      parent = parent.parent;
+    if (this.branch.commit == null) {
+      return commits;
+    }
+
+    let parents = [this.branch.commit];
+
+    while (parents.length > 0) {
+      commits.push(parents);
+      parents = [].concat(...parents.map(parent => parent.parents));
     }
 
     return commits;
+  }
+
+  @computed
+  get visCommits() {
+    return [];
   }
 
   /*@computed

@@ -22,6 +22,7 @@ import RepositoryVisualisation from './RepositoryVisualisation';
 import FileVisualisation from './FileVisualisation';
 import CommitVisualisation from './CommitVisualisation';
 import BranchVisualisation from './BranchVisualisation';
+import PointerVisualisation from './PointerVisualisation';
 
 class GitVisualisation extends Visualisation {
   isGit = true;
@@ -252,8 +253,12 @@ class GitVisualisation extends Visualisation {
     // Create a new commit vis
     const visCommit = new CommitVisualisation(this, commit);
 
+    // Create a new pointer
+    const visPointer = new PointerVisualisation(this, visCommit);
+
     // Move commit to repository
     this.repository.add(visCommit);
+    this.head.add(visPointer);
 
     // Move all the files from the staging area to the commit
     const stagedVisFiles = this.stagingArea.filter(object => object.isFile);

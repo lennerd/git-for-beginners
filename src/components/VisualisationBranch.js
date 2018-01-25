@@ -22,9 +22,11 @@ class VisualisationBranch extends Component {
 
     const { theme, branch } = props;
 
+    console.log(branch);
+
     this.branchObject = new THREE.Group();
 
-    this.lineGeometry = new LineGeometry();
+    /*this.lineGeometry = new LineGeometry();
 
     this.lineMaterial = new THREE.ShaderMaterial(
       basicShader({
@@ -41,14 +43,14 @@ class VisualisationBranch extends Component {
     this.branchObject.add(this.lineObject);
 
     this.lineGeometry.update(this.linePath);
-    this.prevLinePath = this.linePath;
+    this.prevLinePath = this.linePath;*/
 
     /*setTimeout(() => {
       this.lineMaterial.uniforms.opacity.value = 0.5;
     }, 2000);*/
   }
 
-  componentDidMount() {
+  /*componentDidMount() {
     this.disposePath = reaction(
       () => this.linePath,
       linePath => {
@@ -92,7 +94,7 @@ class VisualisationBranch extends Component {
     });
 
     return linePath;
-  }
+  }*/
 
   render() {
     const { children, branch } = this.props;
