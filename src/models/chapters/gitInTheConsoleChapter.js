@@ -116,8 +116,8 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
           <Fragment>
             Wow, that wasn’t so difficult right? The console is nothing more
             than before. A text based menu of options with a nice history of
-            what you have done before. Again you are free to explore and play
-            around.
+            what you have done before.{' '}
+            <em>Again you are free to explore and play around.</em>
           </Fragment>
         ),
         { skip: true },

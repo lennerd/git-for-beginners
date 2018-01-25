@@ -14,6 +14,8 @@ class TutorialContainer extends Component {
     const { tutorial } = this.props;
     const { currentChapter } = tutorial;
 
+    //debugger;
+
     return (
       <Tutorial>
         <Helmet>
@@ -21,17 +23,19 @@ class TutorialContainer extends Component {
         </Helmet>
         <TutorialHeader tutorial={tutorial} />
         <TutorialNavigation tutorial={tutorial} />
-        {<FontLoader>
-          {(fonts) => (
-            currentChapter.component != null &&
-            createElement(currentChapter.component, {
-              ...fonts,
-              key: currentChapter.id,
-              chapter: currentChapter,
-              tutorial,
-            })
-          )}
-        </FontLoader>}
+        {
+          <FontLoader>
+            {fonts =>
+              currentChapter.component != null &&
+              createElement(currentChapter.component, {
+                ...fonts,
+                key: currentChapter.id,
+                chapter: currentChapter,
+                tutorial,
+              })
+            }
+          </FontLoader>
+        }
         <TutorialReset onClick={tutorial.reset}>Reset</TutorialReset>
       </Tutorial>
     );

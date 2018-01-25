@@ -22,8 +22,17 @@ class VisualisationCommit extends Component {
     this.commitObject = new THREE.Group();
 
     this.hoverMesh = new THREE.Mesh(
-      new THREE.BoxBufferGeometry(FILE_WIDTH + COMMIT_OUTLINE, 1, FILE_DEPTH + COMMIT_OUTLINE),
-      new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, color: theme.color.highlight, side: THREE.BackSide }),
+      new THREE.BoxBufferGeometry(
+        FILE_WIDTH + COMMIT_OUTLINE,
+        1,
+        FILE_DEPTH + COMMIT_OUTLINE,
+      ),
+      new THREE.MeshBasicMaterial({
+        transparent: true,
+        depthWrite: false,
+        color: theme.color.highlight,
+        side: THREE.BackSide,
+      }),
     );
 
     // Shift a little to the back by COMMIT_OUTLINE to have no border between moving clones.
@@ -51,45 +60,60 @@ class VisualisationCommit extends Component {
   }
 
   componentDidMount() {
-    this.disposeHeight = reaction(() => {
-      const { commit } = this.props;
+    this.disposeHeight = reaction(
+      () => {
+        const { commit } = this.props;
 
-      return commit.height * FILE_HEIGHT + (commit.height - 1) * (LEVEL_HEIGHT - FILE_HEIGHT);
-    }, height => {
-      tween({
-        from: this.height.get(),
-        to: height,
-        duration: 700,
-        ease: easing.easeInOut
-      }).start(this.height);
-    }, true);
+        return (
+          commit.height * FILE_HEIGHT +
+          (commit.height - 1) * (LEVEL_HEIGHT - FILE_HEIGHT)
+        );
+      },
+      height => {
+        tween({
+          from: this.height.get(),
+          to: height,
+          duration: 500,
+          ease: easing.easeInOut,
+        }).start(this.height);
+      },
+      true,
+    );
 
-    this.disposeOpacity = reaction(() => {
-      const { commit } = this.props;
+    this.disposeOpacity = reaction(
+      () => {
+        const { commit } = this.props;
 
-      return commit.active ? 0.3 : commit.hover ? 0.1 : 0;
-    }, opacity => {
-      tween({
-        from: this.hoverOpacity.get(),
-        to: opacity,
-        duration: 200
-      }).start(this.hoverOpacity);
-    }, true);
+        return commit.active ? 0.3 : commit.hover ? 0.1 : 0;
+      },
+      opacity => {
+        tween({
+          from: this.hoverOpacity.get(),
+          to: opacity,
+          duration: 200,
+        }).start(this.hoverOpacity);
+      },
+      true,
+    );
 
-    this.disposePosition = reaction(() => {
-      const { commit } = this.props;
+    this.disposePosition = reaction(
+      () => {
+        const { commit } = this.props;
 
-      return commit.position;
-    }, position => {
-      const { commit } = this.props;
+        return commit.position;
+      },
+      position => {
+        const { commit } = this.props;
 
-      tween({
-        from: this.position.get(),
-        to: commit.position,
-        duration: 1400,
-        ease: easing.easeInOut
-      }).start(this.position);
-    }, { equals: comparer.structural });
+        tween({
+          from: this.position.get(),
+          to: commit.position,
+          duration: 1400,
+          ease: easing.easeInOut,
+        }).start(this.position);
+      },
+      { equals: comparer.structural },
+    );
   }
 
   componentWillUnmount() {
@@ -98,26 +122,29 @@ class VisualisationCommit extends Component {
     this.disposePosition();
   }
 
-  @action.bound handleClick(event) {
+  @action.bound
+  handleClick(event) {
     const { commit, vis } = this.props;
 
     vis.active = false;
     commit.directActive = !commit.directActive;
 
     event.stopPropagation();
-  };
+  }
 
-  @action.bound handleMouseEnter(event) {
+  @action.bound
+  handleMouseEnter(event) {
     const { commit } = this.props;
 
     commit.directHover = true;
-  };
+  }
 
-  @action.bound handleMouseLeave(event) {
+  @action.bound
+  handleMouseLeave(event) {
     const { commit } = this.props;
 
     commit.directHover = false;
-  };
+  }
 
   render() {
     const { children, commit } = this.props;

@@ -26,23 +26,28 @@ class Chapter {
     return this.id;
   }
 
-  @computed get parent() {
+  @computed
+  get parent() {
     if (this.inheritFrom == null) {
       return null;
     }
 
-    return this.tutorial.chapters.find(chapter => chapter.id === this.inheritFrom);
+    return this.tutorial.chapters.find(
+      chapter => chapter.id === this.inheritFrom,
+    );
   }
 
-  @computed get numberOfVisibleTextSections() {
+  @computed
+  get numberOfVisibleTextSections() {
     return this.state.filter(readOn).length + 1;
   }
 
-  @computed get visibleSections() {
+  @computed
+  get visibleSections() {
     let numberOfVisibleTextSections = this.numberOfVisibleTextSections;
     let prevTaskSectionDone = true;
 
-    return takeWhile(this.sections, (section) => {
+    return takeWhile(this.sections, section => {
       if (section.is(SECTION_TEXT)) {
         if (!prevTaskSectionDone) {
           return false;
@@ -75,7 +80,8 @@ class Chapter {
     });
   }
 
-  @computed get doableSections() {
+  @computed
+  get doableSections() {
     return this.sections.filter(section => {
       if (section.is(SECTION_TEXT)) {
         return !section.skip;
@@ -85,7 +91,8 @@ class Chapter {
     });
   }
 
-  @computed get doneSections() {
+  @computed
+  get doneSections() {
     return this.visibleSections.filter(section => {
       if (section.is(SECTION_TEXT)) {
         return !section.skip;
@@ -99,15 +106,18 @@ class Chapter {
     });
   }
 
-  @computed get progress() {
-    return this.doneSections.length / this.doableSections.length;
+  @computed
+  get progress() {
+    return this.state.progress;
   }
 
-  @computed get completed() {
+  @computed
+  get completed() {
     return this.progress >= 1;
   }
 
-  @action dispatch(action) {
+  @action
+  dispatch(action) {
     let data;
 
     try {
@@ -131,11 +141,13 @@ class Chapter {
     }
 
     this.state.actions.push(action);
+    this.state.progress = this.doneSections.length / this.doableSections.length;
 
     return data;
   }
 
-  @action call(action) {
+  @action
+  call(action) {
     let data;
 
     if (this[action.type]) {
@@ -145,7 +157,8 @@ class Chapter {
     return data;
   }
 
-  @action reset() {
+  @action
+  reset() {
     this.state.actions = [];
   }
 
@@ -159,7 +172,8 @@ class Chapter {
 }
 
 export function createChapter(id, props) {
-  const chapterCreator = (state, ...args) => extendObservable(new Chapter(id, state, ...args), props);
+  const chapterCreator = (state, ...args) =>
+    extendObservable(new Chapter(id, state, ...args), props);
   chapterCreator.id = id;
 
   return chapterCreator;

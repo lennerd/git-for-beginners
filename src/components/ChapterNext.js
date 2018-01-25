@@ -7,14 +7,15 @@ import Button from './Button';
 
 @observer
 class ChapterNext extends Component {
-  @action.bound turnOver() {
+  @action.bound
+  turnOver() {
     const { chapter, tutorial } = this.props;
 
     if (!chapter.completed) {
       return;
     }
 
-    tutorial.currentChapter = tutorial.nextChapter;
+    tutorial.navigate(tutorial.nextChapter);
   }
 
   render() {

@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { withTheme } from 'styled-components';
 import { value, tween } from 'popmotion';
 import { computed, reaction } from 'mobx';
@@ -13,7 +13,7 @@ const ARROW_SIZE = 0.1;
 
 @withTheme
 @observer
-class VisualisationPopup extends PureComponent {
+class VisualisationPopup extends Component {
   static defaultProps = {
     level: 0,
     in: false,

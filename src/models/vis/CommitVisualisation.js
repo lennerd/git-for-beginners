@@ -1,38 +1,93 @@
-import { computed } from "mobx";
+import { computed } from 'mobx';
 
-import VisualisationFileList from "./VisualisationFileList";
+import VisualisationFileList from './VisualisationFileList';
 
 class CommitVisualisation extends VisualisationFileList {
   isContainer = true;
   isCommit = true;
 
-  constructor(vis, branch, commit) {
+  constructor(vis, commit) {
     super();
 
     this.vis = vis;
-    this.branch = branch;
     this.commit = commit;
   }
 
   getPosition() {
     const position = super.getPosition();
 
-    position.row += (
-      this.parent.children.length - (this.parent.children.indexOf(this) + 1)
-    );
+    if (this.onHead) {
+      // Vis commit is head of head branch
+      if (this.vis.repo.head.commit === this.commit) {
+        return position;
+      }
+
+      // Vis commit is on head, so go up the head branch and
+      // get the first child position
+      const child = this.visCommitChildren.find(visCommit => visCommit.onHead);
+      position.row = child.position.row + 1;
+
+      return position;
+    }
+
+    const parentPosition = this.visParentCommit.position;
+
+    // Same branch than parent commit.
+    if (
+      this.visBranches.some(visBranch =>
+        this.visParentCommit.visParentCommit.visBranches.includes(visBranch),
+      )
+    ) {
+      position.row = parentPosition.row - 1;
+      position.column = parentPosition.column;
+      // Parent on other branch.
+    } else {
+      position.row = parentPosition.row - 1;
+      position.column = parentPosition.column + 1;
+    }
 
     return position;
   }
 
-  @computed get visParent() {
-    return this.parent.find(object => object.isCommit && object.commit === this.commit.parent);
+  @computed
+  get visParentCommit() {
+    if (this.commit.parent == null) {
+      return null;
+    }
+
+    return this.vis.repository.find(
+      object => object.isCommit && object.commit === this.commit.parent,
+    );
   }
 
-  @computed get tree() {
+  @computed
+  get visCommitChildren() {
+    return this.vis.repository.filter(
+      object => object.isCommit && object.commit.parent === this.commit,
+    );
+  }
+
+  @computed
+  get visBranches() {
+    return this.vis.repository.filter(
+      object => object.isBranch && object.visCommits.includes(this),
+    );
+  }
+
+  @computed
+  get onHead() {
+    return this.visBranches.some(
+      visBranch => visBranch.branch === this.vis.repo.head,
+    );
+  }
+
+  @computed
+  get tree() {
     return this.commit.tree;
   }
 
-  @computed get parentTree() {
+  @computed
+  get parentTree() {
     if (this.commit.parent != null) {
       return this.commit.parent.tree;
     }

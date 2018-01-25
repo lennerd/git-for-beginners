@@ -14,13 +14,15 @@ function fetchFont(font) {
 const FontLoader = Loadable.Map({
   loader: {
     fontRegular: () => fetchFont(fontRegular),
-    fontBlack: () => fetchFont(fontBlack).then(fontBlack => letterSpacing(fontBlack, 1.2)),
+    fontBlack: () =>
+      fetchFont(fontBlack).then(fontBlack => letterSpacing(fontBlack, 1.2)),
   },
   loading: LoadingSpinner,
-  render: (fonts, { children }) => children({
-    ...fonts,
-    fontRegularCaps: letterSpacing(fonts.fontRegular, 1.2),
-  }),
+  render: (fonts, { children }) =>
+    children({
+      ...fonts,
+      fontRegularCaps: letterSpacing(fonts.fontRegular, 1.2),
+    }),
 });
 
 export default FontLoader;

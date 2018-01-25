@@ -2681,6 +2681,10 @@ gh-pages@^1.1.0:
     graceful-fs "4.1.11"
     rimraf "^2.6.2"
 
+gl-vec2@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/gl-vec2/-/gl-vec2-1.0.0.tgz#77fce6ae9612856d6c8b621cd261cd8281b9c637"
+
 glob-base@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/glob-base/-/glob-base-0.3.0.tgz#dbb164f6221b1c0b1ccf82aea328b497df0ea3c4"
@@ -4620,6 +4624,18 @@ pluralize@^7.0.0:
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/pluralize/-/pluralize-7.0.0.tgz#298b89df8b93b0221dbf421ad2b1b1ea23fc6777"
 
+polyline-miter-util@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/polyline-miter-util/-/polyline-miter-util-1.0.1.tgz#b693f2389ea0ded36a6bcf5ecd2ece4b6917d957"
+  dependencies:
+    gl-vec2 "^1.0.0"
+
+polyline-normals@^2.0.0:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/polyline-normals/-/polyline-normals-2.0.2.tgz#a1737e75d8c0dccb1a591f9cb27f09eef4b7d135"
+  dependencies:
+    polyline-miter-util "^1.0.1"
+
 popmotion@^8.1.8:
   version "8.1.9"
   resolved "https://registry.yarnpkg.com/popmotion/-/popmotion-8.1.9.tgz#c4173bda07219ab07c81b6991b756b843bc11baf"
@@ -6048,6 +6064,14 @@ test-exclude@^4.1.1:
 text-table@0.2.0, text-table@~0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
+
+three-line-2d@^1.1.6:
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/three-line-2d/-/three-line-2d-1.1.6.tgz#caa209ce166ad35f9a3e6b84655e4005dd967b72"
+  dependencies:
+    inherits "^2.0.1"
+    object-assign "^4.0.1"
+    polyline-normals "^2.0.0"
 
 three@^0.89.0:
   version "0.89.0"

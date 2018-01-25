@@ -168,7 +168,7 @@ class VersionDatabaseVisualisation extends Visualisation {
   restoreFile(fileIndex) {
     const file = this.files[fileIndex];
     const copy = file.copy();
-    copy.prevPosition = file.position;
+    copy.prevVisFile = file;
 
     this.files[0].status = STATUS_DELETED;
     this.files.shift();

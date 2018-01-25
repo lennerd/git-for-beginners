@@ -10,6 +10,7 @@ import VisualisationArea from './VisualisationArea';
 import VisualisationAreaName from './VisualisationAreaName';
 import VisualisationCommit from './VisualisationCommit';
 import VisualisationPopup from './VisualisationPopup';
+import VisualisationBranch from './VisualisationBranch';
 
 @observer
 class ChapterVisualisation extends Component {
@@ -23,15 +24,34 @@ class ChapterVisualisation extends Component {
     return (
       <Visualisation vis={chapter.vis}>
         {chapter.vis.visFileLists.map(commit => (
-          <VisualisationCommit commit={commit} key={commit.id} vis={chapter.vis}>
-            {commit.isCommit && <VisualisationPopup font={fontRegular} level={commit.height} content={commit.commit.checksumShort} in={commit.active} />}
+          <VisualisationCommit
+            commit={commit}
+            key={commit.id}
+            vis={chapter.vis}
+          >
+            {commit.isCommit && (
+              <VisualisationPopup
+                font={fontRegular}
+                level={commit.height}
+                content={commit.commit.checksumShort}
+                in={commit.active}
+              />
+            )}
           </VisualisationCommit>
         ))}
         <TransitionGroup component={Fragment}>
           {chapter.vis.visFiles.map(file => (
             <VisualisationFile key={file.id} vis={chapter.vis} file={file}>
-              {file.diff != null && <VisualisationFileStatus font={fontBlack} file={file} vis={chapter.vis} />}
-              {file.name != null && <VisualisationFileName font={fontRegular} name={file.name} />}
+              {file.diff != null && (
+                <VisualisationFileStatus
+                  font={fontBlack}
+                  file={file}
+                  vis={chapter.vis}
+                />
+              )}
+              {file.name != null && (
+                <VisualisationFileName font={fontRegular} name={file.name} />
+              )}
             </VisualisationFile>
           ))}
         </TransitionGroup>
@@ -42,6 +62,20 @@ class ChapterVisualisation extends Component {
             </VisualisationArea>
           ))}
         </TransitionGroup>
+        {chapter.vis.showBranches &&
+          chapter.vis.visBranches.map(
+            branch =>
+              branch.lastVisCommit && (
+                <VisualisationBranch key={branch.id} branch={branch}>
+                  <VisualisationPopup
+                    font={fontRegular}
+                    level={branch.lastVisCommit.height}
+                    content={branch.branch.name}
+                    in={!branch.lastVisCommit.active}
+                  />
+                </VisualisationBranch>
+              ),
+          )}
       </Visualisation>
     );
   }

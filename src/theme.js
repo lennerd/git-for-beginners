@@ -6,20 +6,22 @@ class Color extends THREE.Color {
   }
 
   alpha(alpha) {
-    return `rgba(${(this.r * 255) | 0}, ${(this.g * 255) | 0}, ${(this.b * 255) | 0}, ${alpha})`;
+    return `rgba(${(this.r * 255) | 0}, ${(this.g * 255) | 0}, ${(this.b *
+      255) |
+      0}, ${alpha})`;
   }
 }
-
+/* prettier-ignore */
 function rem(size) {
   return css`${props => size / props.theme.baseFontSize}rem`;
 }
-
+/* prettier-ignore */
 function spacing(multiply = 1) {
-  return css`${(props) => props.theme.rem(props.theme.baseSpacing * multiply)}`;
+  return css`${props => props.theme.rem(props.theme.baseSpacing * multiply)}`;
 }
 
 export const CELL_WIDTH = 2.4;
-export const CELL_HEIGHT = 3;
+export const CELL_HEIGHT = 2.7;
 export const LEVEL_HEIGHT = 0.25;
 
 export default {
@@ -30,7 +32,9 @@ export default {
   rem,
   spacing,
 
-  largeSpacing: (multiply = 1) => css`${props => props.theme.spacing(4.75 * multiply)}`,
+  /* prettier-ignore */
+  largeSpacing: (multiply = 1) =>
+    css`${props => props.theme.spacing(4.75 * multiply)}`,
 
   color: {
     fileDefault: new Color('#FFFCFA'),
@@ -44,12 +48,18 @@ export default {
   },
 
   borderRadius: {
-    normal: css`${props => props.theme.spacing(0.15)}`,
-    large: css`${props => props.theme.spacing(0.25)}`,
+    normal: css`
+      ${props => props.theme.spacing(0.15)};
+    `,
+    large: css`
+      ${props => props.theme.spacing(0.25)};
+    `,
   },
 
   text: {
-    sizeMono: css`${props => props.theme.spacing(0.75)}`,
+    sizeMono: css`
+      ${props => props.theme.spacing(0.75)};
+    `,
   },
 
   mixins: {
@@ -57,5 +67,5 @@ export default {
       font-family: 'Source Code Pro', monospaced;
       font-size: ${props => props.theme.text.sizeMono};
     `,
-  }
+  },
 };

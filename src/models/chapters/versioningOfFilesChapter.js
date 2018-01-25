@@ -62,13 +62,13 @@ const versioningOfFilesChapter = createChapter('Versioning of Files', {
     ];
   },
   get hasFiles() {
-    return this.vis.visFiles.length > 0;
+    return this.vis.files.length > 0;
   },
   get hasCopiedFile() {
-    return this.vis.visFiles.length > 1;
+    return this.vis.files.length > 1;
   },
   get hasBackups() {
-    return this.vis.visFiles.length > 3;
+    return this.vis.files.length > 3;
   },
   get hasRestoredFiles() {
     return this.state.has(restoreFile);

@@ -20,7 +20,38 @@ class Repository {
     this.branches = [master];
   }
 
-  @action stageFile(file) {
+  @action
+  createBranch(branchName) {
+    let branch = this.branches.find(branch => branch.name === branchName);
+
+    if (branch != null) {
+      throw new ConsoleError('Branch already exists.');
+    }
+
+    if (this.head.commit == null) {
+      throw new ConsoleError('No commits yet.');
+    }
+
+    branch = new Branch(branchName);
+    branch.commit = this.head.commit;
+    this.branches.push(branch);
+
+    return branch;
+  }
+
+  @action
+  checkout(branchName) {
+    const branch = this.branches.find(branch => branch.name === branchName);
+
+    if (branch == null) {
+      throw new ConsoleError('Unknown branch.');
+    }
+
+    return (this.head = branch);
+  }
+
+  @action
+  stageFile(file) {
     const blob = this.workingDirectory.tree.get(file);
     const stagedBlob = this.stagingArea.tree.get(file);
 
@@ -36,7 +67,8 @@ class Repository {
     }
   }
 
-  @action unstageFile(file) {
+  @action
+  unstageFile(file) {
     const blob = this.stagingArea.tree.get(file);
     let committedBlob;
 
@@ -65,7 +97,8 @@ class Repository {
     this.workingDirectory.tree = this.workingDirectory.tree.set(file, blob);
   }
 
-  @action createCommit(message = chance.sentence()) {
+  @action
+  createCommit(message = chance.sentence()) {
     const commit = new Commit({
       author: chance.name(),
       message,
@@ -79,7 +112,8 @@ class Repository {
     return commit;
   }
 
-  @action revertCommit(commit) {
+  @action
+  revertCommit(commit) {
     this.workingDirectory.tree = commit.tree;
   }
 }
@@ -87,11 +121,13 @@ class Repository {
 class WorkingDirectory {
   @observable.ref tree = new Map();
 
-  @action addFile(file) {
+  @action
+  addFile(file) {
     this.tree = this.tree.set(file, file.blob);
   }
 
-  @action removeFile(file) {
+  @action
+  removeFile(file) {
     this.tree = this.tree.remove(file);
   }
 }
@@ -106,11 +142,13 @@ class Commit extends Record({
   tree: null,
   parent: null,
 }) {
-  @computed get checksum() {
+  @computed
+  get checksum() {
     return sha1(JSON.stringify(this.toJS()));
   }
 
-  @computed get checksumShort() {
+  @computed
+  get checksumShort() {
     return this.checksum.substring(0, 7);
   }
 }

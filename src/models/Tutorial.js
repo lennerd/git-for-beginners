@@ -12,54 +12,42 @@ class Tutorial {
     this.state = state;
   }
 
-  @action init(chapterCreators) {
+  @action
+  init(chapterCreators) {
     this.chapterCreators = chapterCreators;
 
     // Create chapters
     this.chapters = chapterCreators.map(chapterCreator => {
-      return chapterCreator(new ChapterState(chapterCreator.id), this);
+      const chapterState =
+        this.state.chapterStates.find(
+          chapterState => chapterState.chapterId === chapterCreator.id,
+        ) || new ChapterState(chapterCreator.id);
+
+      return chapterCreator(chapterState, this);
     });
 
-    // Intialise chapter states
-    this.state.chapterStates = this.chapters.map((chapter, index) => {
-      const chapterState = this.state.chapterStates.find(chapterState => (
-        chapterState.chapterId === chapter.id
-      ));
-
-      if (chapterState != null) {
-        chapterState.actions.forEach(action => {
-          chapter.dispatch(action);
-        });
-      } else {
-        chapter.dispatch(init());
-      }
-
-      return chapter.state;
-    });
-
-    // Set a default chapter
-    if (this.currentChapter == null) {
-      this.navigate(this.chapters[0]);
-    }
+    this.navigate(this.currentChapter || this.chapters[0]);
   }
 
-  @computed get currentChapterIndex() {
-    return this.chapters.findIndex(chapter => chapter.id === this.state.currentChapterId);
+  @computed
+  get currentChapterIndex() {
+    return this.chapters.findIndex(
+      chapter => chapter.id === this.state.currentChapterId,
+    );
   }
 
-  @computed get currentChapter() {
+  @computed
+  get currentChapter() {
     return this.chapters[this.currentChapterIndex];
   }
 
-  set currentChapter(currentChapter) {
-    this.state.currentChapterId = currentChapter.id;
-  }
-
-  @computed get nextChapter() {
+  @computed
+  get nextChapter() {
     return this.chapters[this.currentChapterIndex + 1];
   }
 
-  @computed get accessibleChapters() {
+  @computed
+  get accessibleChapters() {
     let lastCompleted = true;
 
     return takeWhile(this.chapters, chapter => {
@@ -73,31 +61,25 @@ class Tutorial {
     });
   }
 
-  @computed get progress() {
-    const chapterStep = this.chapters.length === 1 ? 1 : 1 / (this.chapters.length - 1);
+  @computed
+  get progress() {
+    const chapterStep =
+      this.chapters.length === 1 ? 1 : 1 / (this.chapters.length - 1);
 
     return this.accessibleChapters.reduce((progress, chapter) => {
       return progress + chapterStep * chapter.progress;
     }, 0);
   }
 
-  @action.bound reset() {
-    this.chapters = this.chapterCreators.map((chapterCreator, index) => {
-      if (this.currentChapterIndex > index) {
-        return this.chapters[index];
-      }
-
-      const chapter = chapterCreator(new ChapterState(chapterCreator.id), this);
-      chapter.dispatch(init());
-
-      return chapter;
-    });
-
+  @action.bound
+  reset() {
+    this.initNestedChapter(this.currentChapter, true);
     this.state.chapterStates = this.chapters.map(chapter => chapter.state);
     reset();
   }
 
-  @action navigate(chapter) {
+  @action
+  navigate(chapter) {
     if (!this.accessibleChapters.includes(chapter)) {
       return;
     }
@@ -106,7 +88,39 @@ class Tutorial {
       this.currentChapter.vis.active = false;
     }
 
-    this.currentChapter = chapter;
+    this.initChapter(chapter);
+
+    this.state.currentChapterId = chapter.id;
+  }
+
+  @action
+  initChapter(chapter) {
+    this.initNestedChapter(chapter);
+
+    this.state.chapterStates = this.chapters.map(chapter => chapter.state);
+  }
+
+  initNestedChapter(chapter, reset = false) {
+    if (chapter.parent) {
+      this.initNestedChapter(chapter.parent);
+    }
+
+    const chapterCreatorIndex = this.chapterCreators.findIndex(
+      chapterCreator => chapterCreator.id === chapter.id,
+    );
+    const chapterCreator = this.chapterCreators[chapterCreatorIndex];
+    const actions = chapter.state.actions.slice();
+
+    chapter = chapterCreator(new ChapterState(chapterCreator.id), this);
+    this.chapters.splice(chapterCreatorIndex, 1, chapter);
+
+    if (actions.length === 0 || reset) {
+      chapter.dispatch(init());
+    } else {
+      actions.forEach(action => {
+        chapter.dispatch(action);
+      });
+    }
   }
 }
 

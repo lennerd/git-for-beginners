@@ -1,26 +1,127 @@
-import React, { Fragment } from "react";
+import React, { Fragment } from 'react';
+import { action as popmotionAction } from 'popmotion';
+import { autorun } from 'mobx';
 
-import { createChapter } from "../Chapter";
-import { ChapterText } from "../ChapterSection";
+import { createChapter, init, readOn } from '../Chapter';
+import { ChapterText } from '../ChapterSection';
+import Tooltip from '../../components/Tooltip';
+import { actionQueue, delay } from './utils';
 
 const gitInATeamChapter = createChapter('Git in a Team', {
+  inheritFrom: 'Git in the Console',
   sections: [
     new ChapterText(() => (
-      'Over the passed decades computer in different shape and sizes changed our daily life enormously. Together we create huge amount of data in form of files everyday to store everything from invoices to love letters, from code to illustrations and designs.'
-    )),
-    new ChapterText(() => (
       <Fragment>
-        To prevent data loss we create backups and use clouds to store files and share data with others. Two people working on the same file is often impossible though. And after all, data is lost, because we accidentily deleted an old file or have overwritten a file a college had changed a few minutes before. <strong>No matter how hard we work on file name conventions and how many channels we use to communicate in our team, mistakes are made.</strong>
+        See the label at the last <Tooltip name="commit">commit</Tooltip> and
+        the line connecting all the commits? That’s a branch. Git uses branches
+        to support work in a team on different parts of your projects at the
+        same time. A branch is basically a chain of commits. By default every
+        Git project comes with a <code>master</code> branch.
       </Fragment>
     )),
     new ChapterText(() => (
-      'But not everything is lost (pun intended). Special version control systems can help to store versions of our project more effectily and give our team a better way of working on files together.'
+      <Fragment>
+        To work on a new feature we create a branch called{' '}
+        <code>new-feature</code>. At the moment new commits are still added to
+        the master branch though. Our new branch is not active. To change that,
+        we need to activate <code>new-feature</code>.{' '}
+        <em>This is called a checkout.</em>
+      </Fragment>
     )),
     new ChapterText(() => (
-      <strong>Welcome to “Git for Beginners” – an interactive tutorial to learn and understand Git, a popular version control system to help you and your team to not loose data again.</strong>
+      <Fragment>
+        Once done, we can add new commits. Watch, how some other user just added
+        some changes to the <code>master</code> branch. Might be a bugfix.
+      </Fragment>
     )),
-    new ChapterText(() => 'But let’s start by taking a look at …'),
+    new ChapterText(() => (
+      <Fragment>
+        Now, to merge the changes from both branches, we simply checkout the{' '}
+        <code>master</code> branch again and merge our changes from{' '}
+        <code>new-feature</code> into our currently active branch.
+      </Fragment>
+    )),
+    new ChapterText(
+      () => 'Not so difficult, right? Let’s get our hands dirty with …',
+    ),
   ],
+  get vis() {
+    return this.parent.vis;
+  },
+  [init]() {
+    this.vis.showBranches = true;
+    this.actionQueue = actionQueue().start();
+
+    this.createNewFeatureBranch = popmotionAction(({ complete }) => {
+      console.log('new-feature create');
+      this.vis.createBranch('new-feature');
+      complete();
+    });
+
+    this.createCommit = popmotionAction(({ complete }) => {
+      console.log('commit create');
+      this.vis.createCommit();
+      complete();
+    });
+
+    this.checkoutNewFeature = popmotionAction(({ complete }) => {
+      console.log('new-feature checkout');
+      this.vis.checkout('new-feature');
+      complete();
+    });
+
+    this.checkoutMaster = popmotionAction(({ complete }) => {
+      console.log('master checkout');
+      this.vis.checkout('master');
+      complete();
+    });
+  },
+  [readOn]() {
+    if (!this.hasNewBranch) {
+      this.hasNewBranch = true;
+
+      this.actionQueue.add(delay(2000), this.createNewFeatureBranch);
+    } else if (!this.checkoutNewBranch) {
+      this.checkoutNewBranch = true;
+      this.actionQueue.add(delay(2000), this.checkoutNewFeature);
+    } else if (!this.createdNewCommits) {
+      this.createdNewCommits = true;
+      this.actionQueue.add(
+        delay(2000),
+        this.checkoutMaster,
+        this.createCommit,
+        this.checkoutNewFeature,
+        delay(2000),
+        this.createCommit,
+        delay(2000),
+        this.createCommit,
+      );
+    } else if (!this.mergeMaster) {
+      this.mergeMaster = true;
+      this.actionQueue.add(
+        delay(2000),
+        this.checkoutMaster,
+        this.createCommit,
+        this.checkoutNewFeature,
+        delay(2000),
+        this.createCommit,
+        delay(2000),
+        this.createCommit,
+      );
+    }
+
+    autorun(() => {
+      console.log(
+        this.vis.visBranches.map(visBranch => ({
+          branch: visBranch.branch.name,
+          commits: visBranch.visCommits.map(visCommit => ({
+            checksum: visCommit.commit.checksumShort,
+            position: visCommit.position,
+          })),
+        })),
+      );
+    });
+  },
 });
 
 export default gitInATeamChapter;

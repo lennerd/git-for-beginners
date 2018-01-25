@@ -1,7 +1,6 @@
-import { computed } from "mobx";
+import { computed } from 'mobx';
 
-import VisualisationArea from "./VisualisationArea";
-import BranchVisualisation from "./BranchVisualisation";
+import VisualisationArea from './VisualisationArea';
 
 class RepositoryVisualisation extends VisualisationArea {
   constructor(vis, repo) {
@@ -11,21 +10,16 @@ class RepositoryVisualisation extends VisualisationArea {
     this.repo = repo;
     this.height = 10;
     this.width = 10;
-
-    const visHead = new BranchVisualisation(vis, repo.head);
-    this.add(visHead);
   }
 
-  @computed get visCommits() {
+  @computed
+  get visCommits() {
     return this.filter(object => object.isCommit);
   }
 
-  @computed get visBranches() {
+  @computed
+  get visBranches() {
     return this.filter(object => object.isBranch);
-  }
-
-  @computed get head() {
-    return this.find(object => object.isBranch && object.branch === this.repo.head);
   }
 }
 

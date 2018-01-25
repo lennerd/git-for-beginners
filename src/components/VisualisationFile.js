@@ -226,9 +226,9 @@ class VisualisationFile extends Component {
   handleEnter = () => {
     const { file } = this.props;
 
-    if (file.prevPosition != null) {
+    if (file.prevVisFile != null) {
       moveTo({
-        from: file.prevPosition,
+        from: file.prevVisFile.position,
         to: this.position.get(),
         duration: 1000,
       }).start(this.position);
