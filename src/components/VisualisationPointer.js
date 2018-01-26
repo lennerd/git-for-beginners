@@ -6,6 +6,7 @@ import createLine from 'three-line-2d';
 import createBasicShader from 'three-line-2d/shaders/basic';
 import { reaction } from 'mobx';
 import { tween, value, easing, parallel } from 'popmotion';
+import { Transition } from 'react-transition-group';
 
 import VisualisationObject3D from './VisualisationObject3D';
 import { CELL_WIDTH, CELL_HEIGHT, LEVEL_HEIGHT } from '../theme';
@@ -39,9 +40,6 @@ class VisualisationPointer extends Component {
 
     this.pointerObject.add(this.lineObject);
 
-    this.lineGeometry.update(this.linePath);
-    this.prevLinePath = this.linePath;
-
     this.position = value(visPointer.position, position => {
       this.pointerObject.position.set(
         CELL_HEIGHT * position.row,
@@ -52,6 +50,10 @@ class VisualisationPointer extends Component {
 
     this.opacityValue = value(this.opacity, opacity => {
       this.lineMaterial.uniforms.opacity.value = opacity;
+    });
+
+    this.linePathValue = value(this.linePath, linePath => {
+      this.lineGeometry.update(linePath);
     });
   }
 
@@ -76,22 +78,18 @@ class VisualisationPointer extends Component {
     this.disposeLinePath = reaction(
       () => this.linePath,
       linePath => {
+        const prevLinePath = this.linePathValue.get();
+
         parallel(
           ...linePath.map((lineSegment, index) =>
             tween({
-              from: this.prevLinePath[index],
+              from: prevLinePath[index],
               to: lineSegment,
               duration: 1000,
               ease: easing.easeInOut,
             }),
           ),
-        ).start({
-          update: linePath => {
-            this.lineGeometry.update(linePath);
-          },
-        });
-
-        this.prevLinePath = this.linePath;
+        ).start(this.linePathValue);
       },
       { equals: comparer.structural },
     );
@@ -117,19 +115,21 @@ class VisualisationPointer extends Component {
   @computed
   get linePath() {
     const { visPointer } = this.props;
-    let { row, column } = visPointer.visCommit.position;
+    const { row: rowRelative, column: columnRealtive } = visPointer.position;
+    const { row, column } = visPointer.visCommit.position;
     const linePath = [
       [
-        (row - visPointer.position.row) * CELL_HEIGHT,
-        (column - visPointer.position.column) * CELL_WIDTH,
+        (row - rowRelative) * CELL_HEIGHT,
+        (column - columnRealtive) * CELL_WIDTH,
       ],
     ];
 
     if (visPointer.visParentCommit != null) {
-      ({ row, column } = visPointer.visParentCommit.position);
+      const { row, column } = visPointer.visParentCommit.position;
+
       linePath.push([
-        (row - visPointer.position.row) * CELL_HEIGHT,
-        (column - visPointer.position.column) * CELL_WIDTH,
+        (row - rowRelative) * CELL_HEIGHT,
+        (column - columnRealtive) * CELL_WIDTH,
       ]);
     }
 
@@ -143,13 +143,54 @@ class VisualisationPointer extends Component {
     return visPointer.checkedOut ? 0.6 : 0.2;
   }
 
+  handleEnter = () => {
+    const prevLinePath = this.linePathValue.get();
+
+    parallel(
+      ...this.linePath.map((lineSegment, index) =>
+        tween({
+          from: prevLinePath[1],
+          to: lineSegment,
+          duration: 1000,
+          ease: easing.easeInOut,
+        }),
+      ),
+    ).start(this.linePathValue);
+
+    this.tweenValue = this.linePathValue;
+  };
+
+  handleExit = () => {
+    // @TODO Exit animation
+    console.log('Pointer exits. Should not happen. :/');
+  };
+
+  addEndListener = (node, complete) => {
+    if (this.tweenValue == null) {
+      return complete();
+    }
+
+    this.tweenValue.subscribe({
+      complete,
+    });
+
+    this.tweenValue = null;
+  };
+
   render() {
-    const { children } = this.props;
+    const { children, ...props } = this.props;
 
     return (
-      <VisualisationObject3D object3D={this.pointerObject}>
-        {children}
-      </VisualisationObject3D>
+      <Transition
+        {...props}
+        onEnter={this.handleEnter}
+        onExit={this.handleExit}
+        addEndListener={this.addEndListener}
+      >
+        <VisualisationObject3D object3D={this.pointerObject}>
+          {children}
+        </VisualisationObject3D>
+      </Transition>
     );
   }
 }

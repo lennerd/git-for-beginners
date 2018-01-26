@@ -90,4 +90,34 @@ export default new Glossary({
       </p>
     </Fragment>
   )),
+  console: new GlossaryTerm('Console', () => (
+    <Fragment>
+      <p>
+        Console, Commandline or Commandline Interface (CLI) is a textbased
+        controlling interface for your computer. A long time ago, it was the
+        only way to communicate with a computer, until graphical user interfaces
+        replaced them.
+      </p>
+      <p>
+        Still many computer experts, programmers and alike are using the console
+        as the main tool to have a faster and more direct way of controlling
+        their PCs.
+      </p>
+    </Fragment>
+  )),
+  branch: new GlossaryTerm('Branch', () => (
+    <Fragment>
+      <p>
+        A branch is basically a chain of{' '}
+        <TooltipTerm name="commit">commits</TooltipTerm>. Git uses branches to
+        support work in a team on different parts of your projects at the same
+        time.
+      </p>
+      <p>
+        Branches also allow you to try out new ideas and concepts without
+        risking changes in the main version stored for example in the{' '}
+        <code>master</code> branch.
+      </p>
+    </Fragment>
+  )),
 });

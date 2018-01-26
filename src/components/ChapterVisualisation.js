@@ -79,10 +79,16 @@ class ChapterVisualisation extends Component {
                 </VisualisationBranch>
               ),
           )}
-        {chapter.vis.showBranches &&
-          chapter.vis.visPointers.map(visPointer => (
-            <VisualisationPointer key={visPointer.id} visPointer={visPointer} />
-          ))}
+        {chapter.vis.showBranches && (
+          <TransitionGroup component={Fragment}>
+            {chapter.vis.visPointers.map(visPointer => (
+              <VisualisationPointer
+                key={visPointer.id}
+                visPointer={visPointer}
+              />
+            ))}
+          </TransitionGroup>
+        )}
       </Visualisation>
     );
   }

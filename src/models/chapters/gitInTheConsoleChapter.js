@@ -62,7 +62,7 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
       new ChapterText(() => (
         <Fragment>
           Let’s create a few more <Tooltip name="commit">commits</Tooltip>. This
-          time we use the console.
+          time we use the <Tooltip name="console">console</Tooltip>.
         </Fragment>
       )),
       new ChapterTask(

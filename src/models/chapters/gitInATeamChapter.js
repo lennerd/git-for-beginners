@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
-import { action as popmotionAction } from 'popmotion';
-import { autorun } from 'mobx';
+import { action as popmotionAction, chain } from 'popmotion';
+import { action } from 'mobx';
 
 import { createChapter, init, readOn } from '../Chapter';
 import { ChapterText } from '../ChapterSection';
@@ -75,60 +75,53 @@ const gitInATeamChapter = createChapter('Git in a Team', {
       this.vis.checkout('master');
       complete();
     });
+
+    this.mergeNewFeature = popmotionAction(({ complete }) => {
+      console.log('merge new feature');
+      this.vis.merge('new-feature');
+      complete();
+    });
   },
   [readOn]() {
     if (!this.hasNewBranch) {
       this.hasNewBranch = true;
 
-      this.actionQueue.add(delay(2000), this.createNewFeatureBranch);
+      this.actionQueue.add(delay(1000), this.createNewFeatureBranch);
     } else if (!this.checkoutNewBranch) {
       this.checkoutNewBranch = true;
-      this.actionQueue.add(delay(2000), this.checkoutNewFeature);
+      this.actionQueue.add(delay(1000), this.checkoutNewFeature);
     } else if (!this.createdNewCommits) {
       this.createdNewCommits = true;
       this.actionQueue.add(
-        delay(2000),
-        this.checkoutMaster,
         delay(1000),
         this.createCommit,
         delay(1000),
-        this.checkoutNewFeature,
-        delay(2000),
         this.createCommit,
-        delay(2000),
-        this.createCommit,
+        delay(1000),
+        popmotionAction(
+          action(({ complete }) => {
+            chain(
+              this.checkoutMaster,
+              popmotionAction(({ complete }) => {
+                console.log('commit create without reset');
+                this.vis.createCommit(false);
+                complete();
+              }),
+              this.checkoutNewFeature,
+            ).start({ complete });
+          }),
+        ),
       );
     } else if (!this.mergeMaster) {
       this.mergeMaster = true;
-      /*this.actionQueue.add(
-        delay(2000),
+
+      this.actionQueue.add(
+        delay(1000),
         this.checkoutMaster,
-        this.createCommit,
-        this.checkoutNewFeature,
-        this.createCommit,
-        delay(2000),
-        this.createCommit,
-      );*/
-    }
-
-    /*this.vis.createBranch('new-feature');
-    this.vis.createCommit();
-    this.vis.checkout('new-feature');
-    this.vis.createCommit();
-    this.vis.checkout('master');
-    this.vis.merge('new-feature');
-
-    autorun(() => {
-      console.log(
-        this.vis.visBranches.map(visBranch => ({
-          branch: visBranch.branch.name,
-          commits: visBranch.visCommits.map(
-            visCommit => visCommit.commit.checksumShort,
-          ),
-        })),
+        delay(1000),
+        this.mergeNewFeature,
       );
-      console.log(this.vis.repository.visCommits.length);
-    });*/
+    }
   },
 });
 

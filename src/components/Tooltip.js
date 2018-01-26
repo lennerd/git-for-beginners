@@ -24,7 +24,7 @@ const TooltipPopper = styled.div.attrs({
   background-color: white;
   display: ${props => (props.hidden ? 'none' : 'block')};
   border-radius: ${props => props.theme.borderRadius.large};
-  width: ${props => props.theme.spacing(13)};
+  width: ${props => props.theme.spacing(14)};
 
   &[data-placement='top'] {
     margin-bottom: ${props => props.theme.spacing(0.75)};

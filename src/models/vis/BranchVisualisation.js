@@ -1,5 +1,6 @@
 import { computed } from 'mobx';
 import uniq from 'lodash/uniq';
+import findLast from 'lodash/findLast';
 
 import VisualisationObject from './VisualisationObject';
 
@@ -39,13 +40,18 @@ class BranchVisualisation extends VisualisationObject {
   }
 
   @computed
-  get lastVisCommit() {
-    if (this.branch.commit == null) {
-      return null;
-    }
+  get completeVisCommits() {
+    return this.commits.map(commit =>
+      this.vis.repository.visCommits.find(
+        visCommit => visCommit.commit === commit,
+      ),
+    );
+  }
 
-    return this.vis.repository.visCommits.find(
-      visCommit => visCommit.commit === this.branch.commit,
+  @computed
+  get lastVisCommit() {
+    return this.completeVisCommits.find(
+      visCommit => visCommit.files.length > 0,
     );
   }
 

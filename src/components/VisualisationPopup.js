@@ -56,11 +56,16 @@ class VisualisationPopup extends Component {
     this.popupObject.add(this.popupMesh);
 
     this.appearance = value(
-      { level: this.level, opacity: this.opacity, offset: this.offset },
-      ({ level, opacity, offset }) => {
+      {
+        level: this.level,
+        opacity: this.opacity,
+        textOpacity: this.textOpacity,
+        offset: this.offset,
+      },
+      ({ level, opacity, textOpacity, offset }) => {
         this.popupObject.position.y = LEVEL_HEIGHT * level;
         this.popupObject.position.x = offset;
-        this.textMesh.material.opacity = opacity;
+        this.textMesh.material.opacity = textOpacity;
         this.popupMesh.material.opacity = opacity;
       },
     );
@@ -71,6 +76,7 @@ class VisualisationPopup extends Component {
       () => ({
         level: this.level,
         opacity: this.opacity,
+        textOpacity: this.textOpacity,
         offset: this.offset,
       }),
       appearance => {
@@ -103,6 +109,13 @@ class VisualisationPopup extends Component {
     }
 
     return active ? 1 : 0.5;
+  }
+
+  @computed
+  get textOpacity() {
+    const { in: inProp } = this.props;
+
+    return inProp ? 1 : 0;
   }
 
   @computed
