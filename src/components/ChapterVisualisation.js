@@ -73,6 +73,8 @@ class ChapterVisualisation extends Component {
                     level={branch.lastVisCommit.height}
                     content={branch.branch.name}
                     in={!branch.lastVisCommit.active}
+                    active={branch.checkedOut}
+                    offset={branch.offset}
                   />
                 </VisualisationBranch>
               ),

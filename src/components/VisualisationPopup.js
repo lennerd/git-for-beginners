@@ -17,12 +17,14 @@ class VisualisationPopup extends Component {
   static defaultProps = {
     level: 0,
     in: false,
+    offset: 0,
+    active: true,
   };
 
   constructor(props) {
     super(props);
 
-    const { theme, level } = props;
+    const { theme } = props;
 
     this.popupObject = new THREE.Group();
 
@@ -53,10 +55,11 @@ class VisualisationPopup extends Component {
     this.popupMesh.add(this.textMesh);
     this.popupObject.add(this.popupMesh);
 
-    this.in = value(
-      { position: LEVEL_HEIGHT * level + 0.2, opacity: 0 },
-      ({ position, opacity }) => {
-        this.popupObject.position.y = position;
+    this.appearance = value(
+      { level: this.level, opacity: this.opacity, offset: this.offset },
+      ({ level, opacity, offset }) => {
+        this.popupObject.position.y = LEVEL_HEIGHT * level;
+        this.popupObject.position.x = offset;
         this.textMesh.material.opacity = opacity;
         this.popupMesh.material.opacity = opacity;
       },
@@ -64,38 +67,47 @@ class VisualisationPopup extends Component {
   }
 
   componentDidMount() {
-    this.disposeIn = reaction(
+    this.disposeAppearance = reaction(
       () => ({
-        position: this.position,
+        level: this.level,
         opacity: this.opacity,
+        offset: this.offset,
       }),
-      inProp => {
+      appearance => {
         tween({
-          from: this.in.get(),
-          to: inProp,
+          from: this.appearance.get(),
+          to: appearance,
           duration: 400,
-        }).start(this.in);
+        }).start(this.appearance);
       },
-      true,
     );
   }
 
   componentWillUnmount() {
-    this.disposeIn();
+    this.disposeAppearance();
   }
 
   @computed
-  get position() {
+  get level() {
     const { in: inProp, level } = this.props;
 
-    return LEVEL_HEIGHT * level + (inProp ? 0 : 0.2);
+    return level + (inProp ? 0 : 1);
   }
 
   @computed
   get opacity() {
-    const { in: inProp } = this.props;
+    const { in: inProp, active } = this.props;
 
-    return inProp ? 1 : 0;
+    if (!inProp) {
+      return 0;
+    }
+
+    return active ? 1 : 0.5;
+  }
+
+  @computed
+  get offset() {
+    return this.props.offset * 0.3;
   }
 
   render() {

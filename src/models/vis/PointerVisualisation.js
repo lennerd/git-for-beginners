@@ -16,6 +16,11 @@ class PointerVisualisation extends VisualisationObject {
   getPosition() {
     return this.visCommit.position;
   }
+
+  @computed
+  get checkedOut() {
+    return this.vis.head.commits.includes(this.visCommit.commit);
+  }
 }
 
 export default PointerVisualisation;

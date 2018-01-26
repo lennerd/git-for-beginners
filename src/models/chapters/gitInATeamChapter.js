@@ -48,8 +48,8 @@ const gitInATeamChapter = createChapter('Git in a Team', {
   get vis() {
     return this.parent.vis;
   },
-  /*[init]() {
-    console.log(this.vis.showBranches);
+  [init]() {
+    this.vis.showBranches = true;
     this.actionQueue = actionQueue().start();
 
     this.createNewFeatureBranch = popmotionAction(({ complete }) => {
@@ -75,10 +75,9 @@ const gitInATeamChapter = createChapter('Git in a Team', {
       this.vis.checkout('master');
       complete();
     });
-  },*/
-  [init]() {
-    this.vis.showBranches = true;
-    /*if (!this.hasNewBranch) {
+  },
+  [readOn]() {
+    if (!this.hasNewBranch) {
       this.hasNewBranch = true;
 
       this.actionQueue.add(delay(2000), this.createNewFeatureBranch);
@@ -90,7 +89,9 @@ const gitInATeamChapter = createChapter('Git in a Team', {
       this.actionQueue.add(
         delay(2000),
         this.checkoutMaster,
+        delay(1000),
         this.createCommit,
+        delay(1000),
         this.checkoutNewFeature,
         delay(2000),
         this.createCommit,
@@ -99,19 +100,18 @@ const gitInATeamChapter = createChapter('Git in a Team', {
       );
     } else if (!this.mergeMaster) {
       this.mergeMaster = true;
-      this.actionQueue.add(
+      /*this.actionQueue.add(
         delay(2000),
         this.checkoutMaster,
         this.createCommit,
         this.checkoutNewFeature,
-        delay(2000),
         this.createCommit,
         delay(2000),
         this.createCommit,
-      );
-    }*/
+      );*/
+    }
 
-    this.vis.createBranch('new-feature');
+    /*this.vis.createBranch('new-feature');
     this.vis.createCommit();
     this.vis.checkout('new-feature');
     this.vis.createCommit();
@@ -128,7 +128,7 @@ const gitInATeamChapter = createChapter('Git in a Team', {
         })),
       );
       console.log(this.vis.repository.visCommits.length);
-    });
+    });*/
   },
 });
 

@@ -8,6 +8,7 @@ import Visualisation from '../vis/Visualisation';
 import VisualisationArea from '../vis/VisualisationArea';
 import { actionQueue, loop, delay } from './utils';
 import SimpleFileVisualisation from '../vis/SimpleFileVisualisation';
+import { STATUS_ADDED } from '../../constants';
 
 const workingInATeamChapter = createChapter('Working in a Team', {
   sections: [
@@ -52,6 +53,7 @@ const workingInATeamChapter = createChapter('Working in a Team', {
     this.visUserB.column = 2;
 
     this.visFile = new SimpleFileVisualisation();
+    this.visFile.status = STATUS_ADDED;
     this.visUserFileA = new SimpleFileVisualisation();
     this.visCloudFile = new SimpleFileVisualisation();
     this.visUserFileB = new SimpleFileVisualisation();

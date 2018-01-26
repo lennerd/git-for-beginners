@@ -1,5 +1,4 @@
 import { computed } from 'mobx';
-import takeWhile from 'lodash/takeWhile';
 import uniq from 'lodash/uniq';
 
 import VisualisationObject from './VisualisationObject';
@@ -19,7 +18,7 @@ class BranchVisualisation extends VisualisationObject {
     return this.filter(object => object.isCommit);
   }
 
-  /*@computed
+  @computed
   get commits() {
     const commits = [];
 
@@ -40,44 +39,6 @@ class BranchVisualisation extends VisualisationObject {
   }
 
   @computed
-  get visCommits() {
-    // Collect all commits until false is returned
-    const commits = takeWhile(this.commits, commit => {
-      // Commit is head of branch
-      if (commit === this.branch.commit) {
-        return true;
-      }
-
-      // Collect all other branches containing this commit
-      const otherVisBranchesWithCommit = this.otherVisBranches.filter(
-        visBranch => visBranch.commits.includes(commit),
-      );
-
-      // If their is no other branch, this is settled.
-      if (otherVisBranchesWithCommit.length === 0) {
-        return true;
-      }
-
-      // Compare other branches and use the first one with the lower sort value.
-      for (let otherVisBranch of otherVisBranchesWithCommit) {
-        if (this.compare(otherVisBranch) === -1) {
-          return true;
-        }
-      }
-
-      return false;
-    });
-
-    return this.vis.repository.visCommits.filter(visCommit =>
-      commits.includes(visCommit.commit),
-    );
-  }*/
-
-  /*getPosition() {
-    return this.visCommits[this.visCommits.length - 1];
-  }*/
-
-  /*@computed
   get lastVisCommit() {
     if (this.branch.commit == null) {
       return null;
@@ -89,34 +50,33 @@ class BranchVisualisation extends VisualisationObject {
   }
 
   @computed
-  get otherVisBranches() {
-    return this.vis.repository.filter(
-      object => object.isBranch && object !== this,
-    );
-  }*/
-
-  @computed
-  get lastVisCommit() {
-    if (this.branch.commit == null) {
-      return null;
-    }
-
-    return this.vis.repository.visCommits.find(
-      visCommit => visCommit.commit === this.branch.commit,
-    );
-  }
-
-  @computed
-  get isHead() {
+  get checkedOut() {
     return this.branch === this.vis.repo.head;
   }
 
+  @computed
+  get offset() {
+    const visBranchesOnLastCommit = this.vis.visBranches.filter(
+      visBranch => visBranch.lastVisCommit === this.lastVisCommit,
+    );
+
+    if (visBranchesOnLastCommit.length === 1) {
+      return 0;
+    }
+
+    visBranchesOnLastCommit.sort((a, b) => a.compare(b));
+
+    return (
+      visBranchesOnLastCommit.indexOf(this) - visBranchesOnLastCommit.length / 2
+    );
+  }
+
   compare(otherVisBranch) {
-    if (this.isHead) {
+    if (this.checkedOut) {
       return -1;
     }
 
-    if (otherVisBranch.isHead) {
+    if (otherVisBranch.checkedOut) {
       return 1;
     }
 

@@ -20,7 +20,7 @@ class VisualisationPointer extends Component {
   constructor(props) {
     super(props);
 
-    const { theme } = props;
+    const { theme, visPointer } = props;
 
     this.pointerObject = new THREE.Group();
 
@@ -28,7 +28,6 @@ class VisualisationPointer extends Component {
 
     this.lineMaterial = new THREE.ShaderMaterial(
       basicShader({
-        opacity: 0.5,
         transparent: true,
         diffuse: theme.color.highlight,
         thickness: BRANCH_LINE_WIDTH,
@@ -39,6 +38,80 @@ class VisualisationPointer extends Component {
     this.lineObject.rotation.x = Math.PI / 2;
 
     this.pointerObject.add(this.lineObject);
+
+    this.lineGeometry.update(this.linePath);
+    this.prevLinePath = this.linePath;
+
+    this.position = value(visPointer.position, position => {
+      this.pointerObject.position.set(
+        CELL_HEIGHT * position.row,
+        LEVEL_HEIGHT * position.level,
+        CELL_WIDTH * position.column,
+      );
+    });
+
+    this.opacityValue = value(this.opacity, opacity => {
+      this.lineMaterial.uniforms.opacity.value = opacity;
+    });
+  }
+
+  componentDidMount() {
+    this.disposePosition = reaction(
+      () => {
+        const { visPointer } = this.props;
+
+        return visPointer.position;
+      },
+      position => {
+        tween({
+          from: this.position.get(),
+          to: position,
+          duration: 1000,
+          ease: easing.easeInOut,
+        }).start(this.position);
+      },
+      { equals: comparer.structural },
+    );
+
+    this.disposeLinePath = reaction(
+      () => this.linePath,
+      linePath => {
+        parallel(
+          ...linePath.map((lineSegment, index) =>
+            tween({
+              from: this.prevLinePath[index],
+              to: lineSegment,
+              duration: 1000,
+              ease: easing.easeInOut,
+            }),
+          ),
+        ).start({
+          update: linePath => {
+            this.lineGeometry.update(linePath);
+          },
+        });
+
+        this.prevLinePath = this.linePath;
+      },
+      { equals: comparer.structural },
+    );
+
+    this.disposeOpacity = reaction(
+      () => this.opacity,
+      opacity => {
+        tween({
+          from: this.opacityValue.get(),
+          to: opacity,
+          duration: 400,
+        }).start(this.opacityValue);
+      },
+    );
+  }
+
+  componentWillUnmount() {
+    this.disposePosition();
+    this.disposeLinePath();
+    this.disposeOpacity();
   }
 
   @computed
@@ -63,16 +136,15 @@ class VisualisationPointer extends Component {
     return linePath;
   }
 
+  @computed
+  get opacity() {
+    const { visPointer } = this.props;
+
+    return visPointer.checkedOut ? 0.6 : 0.2;
+  }
+
   render() {
-    const { children, visPointer } = this.props;
-
-    this.pointerObject.position.set(
-      CELL_HEIGHT * visPointer.position.row,
-      LEVEL_HEIGHT * visPointer.position.level,
-      CELL_WIDTH * visPointer.position.column,
-    );
-
-    this.lineGeometry.update(this.linePath);
+    const { children } = this.props;
 
     return (
       <VisualisationObject3D object3D={this.pointerObject}>
