@@ -37,7 +37,7 @@ const gitChapter = createChapter('Git', {
 
       this.vis.createCommit();
     } else {
-      const commit = this.vis.repository.find(object => object.isCommit);
+      const commit = this.vis.repository.visCommits[0];
 
       if (commit != null) {
         commit.directActive = true;

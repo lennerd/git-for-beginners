@@ -358,6 +358,8 @@ class VisualisationFile extends Component {
         : 0;
 
     this.fileMesh.material.needsUpdate = true;
+    //this.fileMesh.material.transparent = true;
+    //this.fileMesh.material.opacity = file.status === STATUS_DELETED ? 0.7 : 1;
 
     return (
       <Transition

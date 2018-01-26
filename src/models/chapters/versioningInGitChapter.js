@@ -41,8 +41,8 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
     return this.vis.files.indexOf(this.activeFile);
   },
   get activeCommit() {
-    const activeVisCommit = this.vis.repository.find(
-      object => object.isCommit && object.active,
+    const activeVisCommit = this.vis.repository.visCommits.find(
+      visCommit => visCommit.active,
     );
 
     if (activeVisCommit == null) {

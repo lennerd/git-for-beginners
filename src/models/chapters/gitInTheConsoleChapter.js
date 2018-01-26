@@ -37,7 +37,7 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
     return this.vis.files.indexOf(this.activeFile);
   },
   get activeVisCommit() {
-    return this.vis.repository.find(object => object.isCommit && object.active);
+    return this.vis.repository.visCommits.find(visCommit => visCommit.active);
   },
   get activeCommit() {
     if (this.activeVisCommit == null) {

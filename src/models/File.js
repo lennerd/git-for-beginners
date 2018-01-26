@@ -1,6 +1,6 @@
 import { observable, action } from 'mobx';
 import { Record } from 'immutable';
-import { diffLines } from 'diff';
+import { diffLines, structuredPatch, applyPatch } from 'diff';
 
 import chance from './chance';
 
@@ -15,7 +15,6 @@ class File {
   static create(name) {
     if (name == null) {
       name = chance.fileName();
-
     }
 
     const numberOfSentences = chance.natural({ min: 1, max: 10 });
@@ -24,13 +23,14 @@ class File {
     return new this(name, lines.join('\n'));
   }
 
-  @action modify() {
+  @action
+  modify() {
     const lines = this.blob.content.split('\n');
-    const turns = chance.natural({ min: 1, max: 10});
+    const turns = chance.natural({ min: 1, max: 10 });
 
     for (let i = 0; i < turns; i++) {
       const index = chance.natural({ min: 0, max: lines.length }) - 1;
-      const newOrDelete = chance.natural({ min: 1, max: 3});
+      const newOrDelete = chance.natural({ min: 1, max: 3 });
 
       let numberOfDeletedLines = 0;
       let newLines = [];
@@ -62,15 +62,24 @@ class Blob extends Record({
   }*/
 
   diff(source) {
-    return diffLines(this.content, source.content).reduce((diff, change) => {
-      if (change.removed) {
-        diff.removed += change.count;
-      } else if (change.added) {
-        diff.added += change.count;
-      }
+    return diffLines(this.content, source.content).reduce(
+      (diff, change) => {
+        if (change.removed) {
+          diff.removed += change.count;
+        } else if (change.added) {
+          diff.added += change.count;
+        }
 
-      return diff;
-    }, { added: 0, removed: 0 });
+        return diff;
+      },
+      { added: 0, removed: 0 },
+    );
+  }
+
+  mergeContent(source) {
+    const patch = structuredPatch('', '', this.content, source.content);
+
+    return this.set('content', applyPatch(this.content, patch));
   }
 }
 

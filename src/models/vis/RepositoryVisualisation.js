@@ -8,8 +8,8 @@ class RepositoryVisualisation extends VisualisationArea {
 
     this.vis = vis;
     this.repo = repo;
-    this.height = 10;
-    this.width = 10;
+    this.height = 1000;
+    this.width = 100;
   }
 
   @computed
@@ -20,6 +20,30 @@ class RepositoryVisualisation extends VisualisationArea {
   @computed
   get visBranches() {
     return this.filter(object => object.isBranch);
+  }
+
+  @computed
+  get visHeadCommit() {
+    return this.visCommits.find(
+      visCommit => visCommit.commit === this.vis.repo.head.commit,
+    );
+  }
+
+  @computed
+  get treeRowOffset() {
+    const minRow = Math.min(
+      ...this.visCommits.map(visCommit => visCommit.treePosition.row),
+    );
+
+    return minRow - this.visHeadCommit.treePosition.row;
+  }
+
+  getPosition() {
+    const position = super.getPosition();
+
+    position.row += this.treeRowOffset;
+
+    return position;
   }
 }
 

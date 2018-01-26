@@ -48,8 +48,8 @@ const gitInATeamChapter = createChapter('Git in a Team', {
   get vis() {
     return this.parent.vis;
   },
-  [init]() {
-    this.vis.showBranches = true;
+  /*[init]() {
+    console.log(this.vis.showBranches);
     this.actionQueue = actionQueue().start();
 
     this.createNewFeatureBranch = popmotionAction(({ complete }) => {
@@ -75,9 +75,10 @@ const gitInATeamChapter = createChapter('Git in a Team', {
       this.vis.checkout('master');
       complete();
     });
-  },
-  [readOn]() {
-    if (!this.hasNewBranch) {
+  },*/
+  [init]() {
+    this.vis.showBranches = true;
+    /*if (!this.hasNewBranch) {
       this.hasNewBranch = true;
 
       this.actionQueue.add(delay(2000), this.createNewFeatureBranch);
@@ -108,18 +109,25 @@ const gitInATeamChapter = createChapter('Git in a Team', {
         delay(2000),
         this.createCommit,
       );
-    }
+    }*/
+
+    this.vis.createBranch('new-feature');
+    this.vis.createCommit();
+    this.vis.checkout('new-feature');
+    this.vis.createCommit();
+    this.vis.checkout('master');
+    this.vis.merge('new-feature');
 
     autorun(() => {
       console.log(
         this.vis.visBranches.map(visBranch => ({
           branch: visBranch.branch.name,
-          commits: visBranch.visCommits.map(visCommit => ({
-            checksum: visCommit.commit.checksumShort,
-            position: visCommit.position,
-          })),
+          commits: visBranch.visCommits.map(
+            visCommit => visCommit.commit.checksumShort,
+          ),
         })),
       );
+      console.log(this.vis.repository.visCommits.length);
     });
   },
 });

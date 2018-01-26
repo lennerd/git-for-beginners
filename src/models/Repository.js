@@ -51,6 +51,32 @@ class Repository {
   }
 
   @action
+  merge(branchName, message = chance.sentence()) {
+    const branch = this.branches.find(branch => branch.name === branchName);
+
+    if (branch == null) {
+      throw new ConsoleError('Unknown branch.');
+    }
+
+    const parents = [this.head.commit, branch.commit];
+    const tree = this.head.commit.tree.mergeWith((headBlob, branchBlob) => {
+      return headBlob.mergeContent(branchBlob);
+    }, branch.commit.tree);
+
+    const commit = new Commit({
+      author: chance.name(),
+      message,
+      tree,
+      parents,
+    });
+
+    this.commits = this.commits.add(commit);
+    this.head.commit = commit;
+
+    return this.head;
+  }
+
+  @action
   stageFile(file) {
     const blob = this.workingDirectory.tree.get(file);
     const stagedBlob = this.stagingArea.tree.get(file);

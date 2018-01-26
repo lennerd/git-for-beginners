@@ -24,6 +24,11 @@ class Visualisation extends VisualisationObject {
   get visBranches() {
     return this.filter(object => object.isBranch);
   }
+
+  @computed
+  get visPointers() {
+    return this.filter(object => object.isPointer);
+  }
 }
 
 export default Visualisation;

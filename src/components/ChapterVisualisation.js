@@ -11,6 +11,7 @@ import VisualisationAreaName from './VisualisationAreaName';
 import VisualisationCommit from './VisualisationCommit';
 import VisualisationPopup from './VisualisationPopup';
 import VisualisationBranch from './VisualisationBranch';
+import VisualisationPointer from './VisualisationPointer';
 
 @observer
 class ChapterVisualisation extends Component {
@@ -76,6 +77,10 @@ class ChapterVisualisation extends Component {
                 </VisualisationBranch>
               ),
           )}
+        {chapter.vis.showBranches &&
+          chapter.vis.visPointers.map(visPointer => (
+            <VisualisationPointer key={visPointer.id} visPointer={visPointer} />
+          ))}
       </Visualisation>
     );
   }

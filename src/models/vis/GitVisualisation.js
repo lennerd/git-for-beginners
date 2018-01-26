@@ -247,18 +247,82 @@ class GitVisualisation extends Visualisation {
   }
 
   @action
+  merge(branchName) {
+    const branch = this.repo.merge(branchName);
+    const commit = branch.commit;
+
+    // Create a new commit vis
+    const visCommit = new CommitVisualisation(this, commit);
+
+    const visParentCommits = this.repository.visCommits.filter(visCommit =>
+      commit.parents.includes(visCommit.commit),
+    );
+
+    // Look for a parent commit and merge the files into our new one.
+    if (commit.parents.length > 0) {
+      commit.parents.forEach(parent => {
+        const parentVisCommit = this.repository.visCommits.find(
+          visCommit => visCommit.commit === parent,
+        );
+
+        // Wait, do not copy previously deleted files.
+        const parentVisFiles = parentVisCommit.filter(
+          object => object.isFile && object.status !== STATUS_DELETED,
+        );
+
+        // Create copy of all the files in the parent commit
+        for (let parentVisFile of parentVisFiles) {
+          parentVisCommit.add(
+            new FileVisualisation(this, parentVisFile.file, parentVisFile),
+          );
+        }
+
+        // Finally copy all the files from the parent commit into our new one.
+        visCommit.add(...parentVisFiles);
+      });
+    }
+
+    this.head.add(visCommit);
+
+    // Create new pointers
+    for (let visParentCommit of visParentCommits) {
+      const visPointer = new PointerVisualisation(
+        this,
+        visCommit,
+        visParentCommit,
+      );
+
+      this.head.add(visPointer);
+    }
+
+    return this.head;
+  }
+
+  @action
   createCommit() {
+    let visParentCommit;
+
     const commit = this.repo.createCommit();
+
+    // Find parent commit to be able to create a pointer
+    if (commit.parents.length > 0) {
+      visParentCommit = this.repository.visCommits.find(
+        visCommit => visCommit.commit === commit.parents[0],
+      );
+    }
 
     // Create a new commit vis
     const visCommit = new CommitVisualisation(this, commit);
 
     // Create a new pointer
-    const visPointer = new PointerVisualisation(this, visCommit);
+    const visPointer = new PointerVisualisation(
+      this,
+      visCommit,
+      visParentCommit,
+    );
 
     // Move commit to repository
-    this.repository.add(visCommit);
-    this.head.add(visPointer);
+    this.head.add(visCommit, visPointer);
 
     // Move all the files from the staging area to the commit
     const stagedVisFiles = this.stagingArea.filter(object => object.isFile);
@@ -267,20 +331,19 @@ class GitVisualisation extends Visualisation {
     // Look for a parent commit and merge the files into our new one.
     if (commit.parents.length > 0) {
       commit.parents.forEach(parent => {
-        const parentVisCommit = this.repository.find(
-          object => object.isCommit && object.commit === parent,
+        const parentVisCommit = this.repository.visCommits.find(
+          visCommit => visCommit.commit === parent,
         );
 
         // Wait, do not copy all the files! Only the one, not present in the staging area.
-        const parentVisFiles = parentVisCommit
-          .filter(object => object.isFile)
-          .filter(
-            parentVisFile =>
-              parentVisFile.status !== STATUS_DELETED &&
-              !stagedVisFiles.some(
-                stagedVisFile => stagedVisFile.file === parentVisFile.file,
-              ),
-          );
+        const parentVisFiles = parentVisCommit.filter(
+          object =>
+            object.isFile &&
+            object.status !== STATUS_DELETED &&
+            !stagedVisFiles.some(
+              stagedVisFile => stagedVisFile.file === object.file,
+            ),
+        );
 
         // Create copy of all the files in the parent commit
         for (let parentVisFile of parentVisFiles) {
@@ -317,8 +380,8 @@ class GitVisualisation extends Visualisation {
     }*/
 
     // Get commit vis.
-    const visCommit = this.repository.find(
-      object => object.isCommit && object.commit === commit,
+    const visCommit = this.repository.visCommits.find(
+      visCommit => visCommit.commit === commit,
     );
 
     // Filter files inside the commit for changes
