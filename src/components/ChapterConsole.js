@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import styled from 'styled-components';
-import { action, observable } from 'mobx';
+import { action, observable, reaction } from 'mobx';
 import AutosizeInput from 'react-input-autosize';
 
 import Console, {
@@ -98,6 +98,22 @@ class ChapterConsoleInput extends Component {
     onEnter({ command, args });
   }
 
+  componentDidMount() {
+    this.disposeFocus = reaction(
+      () => this.props.chapter.vis.find(object => object.directActive),
+      activeVisObject => {
+        // Focus input if vis element was activated.
+        if (activeVisObject != null) {
+          this.inputElement.focus();
+        }
+      },
+    );
+  }
+
+  componentWillUnmount() {
+    this.disposeFocus();
+  }
+
   render() {
     const { chapter } = this.props;
 
@@ -106,6 +122,9 @@ class ChapterConsoleInput extends Component {
         <ConsoleInput>
           <span>$</span>
           <AutosizeInput
+            inputRef={ref => {
+              this.inputElement = ref;
+            }}
             placeholder="Your command …"
             value={this.inputValue}
             onChange={this.handleChange}
