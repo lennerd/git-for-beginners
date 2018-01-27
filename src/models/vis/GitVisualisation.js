@@ -374,14 +374,11 @@ class GitVisualisation extends Visualisation {
   }
 
   @action
-  revertCommit(commitChecksum) {
-    const commit = this.repo.commits.find(
-      commit => commit.checksum === commitChecksum,
-    );
+  revertCommit(commitIndex) {
+    const visCommit = this.repository.visCommits[commitIndex];
 
-    if (commit == null) {
-      console.error('Missing commit');
-      return;
+    if (visCommit == null) {
+      throw new Error('Missing commit!');
     }
 
     // We essentially reset to the parent before, due to simplified rules for this vis.
@@ -391,11 +388,6 @@ class GitVisualisation extends Visualisation {
 
       return;
     }*/
-
-    // Get commit vis.
-    const visCommit = this.repository.visCommits.find(
-      visCommit => visCommit.commit === commit,
-    );
 
     // Filter files inside the commit for changes
     const changedVisFiles = visCommit.filter(
@@ -410,7 +402,7 @@ class GitVisualisation extends Visualisation {
     // Move them into the working directory
     this.workingDirectory.fileList.add(...changedVisFiles);
 
-    this.repo.revertCommit(commit);
+    this.repo.revertCommit(visCommit.commit);
 
     return visCommit;
   }

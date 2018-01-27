@@ -40,22 +40,15 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
   get activeFileIndex() {
     return this.vis.files.indexOf(this.activeFile);
   },
-  get activeCommit() {
-    const activeVisCommit = this.vis.repository.visCommits.find(
-      visCommit => visCommit.active,
-    );
-
-    if (activeVisCommit == null) {
-      return null;
-    }
-
-    return activeVisCommit.commit;
+  get activeVisCommit() {
+    return this.vis.repository.visCommits.find(visCommit => visCommit.active);
+  },
+  get activeVisCommitIndex() {
+    return this.vis.repository.visCommits.indexOf(this.activeVisCommit);
   },
   [init]() {
     this.repo = new Repository();
-
     this.vis = new GitVisualisation(this.repo);
-
     this.console = new Console();
 
     this.console.add(
@@ -174,7 +167,7 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
               </Fragment>
             ),
             action: revertCommit,
-            payloadCreator: () => this.activeCommit.checksum,
+            payloadCreator: () => this.activeVisCommitIndex,
           }),
         ],
       }),
@@ -198,8 +191,8 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
   [createCommit]() {
     return this.vis.createCommit();
   },
-  [revertCommit](commitChecksum) {
-    return this.vis.revertCommit(commitChecksum);
+  [revertCommit](commitIndex) {
+    return this.vis.revertCommit(commitIndex);
   },
   get sections() {
     return [

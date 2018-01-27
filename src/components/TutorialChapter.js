@@ -11,7 +11,14 @@ import ChapterVisualisation from './ChapterVisualisation';
 @observer
 class TutorialChapter extends Component {
   render() {
-    const { chapter, tutorial, children, fontBlack, fontRegular, fontRegularCaps } = this.props;
+    const {
+      chapter,
+      tutorial,
+      children,
+      fontBlack,
+      fontRegular,
+      fontRegularCaps,
+    } = this.props;
 
     return (
       <Chapter>
@@ -21,7 +28,12 @@ class TutorialChapter extends Component {
         </ChapterMain>
         {children}
         <ChapterConsole chapter={chapter} />
-        <ChapterVisualisation chapter={chapter} fontBlack={fontBlack} fontRegular={fontRegular} fontRegularCaps={fontRegularCaps} />
+        <ChapterVisualisation
+          chapter={chapter}
+          fontBlack={fontBlack}
+          fontRegular={fontRegular}
+          fontRegularCaps={fontRegularCaps}
+        />
         <ChapterNext tutorial={tutorial} chapter={chapter} />
       </Chapter>
     );

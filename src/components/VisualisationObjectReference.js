@@ -1,7 +1,7 @@
-import { observer } from "mobx-react";
-import React, { Component } from "react";
-import styled, { css } from "styled-components";
-import { action } from "mobx";
+import { observer } from 'mobx-react';
+import React, { Component } from 'react';
+import styled, { css } from 'styled-components';
+import { action } from 'mobx';
 
 const hover = css`
   border-bottom-color: ${props => props.theme.color.highlight};
@@ -66,11 +66,6 @@ export class VisualisationCommitReference extends Component {
   render() {
     const { commit, vis } = this.props;
 
-    if (commit == null) {
-      console.error("missing commit");
-      return null;
-    }
-
     return (
       <VisualisationObjectReference object={commit} vis={vis}>
         {commit.commit.checksumShort}
@@ -83,10 +78,6 @@ export class VisualisationCommitReference extends Component {
 export class VisualisationFileReference extends Component {
   render() {
     const { file, vis } = this.props;
-
-    if (file == null) {
-      return "file";
-    }
 
     return (
       <VisualisationObjectReference object={file} vis={vis}>
