@@ -45,8 +45,7 @@ const commandlineChapter = createChapter('Command-line', {
       <Fragment>
         There are plenty of graphical interfaces for Git. But often these only
         support a subset of features. And after all, mastering the console will
-        improve your abilities to use any kind of interface for Git. It’s like
-        using a graphical user interface, just without buttons and dialogs.{' '}
+        improve your abilities to use any kind of interface for Git.{' '}
         <em>
           It can be used to control nearly every software on your computer, not
           just Git.
@@ -60,14 +59,14 @@ const commandlineChapter = createChapter('Command-line', {
     new ChapterText(() => (
       <Fragment>
         The <strong>prompt</strong> indicates that the console is ready to take
-        in a new command. It’s often prefixed with the current path or logged in
-        user, to help you orientate.
+        in a new command. It’s often prefixed with the current path to help you
+        orientate.
       </Fragment>
     )),
     new ChapterText(() => (
       <Fragment>
         The prompt is followed by a <strong>command or program</strong> you want
-        to call.
+        to execute by the command-line.
       </Fragment>
     )),
     new ChapterText(() => (
@@ -80,8 +79,8 @@ const commandlineChapter = createChapter('Command-line', {
     new ChapterText(() => (
       <Fragment>
         When you’re ready you press the <em>enter</em> key on your keyboard to
-        send everything to the command. Bare with me, you’ll be amazed how easy
-        it is to use, especially with a visual model in mind of what is
+        send everything to the command-line. Bare with me, you’ll be amazed how
+        easy it is to use, especially with a visual model in mind of what is
         happening underneath.
       </Fragment>
     )),

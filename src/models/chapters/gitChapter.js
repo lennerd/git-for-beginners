@@ -59,19 +59,18 @@ const gitChapter = createChapter('Introducing Git', {
     new ChapterText(() => 'Let’s take a look at the different parts of Git.'),
     new ChapterText(() => (
       <Fragment>
-        First, there is the <strong>working directory</strong>, the folder on
-        your computer where all the files of your project are stored in. It‘s
-        the folder on your computer where your project is located in, where you
-        modify, add or delete files.
+        First, there is the <strong>working directory</strong>. It‘s the folder
+        on your computer where your project is located in, where you modify, add
+        or delete files.
       </Fragment>
     )),
     new ChapterText(() => (
       <Fragment>
         The second part is the <strong>staging area</strong>. Despite its name,
-        it’s not about showing something to others, but instead collect changes
-        to your project you want to be part of your next version. This way you
-        are able to group changes in your files into seperate version, e.g. by
-        feature or topic.
+        it’s not about showing something to others. Instead you can use the
+        staging area to collect changes to your project you want to be part of
+        your next version. This way you are able to group changes in your files
+        into seperate version, e.g. by feature or topic.
       </Fragment>
     )),
     new ChapterText(() => (
@@ -79,18 +78,18 @@ const gitChapter = createChapter('Introducing Git', {
         Last but not least comes the <strong>repository</strong>. Broadly
         speaking, it's the{' '}
         <Tooltip name="versionDatabase">version database</Tooltip> of your
-        project. All three parts of the project are stored on your computer.
-        Only the repository is downloaded from or uploaded to other team
-        members.
+        project. The repository is shared with others by downloading or
+        uploading it to a server or other team members. However, all three parts
+        of your project are always stored on your computer.
       </Fragment>
     )),
     new ChapterText(() => (
       <Fragment>
-        New <Tooltip name="version">versions</Tooltip> stored in the repository
-        are called <strong>commits</strong>. Beside beeing a snapshot of the
-        whole project at a certain point of time they also contain the author
-        and date of the version, so you are able to get an overview of all
-        changes later on.
+        New <Tooltip name="version">versions</Tooltip> in the repository are
+        called <strong>commits</strong>. They are a snapshot of the whole
+        project at a certain point of time. But they also contain the author and
+        date of the version, so you are able to get an overview of all changes
+        later on.
       </Fragment>
     )),
   ],

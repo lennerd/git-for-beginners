@@ -65,14 +65,14 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
         <Fragment>
           Let’s create a few more <Tooltip name="commit">commits</Tooltip>. This
           time we use the <Tooltip name="console">console</Tooltip>. Two
-          programs are available: <code>tutorial</code> and <code>git</code>
+          commands are available: <code>tutorial</code> and <code>git</code>
         </Fragment>
       )),
       new ChapterTask(
         () => (
           <Fragment>
-            First create a new with <code>tutorial add</code> or select a file
-            and modify it via <code>tutorial modify</code>.
+            First create a new with <code>tutorial add</code> <em>or</em> select
+            a file and modify it via <code>tutorial modify</code>.
           </Fragment>
         ),
         this.hasModifiedFiles || this.hasFiledStaged || this.hasCreatedCommit,
@@ -118,9 +118,9 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
       new ChapterText(
         () => (
           <Fragment>
-            Wow, that wasn’t so difficult right? The console is nothing more
-            than before. A text based menu of options with a nice history of
-            what you have done before.{' '}
+            Wow, that wasn’t so difficult right? The console is nothing else
+            than the menu before. A text based menu of options with a nice
+            history of what you have done before.{' '}
             <em>Again you are free to explore and play around.</em>
           </Fragment>
         ),

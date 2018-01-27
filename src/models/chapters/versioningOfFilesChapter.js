@@ -37,8 +37,13 @@ const versioningOfFilesChapter = createChapter('Versioning of Files', {
       ),
       new ChapterTask(() => 'Create a few more backups.', this.hasBackups),
       new ChapterText(
-        () =>
-          'Do you see the problem? Data is lost easily. And the developer of this tutorial, like many people out there, was too lazy to come up with a good way of naming your files. Idiot.',
+        () => (
+          <Fragment>
+            Do you see the problem? It’s very hard to keep an overview. And the
+            developer of this tutorial, like many people out there, was too lazy
+            to come up with a good way of naming your files. Idiot.
+          </Fragment>
+        ),
         { skip: true },
       ),
       new ChapterTask(() => 'Add a version database.', this.hasVersionDatabase),

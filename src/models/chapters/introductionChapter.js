@@ -8,9 +8,9 @@ const introductionChapter = createChapter('Introduction', {
     new ChapterText(() => (
       <Fragment>
         Over the passed decades computer in different shape and sizes changed
-        our daily life enormously. Together we create huge amount of data in
-        form of files everyday to store everything from invoices to love
-        letters, from code to illustrations and designs.
+        our daily life enormously. Together we create huge amount of files
+        everyday to store everything from invoices to love letters, from code to
+        illustrations and designs.
       </Fragment>
     )),
     new ChapterText(() => (
@@ -25,19 +25,6 @@ const introductionChapter = createChapter('Introduction', {
         </em>
       </Fragment>
     )),
-    /*new ChapterText(() => (
-      <Fragment>
-        To prevent data loss we create backups and use clouds to store files and
-        share data with others. Two people working on the same file is often
-        impossible though. And after all, data is lost, because we accidentily
-        deleted an old file or have overwritten a file a college had changed a
-        few minutes before.{' '}
-        <em>
-          No matter how hard we work on file name conventions and how many
-          channels we use to communicate in our team, mistakes are made.
-        </em>
-      </Fragment>
-    )),*/
     new ChapterText(() => (
       <Fragment>
         But not everything is lost (pun intended). Special version control

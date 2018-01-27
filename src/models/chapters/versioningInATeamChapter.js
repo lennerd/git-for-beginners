@@ -56,7 +56,7 @@ const versioningInATeam = createChapter('Versioning in a Team', {
     new ChapterText(() => (
       <Fragment>
         Since the basics are covered now, it’s time to jump back to Git and look
-        at the way how they enable the work in a team.
+        at the way how Git enables the work in a team.
       </Fragment>
     )),
   ],
@@ -239,6 +239,8 @@ const versioningInATeam = createChapter('Versioning in a Team', {
 
       this.visUserFileA.visible = true;
       this.visUserFileB.visible = true;
+      this.visUserA.row = 0;
+      this.visUserB.row = 0;
 
       this.visFile.reset();
       this.visSecondFile.reset();

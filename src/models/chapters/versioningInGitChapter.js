@@ -234,8 +234,8 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
           <Fragment>
             Did you see how files moved from the{' '}
             <Tooltip name="workingDirectory">working directory</Tooltip> to the
-            staging area? These files changes are ready to be part of the next
-            version, the next commit.{' '}
+            staging area? These changed files will be part of your next version,
+            your next commit.{' '}
             <em>
               You can add more files, if you want. The stage is yours, actually.
             </em>
