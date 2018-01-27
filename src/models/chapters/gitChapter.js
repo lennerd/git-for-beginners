@@ -75,9 +75,8 @@ const gitChapter = createChapter('Introducing Git', {
     )),
     new ChapterText(() => (
       <Fragment>
-        Last not least there is the <strong>repository</strong>. Roughly
-        speaking, it‘s the{' '}
-        <Tooltip name="versionDatabase">version database</Tooltip> of your
+        Last not least there is the <strong>repository</strong>. Basically it is
+        the <Tooltip name="versionDatabase">version database</Tooltip> of your
         project. The repository is shared with others by downloading from or
         uploading to a server or other team members. However, all three parts of
         your project are always stored on your computer.
