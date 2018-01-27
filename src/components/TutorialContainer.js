@@ -14,8 +14,6 @@ class TutorialContainer extends Component {
     const { tutorial } = this.props;
     const { currentChapter } = tutorial;
 
-    //debugger;
-
     return (
       <Tutorial>
         <Helmet>

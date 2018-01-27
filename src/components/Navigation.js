@@ -9,7 +9,9 @@ export const NavigationProgressBar = styled.div`
   width: ${props => props.theme.spacing(0.75)};
   min-height: ${props => props.theme.spacing(0.75)};
   max-height: 100%;
-  height: calc(${props => props.progress * 100}% + ${props => props.theme.spacing(0.375)});
+  height: calc(
+    ${props => props.progress * 100}% + ${props => props.theme.spacing(0.375)}
+  );
   left: 50%;
   margin-left: ${props => props.theme.spacing(-0.375)};
   border-radius: ${props => props.theme.spacing(0.375)};
@@ -49,7 +51,7 @@ export const NavigationIndicator = styled.div`
   transform: rotate(0);
   background-color: ${props => props.theme.color.interactive};
 
-  ${props => props.completed && completedIndicator}
+  ${props => props.completed && completedIndicator};
 `;
 
 export const NavigationLabel = styled.div`
@@ -79,7 +81,7 @@ export const NavigationLink = Link.extend`
     }
 
     ${NavigationIndicator} {
-      ${completedIndicator}
+      ${completedIndicator};
     }
   }
 
@@ -96,11 +98,11 @@ export const NavigationLink = Link.extend`
 
 const Navigation = styled.nav`
   position: relative;
-  z-index: 1;
+  z-index: 2;
   justify-self: center;
   align-self: stretch;
   grid-area: navigation;
-  margin: ${props => props.theme.spacing(-0.375)} 0 ;
+  margin: ${props => props.theme.spacing(-0.375)} 0;
 `;
 
 export default Navigation;

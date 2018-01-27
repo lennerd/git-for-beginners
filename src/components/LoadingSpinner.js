@@ -13,22 +13,18 @@ function LoadingSpinner({ className, pastDelay, ...props }) {
     return null;
   }
 
-  return (
-    <div className={className}></div>
-  );
+  return <div className={className} />;
 }
 
 export default styled(LoadingSpinner)`
   grid-area: spinner;
+  position: relative;
   justify-self: center;
   align-self: center;
-  ${props => props.theme.text.caps}
-  pointer-events: none;
-  top: 0;
-  right: 0;
+  ${props => props.theme.text.caps} pointer-events: none;
   color: ${props => props.theme.color.highlight};
   opacity: 0.5;
-  z-index: 1;
+  z-index: 2;
 
   &:before {
     content: '';
