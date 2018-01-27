@@ -108,7 +108,7 @@ class VisualisationCommit extends Component {
         tween({
           from: this.position.get(),
           to: commit.position,
-          duration: 1400,
+          duration: 1000,
           ease: easing.easeInOut,
         }).start(this.position);
       },
