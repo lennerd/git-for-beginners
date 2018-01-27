@@ -500,6 +500,10 @@ function createUnstagedStatus(vis, unstaged) {
 }
 
 export function createStatusMessage(vis, status) {
+  if (status.staged == null && status.unstaged == null) {
+    return 'Nothing to commit, working tree clean.';
+  }
+
   return react`${
     status.staged != null ? createStagedStatus(vis, status.staged) : ''
   }${status.staged != null && status.unstaged != null ? '\n\n' : ''}${
