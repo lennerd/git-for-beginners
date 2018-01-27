@@ -6,7 +6,7 @@ import Tooltip from '../../components/Tooltip';
 import GitVisualisation from '../vis/GitVisualisation';
 import Repository from '../Repository';
 
-const gitChapter = createChapter('Git', {
+const gitChapter = createChapter('Introducing Git', {
   useWorkingDirectory: false,
   useStagingArea: false,
   useRepository: false,
