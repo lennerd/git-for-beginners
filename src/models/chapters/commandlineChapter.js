@@ -35,10 +35,10 @@ const commandlineChapter = createChapter('Command-line', {
   sections: [
     new ChapterText(() => (
       <Fragment>
-        One important part is still missing: the command-line or console, a text
-        based controlling interface for your computer. This may sound old
-        fashioned, but mastering it will speed up your workflow with Git
-        enourmusly, I promise.
+        There is still an important part missing: the command-line or console,
+        i.e. a text based controlling interface for your computer. This may
+        sound old fashioned but it really will speed up your workflow with Git,
+        I promise.
       </Fragment>
     )),
     new ChapterText(() => (
@@ -47,7 +47,7 @@ const commandlineChapter = createChapter('Command-line', {
         support a subset of features. And after all, mastering the console will
         improve your abilities to use any kind of interface for Git.{' '}
         <em>
-          It can be used to control nearly every software on your computer, not
+          It can be used to control nearly any software on your computer, not
           just Git.
         </em>
       </Fragment>
@@ -58,30 +58,30 @@ const commandlineChapter = createChapter('Command-line', {
     ),
     new ChapterText(() => (
       <Fragment>
-        The <strong>prompt</strong> indicates that the console is ready to take
-        in a new command. It’s often prefixed with the current path to help you
-        orientate.
+        The <strong>prompt</strong> indicates by a dollar sign that the console
+        is ready for a new command. It’s often prefixed with the current path to
+        help you to orientate.
       </Fragment>
     )),
     new ChapterText(() => (
       <Fragment>
-        The prompt is followed by a <strong>command or program</strong> you want
-        to execute by the command-line.
+        The prompt is followed by the <strong>command or program</strong> you
+        want to execute with the command-line.
       </Fragment>
     )),
     new ChapterText(() => (
       <Fragment>
         By using <strong>sub commands and options</strong> you can provide
-        parameters on how the command should be executed. It’s up to the command
+        parameters on how the command should be executed. The command decides
         how these parameters are interpreted.
       </Fragment>
     )),
     new ChapterText(() => (
       <Fragment>
-        When you’re ready you press the <em>enter</em> key on your keyboard to
-        send everything to the command-line. Bare with me, you’ll be amazed how
-        easy it is to use, especially with a visual model in mind of what is
-        happening underneath.
+        After the command is given you press the <em>enter</em> key on your
+        keyboard and everything will be send to the command-line. Believe it or
+        not, you’ll be amazed how easy it is, especially when having a visual
+        model in mind of what is happening underneath.
       </Fragment>
     )),
   ],

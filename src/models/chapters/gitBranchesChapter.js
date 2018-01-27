@@ -162,8 +162,8 @@ const gitBranchesChapter = createChapter('Git Branches', {
         () => (
           <Fragment>
             Voilà, you just created a new branch, a bunch of commits and merged
-            these commits into a single one. I would say you are ready for using
-            Git in a team, aren’t you?
+            these commits from both branches into a single one. I would say you
+            are ready for using Git in a team, aren’t you?
           </Fragment>
         ),
         { skip: true },

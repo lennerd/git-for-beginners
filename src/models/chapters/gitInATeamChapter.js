@@ -12,11 +12,12 @@ const gitInATeamChapter = createChapter('Git in a Team', {
   sections: [
     new ChapterText(() => (
       <Fragment>
-        See the label at the last <Tooltip name="commit">commit</Tooltip> and
-        the line connecting all the commits? That’s a <strong>branch</strong>.
-        Git uses branches to support work in a team on different parts of your
-        projects at the same time. A branch is basically a chain of commits. By
-        default every Git project comes with a <code>master</code> branch.
+        Do you see the label at the last <Tooltip name="commit">commit</Tooltip>{' '}
+        and the line connecting all the commits? That’s a{' '}
+        <strong>branch</strong>. Git uses branches to support work in a team on
+        different parts of your projects at the same time. A branch is basically
+        a chain of commits. By default every Git project comes with a{' '}
+        <code>master</code> branch.
       </Fragment>
     )),
     new ChapterText(() => (
@@ -36,9 +37,9 @@ const gitInATeamChapter = createChapter('Git in a Team', {
     )),
     new ChapterText(() => (
       <Fragment>
-        Now, to merge the changes from both branches, we simply checkout the{' '}
+        Next, to merge the changes from both branches, we simply checkout the{' '}
         <code>master</code> branch again and merge our changes from{' '}
-        <code>new-feature</code> into our currently active branch.
+        <code>new-feature</code> into the now active <code>master</code> branch.
       </Fragment>
     )),
     new ChapterText(
@@ -111,9 +112,9 @@ const gitInATeamChapter = createChapter('Git in a Team', {
       this.mergeMaster = true;
 
       this.actionQueue.add(
-        delay(1000),
+        delay(2000),
         this.checkoutMaster,
-        delay(1000),
+        delay(1400),
         this.mergeNewFeature,
       );
     }

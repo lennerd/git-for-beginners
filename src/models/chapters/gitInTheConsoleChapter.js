@@ -71,8 +71,8 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
       new ChapterTask(
         () => (
           <Fragment>
-            First create a new with <code>tutorial add</code> <em>or</em> select
-            a file and modify it via <code>tutorial modify</code>.
+            First create a new file with <code>tutorial add</code> <em>or</em>{' '}
+            select a file and modify it via <code>tutorial modify</code>.
           </Fragment>
         ),
         this.hasModifiedFiles || this.hasFiledStaged || this.hasCreatedCommit,
@@ -88,9 +88,9 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
         {
           tip: () => (
             <Fragment>
-              The normal console won’t give you the visualisation you have here.
-              No worries though. With <code>git status</code> you are able to
-              see similar text based output.
+              The normal console won’t give you the visualisation you see here.
+              But that’s fine. With <code>git status</code> you are able to see
+              the similar text based output.
             </Fragment>
           ),
         },
@@ -118,7 +118,7 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
       new ChapterText(
         () => (
           <Fragment>
-            Wow, that wasn’t so difficult right? The console is nothing else
+            Wow, that wasn’t difficult, was it? The console isn’t anything else
             than the menu before. A text based menu of options with a nice
             history of what you have done before.{' '}
             <em>Again you are free to explore and play around.</em>
@@ -129,7 +129,7 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
       new ChapterText(
         () => (
           <Fragment>
-            Let‘s look at one final topic, where Git can really help you out.
+            Let‘s look at the final topic and see what else Git can do for you.
           </Fragment>
         ),
         { skip: true },

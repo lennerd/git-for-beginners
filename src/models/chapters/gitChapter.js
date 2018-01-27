@@ -50,8 +50,8 @@ const gitChapter = createChapter('Introducing Git', {
         <Fragment>
           Git is a version control system. It’s a software you can install on
           your computer to store <Tooltip name="version">versions</Tooltip> of
-          your file. But instead of copying files and folders by hand, you store
-          new snapshots of your whole project.
+          your file. But instead of copying files and folders manually now you
+          store new snapshots of your whole project.
         </Fragment>
       ),
       { skip: true },
@@ -68,28 +68,27 @@ const gitChapter = createChapter('Introducing Git', {
       <Fragment>
         The second part is the <strong>staging area</strong>. Despite its name,
         it’s not about showing something to others. Instead you can use the
-        staging area to collect changes to your project you want to be part of
-        your next version. This way you are able to group changes in your files
-        into seperate version, e.g. by feature or topic.
+        staging area to collect changes in the project that you want to store in
+        the next version. By this you are able to group changes in your files
+        into seperate versions, e.g. by feature or topic.
       </Fragment>
     )),
     new ChapterText(() => (
       <Fragment>
-        Last but not least comes the <strong>repository</strong>. Broadly
-        speaking, it's the{' '}
+        Last not least there is the <strong>repository</strong>. Roughly
+        speaking, it‘s the{' '}
         <Tooltip name="versionDatabase">version database</Tooltip> of your
-        project. The repository is shared with others by downloading or
-        uploading it to a server or other team members. However, all three parts
-        of your project are always stored on your computer.
+        project. The repository is shared with others by downloading from or
+        uploading to a server or other team members. However, all three parts of
+        your project are always stored on your computer.
       </Fragment>
     )),
     new ChapterText(() => (
       <Fragment>
-        New <Tooltip name="version">versions</Tooltip> in the repository are
-        called <strong>commits</strong>. They are a snapshot of the whole
-        project at a certain point of time. But they also contain the author and
-        date of the version, so you are able to get an overview of all changes
-        later on.
+        The new <Tooltip name="version">versions</Tooltip> in the repository are
+        called <strong>commits</strong>. They are snapshots of the whole project
+        at a certain point of time. But they also contain the author and date of
+        the version, so you are able to get an overview of all changes later on.
       </Fragment>
     )),
   ],

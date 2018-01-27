@@ -85,7 +85,7 @@ export default new Glossary({
         folder.
       </p>
       <p>
-        Depending on it‘s implementation it stores changes between files or
+        Depending on its implementation it stores changes between files or
         snapshots of your whole project.
       </p>
     </Fragment>

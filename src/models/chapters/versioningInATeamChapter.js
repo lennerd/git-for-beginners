@@ -26,37 +26,38 @@ const versioningInATeam = createChapter('Versioning in a Team', {
     ),
     new ChapterText(() => (
       <Fragment>
-        Again User A is creating a new file, adds some changes and uploads the
-        file to the version database. <em>A first version is created.</em>
+        Again User A is creating a new file, adding some changes and uploading
+        the file to the version database. <em>The first version is created.</em>
       </Fragment>
     )),
     new ChapterText(() => (
       <Fragment>
         User B jumps in, downloads the content, makes some modification and
-        uploads the file again. <em>A second version is created.</em>
+        uploads the file again. <em>The second version is created.</em>
       </Fragment>
     )),
-    new ChapterText(() => <em>Again this can go on, and on, and on …</em>),
+    new ChapterText(() => <em>This can go on, again, and again …</em>),
     new ChapterText(() => (
       <Fragment>
-        Nice. Now new changes are stored in a new version of the file. But one
-        problem is still not solved. Both users cannot change content at the
-        same time and need to wait for the other one to upload his changes.
+        Isn’t that nice. Now new changes are stored in a new version of the
+        file. But one problem is still existing. Both users can’t change content
+        at the same time but need to wait for each other to upload the changes.
       </Fragment>
     )),
     new ChapterText(() => (
       <Fragment>
-        That is why version databases are able to merge changes from different
+        That’s why version databases are able to merge changes from different
         users into a single version.{' '}
         <em>
-          Watch how both users are now able to make changes at the sam time.
+          Let’s see how both users will be able to make changes at the same
+          time.
         </em>
       </Fragment>
     )),
     new ChapterText(() => (
       <Fragment>
-        Since the basics are covered now, it’s time to jump back to Git and look
-        at the way how Git enables the work in a team.
+        Since the basics are done now, it’s time to jump back to Git and look
+        how Git supports teamwork.
       </Fragment>
     )),
   ],

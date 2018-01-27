@@ -205,7 +205,7 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
     return [
       new ChapterText(() => (
         <Fragment>
-          Let’s take a look at how a <Tooltip name="commit">commit</Tooltip> is
+          Let’s have a look at how a <Tooltip name="commit">commit</Tooltip> is
           created.
         </Fragment>
       )),
@@ -222,7 +222,7 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
       new ChapterTask(
         () => (
           <Fragment>
-            Stage new files to add them to the{' '}
+            Stage the new files to add them to the{' '}
             <Tooltip name="stagingArea">staging area</Tooltip>.
           </Fragment>
         ),
@@ -232,12 +232,13 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
       new ChapterText(
         () => (
           <Fragment>
-            Did you see how files moved from the{' '}
+            Did you see files moving over from the{' '}
             <Tooltip name="workingDirectory">working directory</Tooltip> to the
             staging area? These changed files will be part of your next version,
             your next commit.{' '}
             <em>
-              You can add more files, if you want. The stage is yours, actually.
+              You can add more files as you like it. The stage is yours,
+              actually.
             </em>
           </Fragment>
         ),
@@ -250,10 +251,10 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
       new ChapterText(
         () => (
           <Fragment>
-            Perfect. A new commit was created and added to the{' '}
-            <Tooltip name="repository">repository</Tooltip>. Like we said, each
-            commit has a unique identifier, so we can reference it for example
-            in the interactive menu below the visualisation.
+            Perfectly done. A new commit was created and added to the{' '}
+            <Tooltip name="repository">repository</Tooltip>. As we said each
+            commit has a unique identifier, as it can be seen in the interactive
+            menu below the visualisation.
           </Fragment>
         ),
         { skip: true },
@@ -262,14 +263,14 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
         () => 'Create at least two more commits.',
         this.vis.repository.visCommits.length > 2,
         {
-          tip: () => 'If you want, you can also add, remove or modify files.',
+          tip: () => 'If you like you can also add, remove or modify files.',
         },
       ),
       new ChapterText(
         () => (
           <Fragment>
-            Now that we have a few more versions of our project, let’s take a
-            look at how to restore an older version.
+            Now as we have a few more versions of our project, let’s have a look
+            at how to restore an older version.
           </Fragment>
         ),
         { skip: true },
@@ -284,7 +285,7 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
             Well done! A few commits were created and an older version of your
             project restored.{' '}
             <em>
-              Go ahead and play around with your git powered project a little
+              Go ahead and play around with your Git powered project a little
               more.
             </em>{' '}
             Or jump directly to the …

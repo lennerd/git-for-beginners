@@ -39,7 +39,7 @@ const sandboxChapter = createChapter('Git Sandbox', {
       new ChapterText(() => (
         <Fragment>
           We have reached the end of this tutorial. You just learned the basics
-          about versioning and git, the console, how to do versioning in a team
+          about versioning and Git, the console, how to do versioning in a team
           and how to use all these concepts together. Crazy. I hope everything
           was understandable and you had fun!
         </Fragment>

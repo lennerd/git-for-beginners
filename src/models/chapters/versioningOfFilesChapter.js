@@ -22,7 +22,7 @@ const deleteFile = createAction('DELETE_FILE');
 const versioningOfFilesChapter = createChapter('Versioning of Files', {
   get sections() {
     return [
-      new ChapterText(() => 'So let’s start by asking: what is a version?', {
+      new ChapterText(() => 'First question is: what is a version?', {
         skip: true,
       }),
       new ChapterTask(() => 'Create a new file.', this.hasFiles),
@@ -32,16 +32,16 @@ const versioningOfFilesChapter = createChapter('Versioning of Files', {
       new ChapterTask(() => 'Make a copy of the file.', this.hasCopiedFile),
       new ChapterText(
         () =>
-          'And there it is, a backup file, an older version of our file. As you can see, we can use filenames to distinguish between them.',
+          'Here it is, a backup file, an older version of our file. As you can see we can use filenames in order to distinguish them.',
         { skip: true },
       ),
       new ChapterTask(() => 'Create a few more backups.', this.hasBackups),
       new ChapterText(
         () => (
           <Fragment>
-            Do you see the problem? It’s very hard to keep an overview. And the
-            developer of this tutorial, like many people out there, was too lazy
-            to come up with a good way of naming your files. Idiot.
+            Do you see the problem? It’s hard to keep an overview. And the
+            developer of this tutorial – as many other people are — was too lazy
+            to find a good way of naming your files. Are you with me?
           </Fragment>
         ),
         { skip: true },
@@ -50,8 +50,9 @@ const versioningOfFilesChapter = createChapter('Versioning of Files', {
       new ChapterText(
         () => (
           <Fragment>
-            Perfect. You added a version database, which stores and restores all
-            the versions of our file, even when we accidentially deleted one.
+            Well done. You added a version database which is able to store and
+            restore all the versions of your file even when accidentially
+            deleted.
           </Fragment>
         ),
         { skip: true },
@@ -62,7 +63,7 @@ const versioningOfFilesChapter = createChapter('Versioning of Files', {
       ),
       new ChapterText(
         () =>
-          'Already dreaming about having your own version databse? Nice! Let’s finally start with the real thing.',
+          'Dreaming already of having your own version databse? Nice! Let’s finally start with the real thing.',
         { skip: true },
       ),
     ];

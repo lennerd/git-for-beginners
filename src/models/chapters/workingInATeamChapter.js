@@ -14,32 +14,31 @@ const workingInATeamChapter = createChapter('Working in a Team', {
   sections: [
     new ChapterText(() => (
       <Fragment>
-        Most of the time, when working on a project, we work in teams. This
-        means we need to exchange our files, for example by using a{' '}
-        <Tooltip name="cloud">cloud</Tooltip>. Let’s take a closer look on a
-        project with one file and two users.
+        Working on a project usally means working in a team. This means we need
+        to exchange our files, for example by using a{' '}
+        <Tooltip name="cloud">cloud</Tooltip>. Let’s take a closer look at a
+        project e.g. with one file and two users.
       </Fragment>
     )),
     new ChapterText(() => (
       <Fragment>
-        User A starts by editing a file on his computer. He or she adds a few
-        changes to it and then uploads the file to the cloud.
+        User A starts editing a file on his or her computer. He or she adds a
+        few changes to it and then uploads the file to the cloud.
       </Fragment>
     )),
     new ChapterText(() => (
       <Fragment>
-        Once uploaded a second user, user B wants to work on the file too. He or
-        she downloads the file, add some changes. Than, he uploads the file
-        again.
+        Once the file beeing uploaded a second user B wants to work on the file,
+        too. He or she downloads the file, adds some changes and uploads the
+        file again.
       </Fragment>
     )),
-    new ChapterText(() => <em>This goes on and on and on…</em>),
+    new ChapterText(() => <em>This goes on and on and on …</em>),
     new ChapterText(() => (
       <Fragment>
-        Sounds easy right? Basically it is. There is one bigger problem though.
-        Both users need to wait until the other one has finished editing the
-        file. Otherwise changes from another user can get lost easily.
-        Versioning to the rescue …
+        Very easy to do. But there is one big problem. Both users need to wait
+        until one or the other has finished editing the file. Otherwise changes
+        will be lost easily. Versioning to the rescue …
       </Fragment>
     )),
   ],

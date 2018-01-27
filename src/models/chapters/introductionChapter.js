@@ -7,40 +7,40 @@ const introductionChapter = createChapter('Introduction', {
   sections: [
     new ChapterText(() => (
       <Fragment>
-        Over the passed decades computer in different shape and sizes changed
-        our daily life enormously. Together we create huge amount of files
-        everyday to store everything from invoices to love letters, from code to
-        illustrations and designs.
+        Over the past decades computers of different shapes and sizes have
+        changed our daily life enormously. Everyday there is a huge amount of
+        files created in order to store everything from invoices to love
+        letters, from codes to illustrations and designs.
       </Fragment>
     )),
     new ChapterText(() => (
       <Fragment>
-        Although we create backups and store our files in clouds, data is lost
-        frequently, because we accidentily deleted an old file or have
-        overwritten a file a college had changed a few minutes before.<br />
+        Although lots of backups are created and files are stored in clouds data
+        is lost frequently because you may have accidentily deleted an old file
+        or overwritten a file a colleague had changed a few minutes ago.<br />
         <em>
-          No matter how hard we work on file name conventions and how many
-          channels and notes we create to communicate to our self and our team,
-          mistakes are made.
+          Regardless how hard we work on file name conventions and how many
+          channels and notes we create to communicate to ourselves or to our
+          team mistakes are made.
         </em>
       </Fragment>
     )),
     new ChapterText(() => (
       <Fragment>
         But not everything is lost (pun intended). Special version control
-        systems can help to store versions of our project more effectily and
-        give our team a better way of working on files together.
+        systems can help you to store versions of your project more efficiently
+        and offers your team a better way of working on files together.
       </Fragment>
     )),
     new ChapterText(() => (
       <Fragment>
         Welcome to <strong>Git for Beginners</strong> – an interactive tutorial
         to learn and understand Git, a popular version control system to help
-        you and your team to not loose data again.
+        you and your team not to loose data again.
       </Fragment>
     )),
     new ChapterText(
-      () => 'Confused already? No worries. We start with the basics …',
+      () => 'Are you confused? Don‘t worry. Let‘s start with the basics …',
     ),
   ],
 });
