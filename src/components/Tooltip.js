@@ -10,7 +10,7 @@ const TooltipTarget = styled.a`
   transition: border-bottom-color 400ms;
   border-bottom: 2px solid ${props => props.theme.color.interactive.alpha(0.5)};
   cursor: pointer;
-  hyphens: none;
+  white-space: nowrap;
 
   &:hover {
     border-bottom-color: ${props => props.theme.color.interactive};
