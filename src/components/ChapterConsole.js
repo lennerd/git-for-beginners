@@ -114,11 +114,15 @@ class ChapterConsoleInput extends Component {
     this.disposeFocus();
   }
 
+  handleClick = () => {
+    this.inputElement.focus();
+  };
+
   render() {
     const { chapter } = this.props;
 
     return (
-      <ConsoleSection>
+      <ConsoleSection onClick={this.handleClick}>
         <ConsoleInput>
           <span>$</span>
           <AutosizeInput
