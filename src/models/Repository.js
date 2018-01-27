@@ -128,11 +128,15 @@ class Repository {
     const parents = [];
 
     if (this.head.commit != null) {
-      if (this.head.commit.tree === this.stagingArea.tree) {
+      if (message != null && this.head.commit.tree === this.stagingArea.tree) {
         throw new ConsoleError('No new changes to add to a commit.');
       }
 
       parents.push(this.head.commit);
+    }
+
+    if (message == null) {
+      message = chance.sentence();
     }
 
     const commit = new Commit({

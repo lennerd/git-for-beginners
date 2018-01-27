@@ -1,7 +1,7 @@
 import { transaction, autorun } from 'mobx';
 import { update, serialize } from 'serializr';
 
-import TutorialState from "./models/TutorialState";
+import TutorialState from './models/TutorialState';
 import Tutorial from './models/Tutorial';
 import introductionChapter from './models/chapters/introductionChapter';
 import versioningOfFilesChapter from './models/chapters/versioningOfFilesChapter';
@@ -13,6 +13,7 @@ import workingInATeamChapter from './models/chapters/workingInATeamChapter';
 import gitBranchesChapter from './models/chapters/gitBranchesChapter';
 import versioningInATeamChapter from './models/chapters/versioningInATeamChapter';
 import gitInATeamChapter from './models/chapters/gitInATeamChapter';
+import sandboxChapter from './models/chapters/sandboxChapter';
 
 const STORAGE_KEY = 'tutorialState';
 
@@ -45,6 +46,7 @@ tutorial.init([
   versioningInATeamChapter,
   gitInATeamChapter,
   gitBranchesChapter,
+  sandboxChapter,
 ]);
 
 export default tutorial;

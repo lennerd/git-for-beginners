@@ -53,31 +53,26 @@ const gitInATeamChapter = createChapter('Git in a Team', {
     this.actionQueue = actionQueue().start();
 
     this.createNewFeatureBranch = popmotionAction(({ complete }) => {
-      console.log('new-feature create');
       this.vis.createBranch('new-feature');
       complete();
     });
 
     this.createCommit = popmotionAction(({ complete }) => {
-      console.log('commit create');
       this.vis.createCommit();
       complete();
     });
 
     this.checkoutNewFeature = popmotionAction(({ complete }) => {
-      console.log('new-feature checkout');
       this.vis.checkout('new-feature');
       complete();
     });
 
     this.checkoutMaster = popmotionAction(({ complete }) => {
-      console.log('master checkout');
       this.vis.checkout('master');
       complete();
     });
 
     this.mergeNewFeature = popmotionAction(({ complete }) => {
-      console.log('merge new feature');
       this.vis.merge('new-feature');
       complete();
     });

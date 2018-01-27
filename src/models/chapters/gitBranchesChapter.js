@@ -124,6 +124,15 @@ const gitBranchesChapter = createChapter('Git Branches', {
           </Fragment>
         ),
         this.newVisBranchHasCommits,
+        {
+          tip: () => (
+            <Fragment>
+              Use the <code>tutorial</code> command to modify selected files or
+              create new ones. Use the <code>git</code> command to add files to
+              the staging area or create commit.
+            </Fragment>
+          ),
+        },
       ),
       new ChapterTask(
         () => (
@@ -158,26 +167,6 @@ const gitBranchesChapter = createChapter('Git Branches', {
           </Fragment>
         ),
         { skip: true },
-      ),
-      new ChapterText(
-        () => (
-          <Fragment>
-            We also have reached the end of this tutorial. You just learned the
-            basics about versioning and git, the console, how to do versioning
-            in a team and how to use all these concepts together. Crazy. I hope
-            everything was understandable and you had fun! Keep in mind (and I
-            can’t say it often enough):
-          </Fragment>
-        ),
-        { skip: true },
-      ),
-      new ChapterText(
-        () => (
-          <em>This is your personal sandbox, ready to be used and explored!</em>
-        ),
-        {
-          skip: true,
-        },
       ),
     ];
   },
@@ -222,6 +211,12 @@ const gitBranchesChapter = createChapter('Git Branches', {
             textOnly: true,
             action: stageFile,
             payloadCreator: () => this.activeFileIndex,
+            message: ({ data }) => (
+              <Fragment>
+                File <VisualisationFileReference vis={this.vis} file={data} />{' '}
+                was added to the staging area.
+              </Fragment>
+            ),
           }),
           new ConsoleCommand('status', {
             textOnly: true,
@@ -257,11 +252,12 @@ const gitBranchesChapter = createChapter('Git Branches', {
           }),
         ],
       }),
-      new ConsoleCommand('Working Directory', {
+      new ConsoleCommand('tutorial', {
+        textOnly: true,
         available: () => this.vis.workingDirectory.active,
         commands: [
-          new ConsoleCommand('Add new file.', {
-            icon: '+',
+          new ConsoleCommand('add', {
+            textOnly: true,
             message: ({ data }) => (
               <Fragment>
                 A new file{' '}
@@ -271,14 +267,9 @@ const gitBranchesChapter = createChapter('Git Branches', {
             ),
             action: addFile,
           }),
-        ],
-      }),
-      new ConsoleCommand('File', {
-        available: () => this.vis.workingDirectory.active,
-        commands: [
-          new ConsoleCommand('Modify', {
+          new ConsoleCommand('modify', {
+            textOnly: true,
             available: () => this.activeFile != null,
-            icon: '+-',
             message: ({ data }) => (
               <Fragment>
                 File <VisualisationFileReference vis={this.vis} file={data} />{' '}
@@ -288,9 +279,9 @@ const gitBranchesChapter = createChapter('Git Branches', {
             action: modifyFile,
             payloadCreator: () => this.activeFileIndex,
           }),
-          new ConsoleCommand('Delete', {
+          new ConsoleCommand('delete', {
+            textOnly: true,
             available: () => this.activeFile != null,
-            icon: '×',
             message: ({ data }) => (
               <Fragment>
                 File <VisualisationFileReference vis={this.vis} file={data} />{' '}

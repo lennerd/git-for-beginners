@@ -1,17 +1,17 @@
 import React, { Fragment } from 'react';
 
 import { createChapter, init } from '../Chapter';
-import { ChapterText, ChapterTask } from '../ChapterSection';
-import Tooltip from '../../components/Tooltip';
+import { ChapterText } from '../ChapterSection';
 import Console from '../Console';
 import { VisualisationFileReference } from '../../components/VisualisationObjectReference';
 import ConsoleCommand from '../ConsoleCommand';
-import { createAction } from '../Action';
 import {
   createStatusMessage,
   createCommitMessage,
+  createCheckoutMessage,
+  createMergeMessage,
 } from '../vis/GitVisualisation';
-import { STATUS_UNMODIFIED } from '../../constants';
+import { createAction } from '../Action';
 import ConsoleError from '../ConsoleError';
 
 const addFile = createAction('ADD_FILE');
@@ -22,9 +22,52 @@ const createCommit = createAction('CREATE_COMMIT', args => {
 });
 const modifyFile = createAction('MODIFY_FILE');
 const deleteFile = createAction('DELETE_FILE');
+const createBranch = createAction('CREATE_BRANCH', args => {
+  return args._[0];
+});
+const checkoutBranch = createAction('CHECKOUT_BRANCH', args => {
+  return args._[0];
+});
+const mergeBranch = createAction('MERGE_BRANCH', args => {
+  return args._[0];
+});
 
-const gitInTheConsoleChapter = createChapter('Git in the Console', {
-  inheritFrom: 'Versioning in Git',
+const sandboxChapter = createChapter('Git Sandbox', {
+  inheritFrom: 'Git Branches',
+  get sections() {
+    return [
+      new ChapterText(() => (
+        <Fragment>
+          We have reached the end of this tutorial. You just learned the basics
+          about versioning and git, the console, how to do versioning in a team
+          and how to use all these concepts together. Crazy. I hope everything
+          was understandable and you had fun!
+        </Fragment>
+      )),
+      new ChapterText(() => (
+        <Fragment>
+          Welcome to the sandbox mode. Use the <code>tutorial</code> command to
+          create new files or modify selected ones. Use the <code>git</code>{' '}
+          command to stage files, create commits or branches, and merge branches
+          together. Keep in mind (and I can’t say it often enough):
+        </Fragment>
+      )),
+      new ChapterText(
+        () => (
+          <em>
+            This is your personal sandbox, ready to be used and explored! Happy
+            gitting!
+          </em>
+        ),
+        {
+          skip: true,
+        },
+      ),
+    ];
+  },
+  get vis() {
+    return this.parent.vis;
+  },
   get activeVisFile() {
     return this.vis.visFiles.find(visFile => visFile.active);
   },
@@ -38,108 +81,8 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
   get activeFileIndex() {
     return this.vis.files.indexOf(this.activeFile);
   },
-  get activeVisCommit() {
-    return this.vis.repository.visCommits.find(visCommit => visCommit.active);
-  },
-  get activeCommit() {
-    if (this.activeVisCommit == null) {
-      return null;
-    }
-
-    return this.activeVisCommit.commit;
-  },
-  get hasModifiedFiles() {
-    return this.vis.workingDirectory.some(
-      object => object.isFile && object.status !== STATUS_UNMODIFIED,
-    );
-  },
-  get hasFiledStaged() {
-    return this.vis.stagingArea.some(object => object.isFile);
-  },
-  get hasCreatedCommit() {
-    return this.state.has(createCommit);
-  },
-  get sections() {
-    return [
-      new ChapterText(() => (
-        <Fragment>
-          Let’s create a few more <Tooltip name="commit">commits</Tooltip>. This
-          time we use the <Tooltip name="console">console</Tooltip>. Two
-          programs are available: <code>tutorial</code> and <code>git</code>
-        </Fragment>
-      )),
-      new ChapterTask(
-        () => (
-          <Fragment>
-            First create a new with <code>tutorial add</code> or select a file
-            and modify it via <code>tutorial modify</code>.
-          </Fragment>
-        ),
-        this.hasModifiedFiles || this.hasFiledStaged || this.hasCreatedCommit,
-      ),
-      new ChapterTask(
-        () => (
-          <Fragment>
-            Select a file and use <code>git add</code> to add it to the{' '}
-            <Tooltip name="stagingArea">staging area</Tooltip>.
-          </Fragment>
-        ),
-        this.hasFiledStaged || this.hasCreatedCommit,
-        {
-          tip: () => (
-            <Fragment>
-              The normal console won’t give you the visualisation you have here.
-              No worries though. With <code>git status</code> you are able to
-              see similar text based output.
-            </Fragment>
-          ),
-        },
-      ),
-      new ChapterTask(
-        () => (
-          <Fragment>
-            Create a new commit via <code>git commit -m "Your message"</code>.
-          </Fragment>
-        ),
-        this.hasCreatedCommit,
-        {
-          tip: () => (
-            <Fragment>
-              <code>-m</code> is short for <code>--message</code>. Do not forget
-              to add quotes in front of and behind your message to signal a
-              complete string.{' '}
-              <em>
-                Use the message string to summarize your changes to others.
-              </em>
-            </Fragment>
-          ),
-        },
-      ),
-      new ChapterText(
-        () => (
-          <Fragment>
-            Wow, that wasn’t so difficult right? The console is nothing more
-            than before. A text based menu of options with a nice history of
-            what you have done before.{' '}
-            <em>Again you are free to explore and play around.</em>
-          </Fragment>
-        ),
-        { skip: true },
-      ),
-      new ChapterText(
-        () => (
-          <Fragment>
-            Let‘s look at one final topic, where Git can really help you out.
-          </Fragment>
-        ),
-        { skip: true },
-      ),
-    ];
-  },
-  get vis() {
-    return this.parent.vis;
-  },
   [init]() {
+    this.vis.showBranches = true;
     this.console = new Console({
       payloadElement: () => {
         if (this.vis.workingDirectory.active && this.activeVisFile != null) {
@@ -183,6 +126,24 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
               <pre>{createCommitMessage(this.vis, data)}</pre>
             ),
             action: createCommit,
+          }),
+          new ConsoleCommand('branch', {
+            textOnly: true,
+            action: createBranch,
+          }),
+          new ConsoleCommand('checkout', {
+            textOnly: true,
+            message: ({ data }) => (
+              <pre>{createCheckoutMessage(this.vis, data)}</pre>
+            ),
+            action: checkoutBranch,
+          }),
+          new ConsoleCommand('merge', {
+            textOnly: true,
+            message: ({ data }) => (
+              <pre>{createMergeMessage(this.vis, data)}</pre>
+            ),
+            action: mergeBranch,
           }),
         ],
       }),
@@ -239,12 +200,19 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
 
     return this.vis.stageFile(fileIndex);
   },
+  visMasterBranchCommits: [],
   [createCommit](message) {
     if (message == null) {
       throw new ConsoleError('Please provide a message.');
     }
 
-    return this.vis.createCommit(message);
+    const visCommit = this.vis.createCommit(message);
+
+    if (this.newVisBranchHasCommits && this.visMasterBranch === this.vis.head) {
+      this.visMasterBranchCommits.push(visCommit);
+    }
+
+    return visCommit;
   },
   [getStatus]() {
     return this.vis.getStatus();
@@ -255,6 +223,27 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
   [modifyFile](fileIndex) {
     return this.vis.modifyFile(fileIndex);
   },
+  [createBranch](branchName) {
+    if (branchName == null || branchName === '') {
+      throw new ConsoleError('Please provide a branch name.');
+    }
+
+    return this.vis.createBranch(branchName);
+  },
+  [checkoutBranch](branchName) {
+    if (branchName == null || branchName === '') {
+      throw new ConsoleError('Please provide a branch name.');
+    }
+
+    return this.vis.checkout(branchName);
+  },
+  [mergeBranch](branchName) {
+    if (branchName == null || branchName === '') {
+      throw new ConsoleError('Please provide a branch name.');
+    }
+
+    return this.vis.merge(branchName);
+  },
 });
 
-export default gitInTheConsoleChapter;
+export default sandboxChapter;

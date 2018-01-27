@@ -552,9 +552,19 @@ export function createCheckoutMessage(vis, visBranch) {
 }
 
 export function createMergeMessage(vis, visBranch) {
-  return react`Updating ${visBranch.lastVisCommit.commit.parents
-    .map(commit => commit.checksumShort)
-    .join('..')}`;
+  const references = visBranch.lastVisCommit.commit.parents
+    .map(commit =>
+      vis.repository.visCommits.find(visCommit => visCommit.commit === commit),
+    )
+    .map(visCommit => (
+      <VisualisationCommitReference
+        key={visCommit.id}
+        vis={vis}
+        commit={visCommit}
+      />
+    ));
+
+  return react`Merged ${references[0]} and ${references[1]}.`;
 }
 
 export default GitVisualisation;
