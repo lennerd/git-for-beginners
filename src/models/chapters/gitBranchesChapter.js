@@ -80,8 +80,8 @@ const gitBranchesChapter = createChapter('Git Branches', {
       new ChapterText(
         () => (
           <Fragment>
-            Let’s do this again. This time again with using the{' '}
-            <Tooltip name="console">console</Tooltip>.
+            Let’s repeat it, i.e. using the{' '}
+            <Tooltip name="console">console</Tooltip> again.
           </Fragment>
         ),
         { skip: true },
@@ -97,10 +97,10 @@ const gitBranchesChapter = createChapter('Git Branches', {
         {
           tip: () => (
             <Fragment>
-              You can replace the name <code>new-branch</code> with what ever
-              you like.{' '}
+              You can replace the name <code>new-branch</code> by any name you
+              like.{' '}
               <em>
-                Keep in mind though that good branch names can help organize the
+                Keep in mind that good branch names help you to organize the
                 work in your team.
               </em>
             </Fragment>
@@ -127,9 +127,9 @@ const gitBranchesChapter = createChapter('Git Branches', {
         {
           tip: () => (
             <Fragment>
-              Use the <code>tutorial</code> command to modify selected files or
-              create new ones. Use the <code>git</code> command to add files to
-              the staging area or create commit.
+              Use the previous <code>tutorial</code> command to modify selected
+              files or create new ones. Use the <code>git</code> command to add
+              files to the staging area or to create new commits.
             </Fragment>
           ),
         },
@@ -161,9 +161,9 @@ const gitBranchesChapter = createChapter('Git Branches', {
       new ChapterText(
         () => (
           <Fragment>
-            Voilà, you just created a new branch, a bunch of commits and merged
-            these commits from both branches into a single one. I would say you
-            are ready for using Git in a team, aren’t you?
+            Voilà, you just created a new branch as well as a bunch of commits
+            and merged these commits from both branches into a single one. I
+            would say you’re ready for using Git in a team, aren’t you?
           </Fragment>
         ),
         { skip: true },

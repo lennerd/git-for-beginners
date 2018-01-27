@@ -38,25 +38,26 @@ const sandboxChapter = createChapter('Git Sandbox', {
     return [
       new ChapterText(() => (
         <Fragment>
-          We have reached the end of this tutorial. You just learned the basics
-          about versioning and Git, the console, how to do versioning in a team
-          and how to use all these concepts together. Crazy. I hope everything
-          was understandable and you had fun!
+          This is the end of your journey through Git. You just learned the
+          basics about versioning and Git, the console, how to do versioning in
+          a team and how to use all these concepts together. Isn‘t that amazing?
+          I hope it was easy to understand and you liked it!
         </Fragment>
       )),
       new ChapterText(() => (
         <Fragment>
-          Welcome to the sandbox mode. Use the <code>tutorial</code> command to
-          create new files or modify selected ones. Use the <code>git</code>{' '}
-          command to stage files, create commits or branches, and merge branches
-          together. Keep in mind (and I can’t say it often enough):
+          One more thing: the sandbox mode. Use the <code>tutorial</code>{' '}
+          command to create new files or modify selected ones. Use the{' '}
+          <code>git</code> command to stage files, create commits or branches
+          and merge branches together. Don‘t forget (and I can‘t stress this
+          often enough):
         </Fragment>
       )),
       new ChapterText(
         () => (
           <em>
-            This is your personal sandbox, ready to be used and explored! Happy
-            gitting!
+            This is your own sandbox looking forward to be used and explored!
+            Happy Gitting!
           </em>
         ),
         {

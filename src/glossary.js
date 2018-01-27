@@ -7,7 +7,7 @@ export default new Glossary({
   version: new GlossaryTerm('Version', () => (
     <Fragment>
       <p>
-        A version in this tutorial is a copy of a file or your whole project.
+        A version in this tutorial is a copy of a file or the whole project.
       </p>
       <p>
         It contains changes or a snapshot of your project at a certain point of
@@ -37,19 +37,19 @@ export default new Glossary({
         <TooltipTerm name="commit">commits</TooltipTerm>.
       </p>
       <p>
-        At it's core it's a very simple object database initialised in your
-        project folder.
+        In it's kind it is a simple object database initialised in your project
+        folder.
       </p>
     </Fragment>
   )),
   stagingArea: new GlossaryTerm('Staging Area', () => (
     <Fragment>
       <p>
-        The staging area can be used to collect changes in your file you want to
-        be part of your next version.
+        The staging area can be used to collect changes in those files you want
+        to be part of the next <TooltipTerm name="version">version</TooltipTerm>.
       </p>
       <p>
-        This way you are able to group changes into seperate version, e.g. by
+        By this you are able to group changes into seperate versions, e.g. by
         feature or topic.
       </p>
     </Fragment>
@@ -61,8 +61,8 @@ export default new Glossary({
         all the files of your project are stored in.
       </p>
       <p>
-        Here you add, modify or delete files with other software like you are
-        used to.
+        Here you add, modify or delete files with other software as you are used
+        to.
       </p>
     </Fragment>
   )),
@@ -70,10 +70,10 @@ export default new Glossary({
     <Fragment>
       <p>
         A cloud is an external storage in the internet, where you can upload and
-        download files and exchange them with others.
+        download files and sharing them with others.
       </p>
       <p>
-        Cloud providers often also provide software, which you can use to
+        Cloud providers often provide software which you can use to
         automatically upload and download changes to and from the cloud.
       </p>
     </Fragment>
@@ -82,26 +82,26 @@ export default new Glossary({
     <Fragment>
       <p>
         A version database is a database to store versions of your files and
-        folder.
+        folders.
       </p>
       <p>
-        Depending on its implementation it stores changes between files or
-        snapshots of your whole project.
+        Depending on its implementation it stores just changes in content of the
+        the different files or snapshots of your whole project.
       </p>
     </Fragment>
   )),
   console: new GlossaryTerm('Console', () => (
     <Fragment>
       <p>
-        Console, command-line or command-line interface (CLI) is a textbased
-        controlling interface for your computer. A long time ago, it was the
-        only way to communicate with a computer, until graphical user interfaces
-        replaced them.
+        Console, command-line or command-line interface (CLI) is a text based
+        controlling interface for your computer. A long time ago it was the only
+        way to communicate with a computer until it got replaced by graphical
+        user interfaces.
       </p>
       <p>
-        Still many computer experts, programmers and alike are using the console
-        as the main tool to have a faster and more direct way of controlling
-        their PCs.
+        Still many computer experts, programmers etc are using the console as
+        the main tool to have a faster and more direct way of controlling their
+        computers.
       </p>
     </Fragment>
   )),

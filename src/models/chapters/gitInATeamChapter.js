@@ -13,26 +13,27 @@ const gitInATeamChapter = createChapter('Git in a Team', {
     new ChapterText(() => (
       <Fragment>
         Do you see the label at the last <Tooltip name="commit">commit</Tooltip>{' '}
-        and the line connecting all the commits? That’s a{' '}
-        <strong>branch</strong>. Git uses branches to support work in a team on
-        different parts of your projects at the same time. A branch is basically
-        a chain of commits. By default every Git project comes with a{' '}
+        and the line connecting all the commits? That’s called a{' '}
+        <strong>branch</strong>. Git uses branches to support if working in a
+        team on different parts of your projects at the same time. A branch is
+        basically a chain of commits. By default every Git project comes with a{' '}
         <code>master</code> branch.
       </Fragment>
     )),
     new ChapterText(() => (
       <Fragment>
         To work on a new feature we create a branch called{' '}
-        <code>new-feature</code>. At the moment new commits are still added to
-        the master branch though. Our new branch is not active. To change that,
-        we need to activate <code>new-feature</code>.{' '}
-        <em>This is called a checkout.</em>
+        <code>new-feature</code>. By now new commits are still added to the{' '}
+        <code>master</code> branch because our new branch is not active yet. To
+        change that we need to activate <code>new-feature</code>.{' '}
+        <em>It‘s called checking out a branch.</em>
       </Fragment>
     )),
     new ChapterText(() => (
       <Fragment>
-        Once done, we can add new commits. Watch, how some other user just added
-        some changes to the <code>master</code> branch. Might be a bugfix.
+        Once done we may add new commits. Do you see the changes that have been
+        added to the <code>master</code> branch by some other user? Might be a
+        bugfix.
       </Fragment>
     )),
     new ChapterText(() => (
@@ -42,9 +43,7 @@ const gitInATeamChapter = createChapter('Git in a Team', {
         <code>new-feature</code> into the now active <code>master</code> branch.
       </Fragment>
     )),
-    new ChapterText(
-      () => 'Not so difficult, right? Let’s get our hands dirty with …',
-    ),
+    new ChapterText(() => 'Not difficult, right? Let‘s get it right now …'),
   ],
   get vis() {
     return this.parent.vis;
