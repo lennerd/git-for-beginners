@@ -17,7 +17,9 @@ import ConsoleError from '../ConsoleError';
 const addFile = createAction('ADD_FILE');
 const stageFile = createAction('STAGE_FILE');
 const getStatus = createAction('GET_STATUS');
-const createCommit = createAction('CREATE_COMMIT');
+const createCommit = createAction('CREATE_COMMIT', args => {
+  return args.m || args.message;
+});
 const modifyFile = createAction('MODIFY_FILE');
 const deleteFile = createAction('DELETE_FILE');
 
@@ -102,8 +104,9 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
         {
           tip: () => (
             <Fragment>
-              Do not forget to add quotes in front of and behind your message to
-              signal a complete string.{' '}
+              <code>-m</code> is short for <code>--message</code>. Do not forget
+              to add quotes in front of and behind your message to signal a
+              complete string.{' '}
               <em>
                 Use the message string to summarize your changes to others.
               </em>
@@ -152,21 +155,29 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
     });
 
     this.console.add(
-      new ConsoleCommand('git add', {
+      new ConsoleCommand('git', {
         textOnly: true,
-        action: stageFile,
-        payloadCreator: () => this.activeFileIndex,
-      }),
-      new ConsoleCommand('git status', {
-        textOnly: true,
-        message: ({ data }) => <pre>{createStatusMessage(this.vis, data)}</pre>,
-        action: getStatus,
-      }),
-      new ConsoleCommand('git commit', {
-        textOnly: true,
-        message: ({ data }) => <pre>{createCommitMessage(this.vis, data)}</pre>,
-        action: createCommit,
-        payloadCreator: () => this.activeFileIndex,
+        commands: [
+          new ConsoleCommand('add', {
+            textOnly: true,
+            action: stageFile,
+            payloadCreator: () => this.activeFileIndex,
+          }),
+          new ConsoleCommand('status', {
+            textOnly: true,
+            message: ({ data }) => (
+              <pre>{createStatusMessage(this.vis, data)}</pre>
+            ),
+            action: getStatus,
+          }),
+          new ConsoleCommand('commit', {
+            textOnly: true,
+            message: ({ data }) => (
+              <pre>{createCommitMessage(this.vis, data)}</pre>
+            ),
+            action: createCommit,
+          }),
+        ],
       }),
       new ConsoleCommand('Working Directory', {
         available: () => this.vis.workingDirectory.active,
@@ -225,8 +236,12 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
 
     return this.vis.stageFile(fileIndex);
   },
-  [createCommit]() {
-    return this.vis.createCommit();
+  [createCommit](message) {
+    if (message == null) {
+      throw new ConsoleError('Please provide a message.');
+    }
+
+    return this.vis.createCommit(message);
   },
   [getStatus]() {
     return this.vis.getStatus();

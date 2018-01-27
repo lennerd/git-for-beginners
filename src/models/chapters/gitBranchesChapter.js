@@ -19,15 +19,63 @@ import ConsoleError from '../ConsoleError';
 const addFile = createAction('ADD_FILE');
 const stageFile = createAction('STAGE_FILE');
 const getStatus = createAction('GET_STATUS');
-const createCommit = createAction('CREATE_COMMIT');
+const createCommit = createAction('CREATE_COMMIT', args => {
+  return args.m || args.message;
+});
 const modifyFile = createAction('MODIFY_FILE');
 const deleteFile = createAction('DELETE_FILE');
-const createBranch = createAction('CREATE_BRANCH');
-const checkoutBranch = createAction('CHECKOUT_BRANCH');
-const mergeBranch = createAction('MERGE_BRANCH');
+const createBranch = createAction('CREATE_BRANCH', args => {
+  return args._[0];
+});
+const checkoutBranch = createAction('CHECKOUT_BRANCH', args => {
+  return args._[0];
+});
+const mergeBranch = createAction('MERGE_BRANCH', args => {
+  return args._[0];
+});
 
 const gitBranchesChapter = createChapter('Git Branches', {
   inheritFrom: 'Git in the Console',
+  get newBranch() {
+    if (this.vis.repo.branches.length === 1) {
+      return null; // Only master
+    }
+
+    return this.vis.repo.branches[this.vis.repo.branches.length - 1];
+  },
+  get newVisBranch() {
+    if (this.newBranch == null) {
+      return null;
+    }
+
+    return this.vis.visBranches.find(
+      visBranch => visBranch.branch === this.newBranch,
+    );
+  },
+  get newVisBranchHasCommits() {
+    if (this.newVisBranch == null) {
+      return false;
+    }
+
+    return this.newVisBranch.visCommits.length > 0;
+  },
+  get visMasterBranch() {
+    return this.vis.visBranches.find(
+      visBranch => visBranch.branch.name === 'master',
+    );
+  },
+  get visMasterBranchHasCommits() {
+    return this.visMasterBranchCommits.length > 0;
+  },
+  get visNewBranchWasMerged() {
+    if (this.newVisBranch == null) {
+      return false;
+    }
+
+    return this.state
+      .filter(mergeBranch)
+      .some(action => action.payload === this.newVisBranch.branch.name);
+  },
   get sections() {
     return [
       new ChapterText(
@@ -46,7 +94,7 @@ const gitBranchesChapter = createChapter('Git Branches', {
             <code>git branch new-branch</code>
           </Fragment>
         ),
-        true,
+        this.newVisBranch != null,
         {
           tip: () => (
             <Fragment>
@@ -63,11 +111,12 @@ const gitBranchesChapter = createChapter('Git Branches', {
       new ChapterTask(
         () => (
           <Fragment>
-            Check out your <code>new-branch</code> branch with{' '}
-            <code>git checkout new-branch</code> to activate it.
+            Check out your <code>{this.newVisBranch.branch.name}</code> branch
+            with <code>git checkout {this.newVisBranch.branch.name}</code> to
+            activate it.
           </Fragment>
         ),
-        true,
+        this.newVisBranch === this.vis.head || this.newVisBranchHasCommits,
       ),
       new ChapterTask(
         () => (
@@ -75,7 +124,7 @@ const gitBranchesChapter = createChapter('Git Branches', {
             Create one or more new <Tooltip name="commit">commits</Tooltip>.
           </Fragment>
         ),
-        true,
+        this.newVisBranchHasCommits,
       ),
       new ChapterTask(
         () => (
@@ -83,20 +132,23 @@ const gitBranchesChapter = createChapter('Git Branches', {
             Checkout the <code>master</code> branch.
           </Fragment>
         ),
-        true,
+        this.visMasterBranch === this.vis.head ||
+          this.visMasterBranchHasCommits ||
+          this.visNewBranchWasMerged,
       ),
       new ChapterTask(
         () => <Fragment>Create one or more new commits.</Fragment>,
-        true,
+        this.visMasterBranchHasCommits,
       ),
       new ChapterTask(
         () => (
           <Fragment>
-            Use <code>git merge new-branch</code> to merge{' '}
-            <code>new-branch</code> into <code>master</code>.
+            Use <code>git merge {this.newVisBranch.branch.name}</code> to merge{' '}
+            <code>{this.newVisBranch.branch.name}</code> into{' '}
+            <code>master</code>.
           </Fragment>
         ),
-        true,
+        this.visNewBranchWasMerged, // True as soon as new branch was merged into master
       ),
       new ChapterText(
         () => (
@@ -146,17 +198,8 @@ const gitBranchesChapter = createChapter('Git Branches', {
   get activeFileIndex() {
     return this.vis.files.indexOf(this.activeFile);
   },
-  get activeVisCommit() {
-    return this.vis.repository.visCommits.find(visCommit => visCommit.active);
-  },
-  get activeCommit() {
-    if (this.activeVisCommit == null) {
-      return null;
-    }
-
-    return this.activeVisCommit.commit;
-  },
   [init]() {
+    this.vis.showBranches = true;
     this.console = new Console({
       payloadElement: () => {
         if (this.vis.workingDirectory.active && this.activeVisFile != null) {
@@ -194,7 +237,6 @@ const gitBranchesChapter = createChapter('Git Branches', {
               <pre>{createCommitMessage(this.vis, data)}</pre>
             ),
             action: createCommit,
-            payloadCreator: () => this.activeFileIndex,
           }),
           new ConsoleCommand('branch', {
             textOnly: true,
@@ -276,8 +318,19 @@ const gitBranchesChapter = createChapter('Git Branches', {
 
     return this.vis.stageFile(fileIndex);
   },
-  [createCommit]() {
-    return this.vis.createCommit();
+  visMasterBranchCommits: [],
+  [createCommit](message) {
+    if (message == null) {
+      throw new ConsoleError('Please provide a message.');
+    }
+
+    const visCommit = this.vis.createCommit(message);
+
+    if (this.newVisBranchHasCommits && this.visMasterBranch === this.vis.head) {
+      this.visMasterBranchCommits.push(visCommit);
+    }
+
+    return visCommit;
   },
   [getStatus]() {
     return this.vis.getStatus();
@@ -287,6 +340,27 @@ const gitBranchesChapter = createChapter('Git Branches', {
   },
   [modifyFile](fileIndex) {
     return this.vis.modifyFile(fileIndex);
+  },
+  [createBranch](branchName) {
+    if (branchName == null || branchName === '') {
+      throw new ConsoleError('Please provide a branch name.');
+    }
+
+    return this.vis.createBranch(branchName);
+  },
+  [checkoutBranch](branchName) {
+    if (branchName == null || branchName === '') {
+      throw new ConsoleError('Please provide a branch name.');
+    }
+
+    return this.vis.checkout(branchName);
+  },
+  [mergeBranch](branchName) {
+    if (branchName == null || branchName === '') {
+      throw new ConsoleError('Please provide a branch name.');
+    }
+
+    return this.vis.merge(branchName);
   },
 });
 

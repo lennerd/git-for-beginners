@@ -7,7 +7,7 @@ class ConsoleCommand extends ConsoleObject {
 
   icon = '';
   action;
-  payloadCreator = () => {};
+  payloadCreator = payload => payload;
   textOnly = false;
 
   constructor(name, { commands, ...options }) {

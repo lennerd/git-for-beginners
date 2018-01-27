@@ -104,7 +104,7 @@ const gitInATeamChapter = createChapter('Git in a Team', {
               this.checkoutMaster,
               popmotionAction(({ complete }) => {
                 console.log('commit create without reset');
-                this.vis.createCommit(false);
+                this.vis.createCommit(null, false);
                 complete();
               }),
               this.checkoutNewFeature,

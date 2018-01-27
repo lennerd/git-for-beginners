@@ -79,6 +79,19 @@ class Blob extends Record({
   mergeContent(source) {
     const patch = structuredPatch('', '', this.content, source.content);
 
+    // @TODO Missing delimiters. Bug in applyPatch?
+    for (let hunk of patch.hunks) {
+      if (hunk.linedelimiters != null) {
+        continue;
+      }
+
+      hunk.linedelimiters = [];
+
+      for (let i = 0; i < hunk.lines.length; i++) {
+        hunk.linedelimiters[i] = '\n';
+      }
+    }
+
     return this.set('content', applyPatch(this.content, patch));
   }
 }

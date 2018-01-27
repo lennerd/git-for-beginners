@@ -19,22 +19,33 @@ class ConsoleBody extends Component {
   }
 
   render() {
+    const props = { ...this.props };
+
+    delete props.limit;
+    delete props.back;
+
     return (
-      <div {...this.props} ref={(ref) => { this.consoleBody = ref; }} />
+      <div
+        {...props}
+        ref={ref => {
+          this.consoleBody = ref;
+        }}
+      />
     );
   }
 }
 
-const limit = css`max-height: ${props => props.theme.spacing(8)};`;
+const limit = css`
+  max-height: ${props => props.theme.spacing(8)};
+`;
 
 export default styled(ConsoleBody)`
-  ${props => props.limit && limit}
-  transition: opacity 600ms;
+  ${props => props.limit && limit} transition: opacity 600ms;
   display: flex;
   flex-direction: column;
   overflow: auto;
   overflow-x: hidden;
-  opacity: ${props => props.back ? 0.5 : 1};
+  opacity: ${props => (props.back ? 0.5 : 1)};
   background-color: white;
 
   &:first-child {

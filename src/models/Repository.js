@@ -124,10 +124,14 @@ class Repository {
   }
 
   @action
-  createCommit(message = chance.sentence()) {
+  createCommit(message) {
     const parents = [];
 
     if (this.head.commit != null) {
+      if (this.head.commit.tree === this.stagingArea.tree) {
+        throw new ConsoleError('No new changes to add to a commit.');
+      }
+
       parents.push(this.head.commit);
     }
 

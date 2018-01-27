@@ -164,7 +164,7 @@ class ChapterConsole extends Component {
                 command.available && (
                   <ConsoleCommand
                     key={command.id}
-                    onClick={() => this.runCommand(command)}
+                    onClick={() => this.runCommand({ command })}
                   >
                     <ConsoleIcon offset={iconMaxLength - command.icon.length}>
                       {command.icon}

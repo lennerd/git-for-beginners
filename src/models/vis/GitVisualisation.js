@@ -90,8 +90,8 @@ class GitVisualisation extends Visualisation {
 
   @computed
   get head() {
-    return this.repository.find(
-      object => object.isBranch && object.branch === this.repo.head,
+    return this.visBranches.find(
+      visBranch => visBranch.branch === this.repo.head,
     );
   }
 
@@ -308,10 +308,10 @@ class GitVisualisation extends Visualisation {
   }
 
   @action
-  createCommit(prevVIsFile = true) {
+  createCommit(message, prevVIsFile = true) {
     let visParentCommit;
 
-    const commit = this.repo.createCommit();
+    const commit = this.repo.createCommit(message);
 
     // Find parent commit to be able to create a pointer
     if (commit.parents.length > 0) {
@@ -542,7 +542,7 @@ export function createCommitMessage(vis, visCommit) {
       vis={vis}
       commit={visCommit}
     />
-  )}] Commit message
+  )}] ${visCommit.commit.message}
 ${createCommitDiff(visCommit)}
 `;
 }

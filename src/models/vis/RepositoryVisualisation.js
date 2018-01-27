@@ -31,6 +31,10 @@ class RepositoryVisualisation extends VisualisationArea {
 
   @computed
   get treeRowOffset() {
+    if (this.visHeadCommit == null) {
+      return 0;
+    }
+
     const minRow = Math.min(
       ...this.visCommits.map(visCommit => visCommit.treePosition.row),
     );
