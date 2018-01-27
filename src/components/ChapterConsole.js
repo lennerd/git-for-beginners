@@ -39,14 +39,16 @@ class ChapterConsoleHistory extends Component {
             <ConsoleSection key={log.id} error={log.error}>
               {log.command.parent != null &&
                 !log.command.parent.isConsole && (
-                  <ConsoleLabel>{log.command.parent.name}</ConsoleLabel>
+                  <ConsoleLabel>
+                    {log.command.textOnly && '$ '}
+                    {log.command.parent.name}
+                  </ConsoleLabel>
                 )}
               <ConsoleLog>
                 <ConsoleTitle>
                   {log.command.icon !== '' && (
                     <ConsoleIcon>{log.command.icon}</ConsoleIcon>
                   )}
-                  {log.command.textOnly && '$ '}
                   {log.command.name}
                 </ConsoleTitle>
                 {message != null && (

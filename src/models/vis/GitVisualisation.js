@@ -551,8 +551,10 @@ export function createCheckoutMessage(vis, visBranch) {
   return react`Switched to branch '${visBranch.branch.name}'`;
 }
 
-export function createMergeMessage(vis, data) {
-  return '';
+export function createMergeMessage(vis, visBranch) {
+  return react`Updating ${visBranch.lastVisCommit.commit.parents
+    .map(commit => commit.checksumShort)
+    .join('..')}`;
 }
 
 export default GitVisualisation;

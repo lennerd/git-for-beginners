@@ -9,7 +9,6 @@ import ConsoleCommand from '../ConsoleCommand';
 import {
   createStatusMessage,
   createCommitMessage,
-  createBranchMessage,
   createCheckoutMessage,
   createMergeMessage,
 } from '../vis/GitVisualisation';
