@@ -93,7 +93,7 @@ export default new Glossary({
   console: new GlossaryTerm('Console', () => (
     <Fragment>
       <p>
-        Console, Commandline or Commandline Interface (CLI) is a textbased
+        Console, command-line or command-line interface (CLI) is a textbased
         controlling interface for your computer. A long time ago, it was the
         only way to communicate with a computer, until graphical user interfaces
         replaced them.

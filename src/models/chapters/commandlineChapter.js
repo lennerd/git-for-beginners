@@ -5,7 +5,7 @@ import { ChapterText } from '../ChapterSection';
 import TutorialChapter from '../../components/TutorialChapter';
 import CommandlineVisualisation from '../../components/CommandlineVisualisation';
 
-const commandlineChapter = createChapter('Commandline', {
+const commandlineChapter = createChapter('Command-line', {
   readOn: 0,
   hasPrompt: false,
   hasCommand: false,
@@ -35,7 +35,7 @@ const commandlineChapter = createChapter('Commandline', {
   sections: [
     new ChapterText(() => (
       <Fragment>
-        One important part is still missing: the commandline or console, a text
+        One important part is still missing: the command-line or console, a text
         based controlling interface for your computer. This may sound old
         fashioned, but mastering it will speed up your workflow with Git
         enourmusly, I promise.

@@ -13,7 +13,7 @@ import Console, {
   ConsoleCommandList,
   ConsoleLog,
   ConsoleTitle,
-  ConsoleInput
+  ConsoleInput,
 } from './Console';
 import ConsoleBody from './ConsoleBody';
 
@@ -37,19 +37,23 @@ class ChapterConsoleHistory extends Component {
 
           return (
             <ConsoleSection key={log.id} error={log.error}>
-              {
-                log.command.parent != null && !log.command.parent.isConsole &&
-                <ConsoleLabel>{log.command.parent.name}</ConsoleLabel>
-              }
+              {log.command.parent != null &&
+                !log.command.parent.isConsole && (
+                  <ConsoleLabel>{log.command.parent.name}</ConsoleLabel>
+                )}
               <ConsoleLog>
                 <ConsoleTitle>
-                  {log.command.icon !== '' && <ConsoleIcon>{log.command.icon}</ConsoleIcon>}
+                  {log.command.icon !== '' && (
+                    <ConsoleIcon>{log.command.icon}</ConsoleIcon>
+                  )}
                   {log.command.textOnly && '$ '}
                   {log.command.name}
                 </ConsoleTitle>
-                {message != null && <ConsoleMessage>
-                  <span>{message(log)}</span>
-                </ConsoleMessage>}
+                {message != null && (
+                  <ConsoleMessage>
+                    <span>{message(log)}</span>
+                  </ConsoleMessage>
+                )}
               </ConsoleLog>
             </ConsoleSection>
           );
@@ -63,12 +67,14 @@ class ChapterConsoleHistory extends Component {
 class ChapterConsoleInput extends Component {
   @observable inputValue = '';
 
-  @action.bound handleChange(event) {
+  @action.bound
+  handleChange(event) {
     this.inputValue = event.target.value;
   }
 
-  @action.bound handleKeyDown(event) {
-    const { onEnter, chapter } = this.props;
+  @action.bound
+  handleKeyDown(event) {
+    const { chapter, onEnter } = this.props;
 
     if (event.key !== 'Enter') {
       return;
@@ -76,14 +82,18 @@ class ChapterConsoleInput extends Component {
 
     event.preventDefault();
 
-    const command = chapter.console.getCommand(event.target.value);
+    let command;
+    let args;
 
-    if (command == null) {
+    try {
+      ({ command, args } = chapter.console.parse(event.target.value));
+    } catch (error) {
+      console.error(error);
       return;
     }
 
-    onEnter(command);
     this.inputValue = '';
+    onEnter({ command, args });
   }
 
   render() {
@@ -99,9 +109,7 @@ class ChapterConsoleInput extends Component {
             onChange={this.handleChange}
             onKeyDown={this.handleKeyDown}
           />
-          <span>
-            {chapter.console.payloadElement()}
-          </span>
+          <span>{chapter.console.payloadElement()}</span>
         </ConsoleInput>
       </ConsoleSection>
     );
@@ -110,16 +118,20 @@ class ChapterConsoleInput extends Component {
 
 @observer
 class ChapterConsole extends Component {
-  @action.bound runCommand(command) {
+  @action.bound
+  runCommand({ command, args }) {
     const { chapter } = this.props;
 
-    chapter.dispatch(command.action(command.payloadCreator()));
+    chapter.dispatch(command.action(command.payloadCreator(args)));
   }
 
   renderVisibleCommands() {
     const { chapter } = this.props;
 
-    if (chapter.console.visibleCommands.length === 0 && !chapter.console.useInput) {
+    if (
+      chapter.console.visibleCommands.length === 0 &&
+      !chapter.console.useInput
+    ) {
       return (
         <ConsoleSection>
           <ConsoleMessage>Nothing selected.</ConsoleMessage>
@@ -131,7 +143,7 @@ class ChapterConsole extends Component {
       if (command.commands.length === 0) {
         return (
           <ConsoleSection key={command.id}>
-            <ConsoleCommand onClick={() => this.runCommand(command)}>
+            <ConsoleCommand onClick={() => this.runCommand({ command })}>
               {command.icon !== '' && <ConsoleIcon>{command.icon}</ConsoleIcon>}
               {command.name}
             </ConsoleCommand>
@@ -140,20 +152,27 @@ class ChapterConsole extends Component {
       }
 
       const iconMaxLength = Math.max(
-        ...command.commands.map(command => command.icon.length)
+        ...command.commands.map(command => command.icon.length),
       );
 
       return (
         <ConsoleSection key={command.id}>
           <ConsoleLabel>{command.name}</ConsoleLabel>
           <ConsoleCommandList>
-            {command.visibleCommands.map(command => (
-              command.available &&
-              <ConsoleCommand key={command.id} onClick={() => this.runCommand(command)}>
-                <ConsoleIcon offset={iconMaxLength - command.icon.length}>{command.icon}</ConsoleIcon>
-                {command.name}
-              </ConsoleCommand>
-            ))}
+            {command.visibleCommands.map(
+              command =>
+                command.available && (
+                  <ConsoleCommand
+                    key={command.id}
+                    onClick={() => this.runCommand(command)}
+                  >
+                    <ConsoleIcon offset={iconMaxLength - command.icon.length}>
+                      {command.icon}
+                    </ConsoleIcon>
+                    {command.name}
+                  </ConsoleCommand>
+                ),
+            )}
           </ConsoleCommandList>
         </ConsoleSection>
       );
@@ -172,7 +191,9 @@ class ChapterConsole extends Component {
         <ChapterConsoleHistory chapter={chapter} />
         <ConsoleBody>
           {this.renderVisibleCommands()}
-          {chapter.console.useInput && <ChapterConsoleInput chapter={chapter} onEnter={this.runCommand} />}
+          {chapter.console.useInput && (
+            <ChapterConsoleInput chapter={chapter} onEnter={this.runCommand} />
+          )}
         </ConsoleBody>
       </Console>
     );

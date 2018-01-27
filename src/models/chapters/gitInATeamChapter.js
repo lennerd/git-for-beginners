@@ -13,10 +13,10 @@ const gitInATeamChapter = createChapter('Git in a Team', {
     new ChapterText(() => (
       <Fragment>
         See the label at the last <Tooltip name="commit">commit</Tooltip> and
-        the line connecting all the commits? That’s a branch. Git uses branches
-        to support work in a team on different parts of your projects at the
-        same time. A branch is basically a chain of commits. By default every
-        Git project comes with a <code>master</code> branch.
+        the line connecting all the commits? That’s a <strong>branch</strong>.
+        Git uses branches to support work in a team on different parts of your
+        projects at the same time. A branch is basically a chain of commits. By
+        default every Git project comes with a <code>master</code> branch.
       </Fragment>
     )),
     new ChapterText(() => (

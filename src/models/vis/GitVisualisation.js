@@ -547,4 +547,16 @@ ${createCommitDiff(visCommit)}
 `;
 }
 
+export function createBranchMessage(vis, visBranch) {
+  return '';
+}
+
+export function createCheckoutMessage(vis, visBranch) {
+  return '';
+}
+
+export function createMergeMessage(vis, data) {
+  return '';
+}
+
 export default GitVisualisation;
