@@ -547,12 +547,8 @@ ${createCommitDiff(visCommit)}
 `;
 }
 
-export function createBranchMessage(vis, visBranch) {
-  return '';
-}
-
 export function createCheckoutMessage(vis, visBranch) {
-  return '';
+  return react`Switched to branch '${visBranch.branch.name}'`;
 }
 
 export function createMergeMessage(vis, data) {

@@ -240,9 +240,6 @@ const gitBranchesChapter = createChapter('Git Branches', {
           }),
           new ConsoleCommand('branch', {
             textOnly: true,
-            message: ({ data }) => (
-              <pre>{createBranchMessage(this.vis, data)}</pre>
-            ),
             action: createBranch,
           }),
           new ConsoleCommand('checkout', {
