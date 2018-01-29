@@ -79,6 +79,11 @@ export class VisualisationFileReference extends Component {
   render() {
     const { file, vis } = this.props;
 
+    if (file == null) {
+      console.error('File is missing.');
+      return 'file';
+    }
+
     return (
       <VisualisationObjectReference object={file} vis={vis}>
         {file.file.name}

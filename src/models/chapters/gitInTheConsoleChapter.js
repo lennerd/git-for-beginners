@@ -61,13 +61,16 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
   },
   get sections() {
     return [
-      new ChapterText(() => (
-        <Fragment>
-          Let’s create a few more <Tooltip name="commit">commits</Tooltip>. This
-          time we use the <Tooltip name="console">console</Tooltip>. Two
-          commands are available: <code>tutorial</code> and <code>git</code>
-        </Fragment>
-      )),
+      new ChapterText(
+        () => (
+          <Fragment>
+            Let’s create a few more <Tooltip name="commit">commits</Tooltip>.
+            This time we use the <Tooltip name="console">console</Tooltip>. Two
+            commands are available: <code>tutorial</code> and <code>git</code>
+          </Fragment>
+        ),
+        { skip: true },
+      ),
       new ChapterTask(
         () => (
           <Fragment>

@@ -1,5 +1,5 @@
-import { SECTION_TEXT, SECTION_TASK } from "../constants";
-import { readOn } from "./Chapter";
+import { SECTION_TEXT, SECTION_TASK } from '../constants';
+import { readOn } from './Chapter';
 
 class ChapterSection {
   is(type) {
@@ -11,7 +11,6 @@ export class ChapterText extends ChapterSection {
   type = SECTION_TEXT;
   skip = false;
   action = readOn;
-  delay = 100;
 
   constructor(text, data) {
     super();

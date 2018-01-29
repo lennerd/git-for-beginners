@@ -36,9 +36,9 @@ const commandlineChapter = createChapter('Command-line', {
     new ChapterText(() => (
       <Fragment>
         There is still an important part missing: the command-line or console,
-        i.e. a text based controlling interface for your computer. This may
-        sound old fashioned but it really will speed up your workflow with Git,
-        I promise.
+        i.e. a text based controlling interface for your computer and the
+        default way to work with Git. This may sound old fashioned but it really
+        will speed up your workflow with Git, I promise.
       </Fragment>
     )),
     new ChapterText(() => (

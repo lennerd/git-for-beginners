@@ -196,12 +196,15 @@ const versioningInGitChapter = createChapter('Versioning in Git', {
   },
   get sections() {
     return [
-      new ChapterText(() => (
-        <Fragment>
-          Let’s have a look at how a <Tooltip name="commit">commit</Tooltip> is
-          created.
-        </Fragment>
-      )),
+      new ChapterText(
+        () => (
+          <Fragment>
+            Let’s have a look at how a <Tooltip name="commit">commit</Tooltip>{' '}
+            is created.
+          </Fragment>
+        ),
+        { skip: true },
+      ),
       new ChapterTask(
         () => (
           <Fragment>

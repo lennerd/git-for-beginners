@@ -18,11 +18,7 @@ class ChapterBody extends Component {
   readOn() {
     const { chapter } = this.props;
 
-    delay(this.lastSection.delay).start({
-      complete: () => {
-        chapter.dispatch(this.lastSection.action());
-      },
-    });
+    chapter.dispatch(this.lastSection.action());
   }
 
   @computed

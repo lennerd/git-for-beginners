@@ -5,14 +5,17 @@ import { ChapterText } from '../ChapterSection';
 
 const introductionChapter = createChapter('Introduction', {
   sections: [
-    new ChapterText(() => (
-      <Fragment>
-        Over the past decades computers of different shapes and sizes have
-        changed our daily life enormously. Everyday there is a huge amount of
-        files created in order to store everything from invoices to love
-        letters, from codes to illustrations and designs.
-      </Fragment>
-    )),
+    new ChapterText(
+      () => (
+        <Fragment>
+          Over the past decades computers of different shapes and sizes have
+          changed our daily life enormously. Everyday there is a huge amount of
+          files created in order to store everything from invoices to love
+          letters, from codes to illustrations and designs.
+        </Fragment>
+      ),
+      { skip: true },
+    ),
     new ChapterText(() => (
       <Fragment>
         Although lots of backups are created and files are stored in clouds data
@@ -32,16 +35,17 @@ const introductionChapter = createChapter('Introduction', {
         and offers your team a better way of working on files together.
       </Fragment>
     )),
-    new ChapterText(() => (
-      <Fragment>
-        Welcome to <strong>Git for Beginners</strong> – an interactive tutorial
-        to learn and understand Git, a popular version control system to help
-        you and your team not to loose data again.
-      </Fragment>
-    )),
     new ChapterText(
-      () => 'Are you confused? Don‘t worry. Let‘s start with the basics …',
+      () => (
+        <Fragment>
+          Welcome to <strong>Git for Beginners</strong> – an interactive
+          tutorial to learn and understand Git, a popular version control system
+          to help you and your team not to loose data again.
+        </Fragment>
+      ),
+      { skip: true },
     ),
+    new ChapterText(() => 'All set? Then let‘s start with the basics …'),
   ],
 });
 

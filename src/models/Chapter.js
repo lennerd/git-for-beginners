@@ -53,12 +53,12 @@ class Chapter {
           return false;
         }
 
-        if (section.skip) {
-          return true;
+        if (numberOfVisibleTextSections < 1) {
+          return false;
         }
 
-        if (numberOfVisibleTextSections === 0) {
-          return false;
+        if (section.skip) {
+          return true;
         }
 
         numberOfVisibleTextSections--;
