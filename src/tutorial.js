@@ -18,7 +18,9 @@ import versioningInATeamChapter from './models/chapters/versioningInATeamChapter
 import gitInATeamChapter from './models/chapters/gitInATeamChapter';
 import sandboxChapter from './models/chapters/sandboxChapter';
 
-const history = createHistory();
+const history = createHistory({
+  basename: process.env.PUBLIC_URL,
+});
 let sessionId = history.location.search.substr(1);
 
 if (sessionId === '') {
