@@ -245,7 +245,7 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
     return this.vis.stageFile(fileIndex);
   },
   [createCommit](message) {
-    if (message == null) {
+    if (typeof message !== 'string' || message === '') {
       throw new ConsoleError('Please provide a message.');
     }
 

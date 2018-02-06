@@ -198,7 +198,7 @@ class Commit extends Record({
 
   @computed
   get messageShort() {
-    if (this.message.length < 11) {
+    if (typeof this.message !== 'string' || this.message.length < 11) {
       return this.message;
     }
 

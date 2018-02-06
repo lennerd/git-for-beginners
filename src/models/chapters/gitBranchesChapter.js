@@ -307,7 +307,7 @@ const gitBranchesChapter = createChapter('Git Branches', {
   },
   visMasterBranchCommits: [],
   [createCommit](message) {
-    if (message == null) {
+    if (typeof message !== 'string' || message === '') {
       throw new ConsoleError('Please provide a message.');
     }
 
