@@ -34,7 +34,11 @@ class ChapterVisualisation extends Component {
               <VisualisationPopup
                 font={fontRegular}
                 level={commit.height}
-                content={commit.commit.checksumShort}
+                content={`${commit.commit.checksumShort}${
+                  chapter.vis.showMessages
+                    ? `\n${commit.commit.messageShort}`
+                    : ''
+                }`}
                 in={commit.active}
               />
             )}

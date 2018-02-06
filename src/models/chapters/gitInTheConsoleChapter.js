@@ -143,6 +143,8 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
     return this.parent.vis;
   },
   [init]() {
+    this.vis.showMessages = true;
+
     this.console = new Console({
       payloadElement: () => {
         if (this.vis.workingDirectory.active && this.activeVisFile != null) {

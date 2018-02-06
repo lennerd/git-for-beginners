@@ -126,17 +126,30 @@ class VisualisationPopup extends Component {
   render() {
     const { font, content } = this.props;
 
-    const shapes = font.generateShapes(content, FONT_SIZE, 2);
-    const textGeometry = new THREE.ShapeGeometry(shapes);
+    const textGeometry = new THREE.Geometry();
+    let lineHeight = 0.2;
+
+    content.split('\n').forEach((line, index) => {
+      const shapes = font.generateShapes(line, FONT_SIZE, 2);
+      const lineGeometry = new THREE.ShapeGeometry(shapes);
+
+      lineGeometry.computeBoundingBox();
+      const xMidText =
+        (lineGeometry.boundingBox.max.x - lineGeometry.boundingBox.min.x) / -2;
+      lineGeometry.translate(xMidText, lineHeight * -index, 0);
+
+      textGeometry.merge(lineGeometry);
+    });
+
+    this.textGeometry.fromGeometry(textGeometry);
 
     textGeometry.computeBoundingBox();
+
     let width = textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x;
     let height =
       textGeometry.boundingBox.max.y - textGeometry.boundingBox.min.y;
-    const xMidText = width / -2;
-    textGeometry.translate(xMidText, height + PADDING.y, 0);
 
-    this.textGeometry.fromGeometry(textGeometry);
+    this.textMesh.position.y = height + PADDING.y;
 
     width += PADDING.x * 2;
     height += ARROW_SIZE + PADDING.y * 2;

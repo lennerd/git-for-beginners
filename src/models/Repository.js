@@ -195,6 +195,15 @@ class Commit extends Record({
   get checksumShort() {
     return this.checksum.substring(0, 7);
   }
+
+  @computed
+  get messageShort() {
+    if (this.message.length < 11) {
+      return this.message;
+    }
+
+    return `${this.message.substring(0, 10)}…`;
+  }
 }
 
 class Branch {
