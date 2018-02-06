@@ -1,9 +1,14 @@
 {
-  "main.css": "static/css/main.653da357.css",
-  "main.css.map": "static/css/main.653da357.css.map",
-  "main.js": "static/js/main.34495024.js",
-  "main.js.map": "static/js/main.34495024.js.map",
+  "main.css": "static/css/main.a75fcfb8.css",
+  "main.css.map": "static/css/main.a75fcfb8.css.map",
+  "main.js": "static/js/main.5c3c3470.js",
+  "main.js.map": "static/js/main.5c3c3470.js.map",
   "static/fonts/SourceCodeProBlack.json": "static/fonts/SourceCodeProBlack.a5b61f98.json",
   "static/fonts/SourceCodeProRegular.json": "static/fonts/SourceCodeProRegular.13397bda.json",
+  "static/media/SourceCodePro-Bold.otf": "static/media/SourceCodePro-Bold.c1cf2d6a.otf",
+  "static/media/SourceCodePro-Regular.otf": "static/media/SourceCodePro-Regular.4889cf47.otf",
+  "static/media/SourceSansPro-It.otf": "static/media/SourceSansPro-It.221e2885.otf",
+  "static/media/SourceSansPro-Regular.otf": "static/media/SourceSansPro-Regular.5e1d162e.otf",
+  "static/media/SourceSansPro-Semibold.otf": "static/media/SourceSansPro-Semibold.78667e5e.otf",
   "static/media/checkmark.svg": "static/media/checkmark.09777da4.svg"
 }
