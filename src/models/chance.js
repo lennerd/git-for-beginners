@@ -13,7 +13,11 @@ if (serializedSeed == null) {
 let chance;
 
 export function reset() {
-  chance = new Chance(serializedSeed);
+  if (chance != null) {
+    Object.assign(chance, new Chance(serializedSeed));
+  } else {
+    chance = new Chance(serializedSeed);
+  }
 
   chance.mixin({
     diff(diff) {

@@ -47,7 +47,11 @@ class Repository {
       throw new ConsoleError('Unknown branch.');
     }
 
-    return (this.head = branch);
+    this.head = branch;
+
+    this.workingDirectory.tree = this.head.commit.tree;
+
+    return branch;
   }
 
   @action

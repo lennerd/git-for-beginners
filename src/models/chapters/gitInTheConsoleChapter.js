@@ -57,7 +57,7 @@ const gitInTheConsoleChapter = createChapter('Git in the Console', {
     return this.vis.stagingArea.some(object => object.isFile);
   },
   get hasCreatedCommit() {
-    return this.vis.repository.visCommits.length > 0;
+    return this.state.has(createCommit);
   },
   get sections() {
     return [

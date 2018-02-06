@@ -1,6 +1,5 @@
 import { computed, action } from 'mobx';
 import React from 'react';
-import { Set } from 'immutable';
 import sortBy from 'lodash/sortBy';
 import padEnd from 'lodash/padEnd';
 import uniqBy from 'lodash/uniqBy';
@@ -153,7 +152,12 @@ class GitVisualisation extends Visualisation {
     }
 
     // Move it into the staging area
-    this.repo.stageFile(file);
+    try {
+      this.repo.stageFile(file);
+    } catch (error) {
+      console.log(fileIndex);
+      throw error;
+    }
     this.stagingArea.fileList.add(visFiles[0]);
 
     const stagedVisFiles = this.stagingArea.filter(
