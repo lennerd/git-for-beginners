@@ -30,4 +30,15 @@ const Tutorial = styled.div`
   }
 `;
 
+export const TutorialReset = styled.button`
+  padding: ${props => props.theme.spacing(0.5)}
+    ${props => props.theme.spacing()};
+  font-size: 10px;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  color: ${props => props.theme.color.highlight};
+  opacity: 0.5;
+`;
+
 export default Tutorial;

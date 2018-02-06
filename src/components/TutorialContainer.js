@@ -2,7 +2,7 @@ import React, { Component, createElement } from 'react';
 import { Helmet } from 'react-helmet';
 import { inject, observer } from 'mobx-react';
 
-import Tutorial from './Tutorial';
+import Tutorial, { TutorialReset } from './Tutorial';
 import TutorialNavigation from './TutorialNavigation';
 import TutorialHeader from './TutorialHeader';
 import FontLoader from './FontLoader';
@@ -34,6 +34,7 @@ class TutorialContainer extends Component {
             }
           </FontLoader>
         }
+        <TutorialReset onClick={tutorial.reset}>Reset</TutorialReset>
       </Tutorial>
     );
   }
