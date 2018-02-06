@@ -1,6 +1,5 @@
 import { computed } from 'mobx';
 import uniq from 'lodash/uniq';
-import findLast from 'lodash/findLast';
 
 import VisualisationObject from './VisualisationObject';
 

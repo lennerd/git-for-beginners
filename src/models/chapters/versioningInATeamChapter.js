@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { action } from 'mobx';
-import { action as popmotionAction, chain } from 'popmotion';
+import { action as popmotionAction } from 'popmotion';
 
 import { createChapter, init, readOn } from '../Chapter';
 import { ChapterText } from '../ChapterSection';
