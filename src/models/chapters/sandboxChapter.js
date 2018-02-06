@@ -36,14 +36,17 @@ const sandboxChapter = createChapter('Git Sandbox', {
   inheritFrom: 'Git Branches',
   get sections() {
     return [
-      new ChapterText(() => (
-        <Fragment>
-          This is the end of your journey through Git. You just learned the
-          basics about versioning and Git, the console, how to do versioning in
-          a team and how to use all these concepts together. Isn‘t that amazing?
-          I hope it was easy to understand and you liked it!
-        </Fragment>
-      )),
+      new ChapterText(
+        () => (
+          <Fragment>
+            This is the end of your journey through Git. You just learned the
+            basics about versioning and Git, the console, how to do versioning
+            in a team and how to use all these concepts together. Isn‘t that
+            amazing? I hope it was easy to understand and you liked it!
+          </Fragment>
+        ),
+        { skip: true },
+      ),
       new ChapterText(
         () => (
           <Fragment>

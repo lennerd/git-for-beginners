@@ -127,7 +127,7 @@ class Chapter {
         throw error;
       }
 
-      console.error(error);
+      console.error(error.message());
 
       if (this.console != null) {
         this.console.error(action, error);

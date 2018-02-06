@@ -3,6 +3,7 @@ import React from 'react';
 import { Set } from 'immutable';
 import sortBy from 'lodash/sortBy';
 import padEnd from 'lodash/padEnd';
+import uniqBy from 'lodash/uniqBy';
 
 import Visualisation from './Visualisation';
 import {
@@ -23,7 +24,6 @@ import FileVisualisation from './FileVisualisation';
 import CommitVisualisation from './CommitVisualisation';
 import BranchVisualisation from './BranchVisualisation';
 import PointerVisualisation from './PointerVisualisation';
-import { delay } from '../chapters/utils';
 
 class GitVisualisation extends Visualisation {
   isGit = true;
@@ -75,7 +75,7 @@ class GitVisualisation extends Visualisation {
 
   @computed
   get files() {
-    let files = Set.fromKeys(this.repo.workingDirectory.tree);
+    /*let files = Set.fromKeys(this.repo.workingDirectory.tree);
 
     if (this.repo.stagingArea.tree != null) {
       files = files.concat(this.repo.stagingArea.tree.keySeq());
@@ -83,9 +83,13 @@ class GitVisualisation extends Visualisation {
 
     if (this.repo.head.commit != null) {
       files = files.concat(this.repo.head.commit.tree.keySeq());
-    }
+    }*/
 
-    return sortBy(files.toArray(), file => file.name);
+    const files = uniqBy(this.visFiles, visFile => visFile.file).map(
+      visFile => visFile.file,
+    );
+
+    return sortBy(files /*.toArray()*/, file => file.name);
   }
 
   @computed
@@ -390,9 +394,14 @@ class GitVisualisation extends Visualisation {
     }*/
 
     // Filter files inside the commit for changes
-    const changedVisFiles = visCommit.filter(
-      object => object.isFile && object.status !== STATUS_UNMODIFIED,
+    let changedVisFiles = visCommit.filter(
+      object =>
+        object.isFile &&
+        object.status !== STATUS_UNMODIFIED &&
+        object.status !== STATUS_DELETED,
     );
+
+    changedVisFiles = uniqBy(changedVisFiles, visFile => visFile.file);
 
     // Copy all changed files from the commit as visualisation backups.
     for (let changedVisFile of changedVisFiles) {
