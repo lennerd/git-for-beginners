@@ -155,7 +155,6 @@ class GitVisualisation extends Visualisation {
     try {
       this.repo.stageFile(file);
     } catch (error) {
-      console.log(fileIndex);
       throw error;
     }
     this.stagingArea.fileList.add(visFiles[0]);

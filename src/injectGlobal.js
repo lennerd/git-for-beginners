@@ -2,9 +2,9 @@ import { injectGlobal } from 'styled-components';
 import theme from './theme';
 import 'normalize.css';
 
-injectGlobal`
-  @import url("https://use.typekit.net/ldn8onu.css");
+import './fonts/stylesheet.css'
 
+injectGlobal`
   * {
     box-sizing: border-box;
   }
@@ -20,7 +20,7 @@ injectGlobal`
   }
 
   html {
-    font-family: 'source-sans-pro', sans-serif;
+    font-family: 'Source Sans Pro', sans-serif;
     line-height: ${theme.baseLineHeight};
     font-size: ${theme.baseFontSize}px;
     color: ${theme.color.text};
