@@ -20,7 +20,7 @@ injectGlobal`
   }
 
   html {
-    font-family: 'Source Sans Pro', sans-serif;
+    font-family: 'source-sans-pro', sans-serif;
     line-height: ${theme.baseLineHeight};
     font-size: ${theme.baseFontSize}px;
     color: ${theme.color.text};

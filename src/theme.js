@@ -64,7 +64,7 @@ export default {
 
   mixins: {
     monospaced: css`
-      font-family: 'Source Code Pro', monospaced;
+      font-family: 'source-code-pro', monospaced;
       font-size: ${props => props.theme.text.sizeMono};
     `,
   },
