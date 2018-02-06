@@ -47,29 +47,21 @@ const sandboxChapter = createChapter('Git Sandbox', {
         ),
         { skip: true },
       ),
-      new ChapterText(
-        () => (
-          <Fragment>
-            One more thing: the sandbox mode. Use the <code>tutorial</code>{' '}
-            command to create new files or modify selected ones. Use the{' '}
-            <code>git</code> command to stage files, create commits or branches
-            and merge branches together. Don‘t forget (and I can‘t stress this
-            often enough):
-          </Fragment>
-        ),
-        { skip: true },
-      ),
-      new ChapterText(
-        () => (
-          <em>
-            This is your own sandbox looking forward to be used and explored!
-            Happy Gitting!
-          </em>
-        ),
-        {
-          skip: true,
-        },
-      ),
+      new ChapterText(() => (
+        <Fragment>
+          One more thing: the sandbox mode. Use the <code>tutorial</code>{' '}
+          command to create new files or modify selected ones. Use the{' '}
+          <code>git</code> command to stage files, create commits or branches
+          and merge branches together. Don‘t forget (and I can‘t stress this
+          often enough):
+        </Fragment>
+      )),
+      new ChapterText(() => (
+        <em>
+          This is your own sandbox looking forward to be used and explored!
+          Happy Gitting!
+        </em>
+      )),
     ];
   },
   get vis() {
