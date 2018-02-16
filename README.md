@@ -1,6 +1,9 @@
 # Git for Beginners
 
-Explorable Explanation and web tutorial for learning versioning of files and Git.<br>
+Explorable Explanation and web tutorial for learning something about versioning of files and versioning in Git.
+
+![Git for Beginners, Screencast](git-for-beginners.gif)
+
 This early prototype is part of the Bachelor Thesis “Git for Beginners” by Lennart Hildebrandt
 conducted in winter 2017.
 
