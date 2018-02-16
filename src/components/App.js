@@ -1,8 +1,10 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import styled from 'styled-components';
+import mobile from 'ismobilejs';
 
 import TutorialContainer from './TutorialContainer';
+import TutorialNoMobile from './TutorialNoMobile';
 
 const AppWrapper = styled.div`
   height: 100%;
@@ -12,8 +14,11 @@ const AppWrapper = styled.div`
 function App() {
   return (
     <AppWrapper>
-      <Helmet titleTemplate="%s — Git for Beginners" defaultTitle="Git for Beginners" />
-      <TutorialContainer />
+      <Helmet
+        titleTemplate="%s — Git for Beginners"
+        defaultTitle="Git for Beginners"
+      />
+      {mobile.any ? <TutorialNoMobile /> : <TutorialContainer />}
     </AppWrapper>
   );
 }

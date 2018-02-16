@@ -1,4 +1,4 @@
-import { computed, action, observable } from 'mobx';
+import { computed, action, observable, observe } from 'mobx';
 import takeWhile from 'lodash/takeWhile';
 
 import ChapterState from './ChapterState';
@@ -10,6 +10,18 @@ class Tutorial {
 
   constructor(state) {
     this.state = state;
+
+    if (process.env.NODE_ENV === 'production') {
+      observe(this, 'currentChapter', () => {
+        Raven.captureBreadcrumb({
+          message: 'Changed chapter',
+          category: 'tutorial',
+          data: {
+            chapterId: this.currentChapter.id,
+          },
+        });
+      });
+    }
   }
 
   @action

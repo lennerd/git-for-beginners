@@ -1,8 +1,8 @@
-'use strict';
-
 const fs = require('fs');
 const path = require('path');
 const paths = require('./paths');
+const uuid = require('uuid');
+const sha1 = require('js-sha1');
 
 // Make sure that including paths.js after env.js will read .env variables.
 delete require.cache[require.resolve('./paths')];
@@ -10,7 +10,7 @@ delete require.cache[require.resolve('./paths')];
 const NODE_ENV = process.env.NODE_ENV;
 if (!NODE_ENV) {
   throw new Error(
-    'The NODE_ENV environment variable is required but was not specified.'
+    'The NODE_ENV environment variable is required but was not specified.',
   );
 }
 
@@ -74,7 +74,9 @@ function getClientEnvironment(publicUrl) {
         // This should only be used as an escape hatch. Normally you would put
         // images into the `src` and `import` them in code to get their paths.
         PUBLIC_URL: publicUrl,
-      }
+        // Release id for raven
+        RELEASE_ID: sha1(uuid()),
+      },
     );
   // Stringify all values so we can feed into Webpack DefinePlugin
   const stringified = {

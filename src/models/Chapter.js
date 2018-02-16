@@ -143,6 +143,18 @@ class Chapter {
     this.state.actions.push(action);
     this.state.progress = this.doneSections.length / this.doableSections.length;
 
+    if (process.env.NODE_ENV === 'production') {
+      Raven.captureBreadcrumb({
+        message: 'Dispatch action',
+        category: 'chapter',
+        data: {
+          chapterId: this.id,
+          action: action.type,
+          payload: action.payload,
+        },
+      });
+    }
+
     return data;
   }
 
