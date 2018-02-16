@@ -1,13 +1,13 @@
 # Git for Beginners
 
-[lennerd.github.io/git-for-beginners](https://lennerd.github.io/git-for-beginners/)
-
 Explorable explanation and web tutorial for learning versioning with Git.
+
+Prototype: [lennerd.github.io/git-for-beginners](https://lennerd.github.io/git-for-beginners/)<br/>
+Bachelor thesis: [“Git for Beginners” (PDF, German)](https://fhp.incom.org/action/open-file/269690)
 
 ![Git for Beginners, Screencast](git-for-beginners.gif)
 
-This early prototype is part of the bachelor thesis “Git for Beginners” by Lennart Hildebrandt
-conducted in winter 2017.
+This early prototype is part of my bachelor thesis “Git for Beginners” conducted in winter 2017.
 
 > Vermittlung von komplexen Themen mit Hilfe von interaktiven Web-Tutorials am Beispiel der Versionierung mit Git
 
