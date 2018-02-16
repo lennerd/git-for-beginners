@@ -1,8 +1,8 @@
 {
   "main.css": "static/css/main.a75fcfb8.css",
   "main.css.map": "static/css/main.a75fcfb8.css.map",
-  "main.js": "static/js/main.925fe9db.js",
-  "main.js.map": "static/js/main.925fe9db.js.map",
+  "main.js": "static/js/main.beadb573.js",
+  "main.js.map": "static/js/main.beadb573.js.map",
   "static/fonts/SourceCodeProBlack.json": "static/fonts/SourceCodeProBlack.a5b61f98.json",
   "static/fonts/SourceCodeProRegular.json": "static/fonts/SourceCodeProRegular.13397bda.json",
   "static/media/SourceCodePro-Bold.otf": "static/media/SourceCodePro-Bold.c1cf2d6a.otf",
@@ -10,5 +10,8 @@
   "static/media/SourceSansPro-It.otf": "static/media/SourceSansPro-It.221e2885.otf",
   "static/media/SourceSansPro-Regular.otf": "static/media/SourceSansPro-Regular.5e1d162e.otf",
   "static/media/SourceSansPro-Semibold.otf": "static/media/SourceSansPro-Semibold.78667e5e.otf",
-  "static/media/checkmark.svg": "static/media/checkmark.09777da4.svg"
+  "static/media/checkmark.svg": "static/media/checkmark.09777da4.svg",
+  "static/media/github-logo.svg": "static/media/github-logo.864b2935.svg",
+  "static/media/incom-logo.svg": "static/media/incom-logo.d022f24b.svg",
+  "static/media/pdf-file.svg": "static/media/pdf-file.df9042dd.svg"
 }
