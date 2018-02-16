@@ -34,7 +34,9 @@ class TutorialContainer extends Component {
             }
           </FontLoader>
         }
-        <TutorialReset onClick={tutorial.reset}>Reset</TutorialReset>
+        {process.env.NODE_ENV === 'development' && (
+          <TutorialReset onClick={tutorial.reset}>Reset</TutorialReset>
+        )}
       </Tutorial>
     );
   }
