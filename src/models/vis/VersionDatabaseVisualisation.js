@@ -129,6 +129,7 @@ class VersionDatabaseVisualisation extends Visualisation {
     this.set(...children);
   }
 
+  @action
   addFile() {
     const file = new FileVisualisation(this, this.nameIndex++);
     file.status = STATUS_ADDED;
@@ -136,6 +137,7 @@ class VersionDatabaseVisualisation extends Visualisation {
     this.files.unshift(file);
   }
 
+  @action
   modifyFile(fileIndex, diff) {
     const file = this.files[fileIndex];
 
@@ -143,6 +145,7 @@ class VersionDatabaseVisualisation extends Visualisation {
     file.diff = diff;
   }
 
+  @action
   copyFile(fileIndex) {
     const file = this.files[fileIndex];
     const copy = file.copy();
@@ -150,12 +153,14 @@ class VersionDatabaseVisualisation extends Visualisation {
     copy.nameIndex = this.nameIndex++;
 
     this.files.unshift(copy);
+    this.active = false;
 
     if (file.status === STATUS_DELETED) {
       copy.visible = false;
     }
   }
 
+  @action
   deleteFile(fileIndex) {
     const file = this.files[fileIndex];
     file.status = STATUS_DELETED;
@@ -165,6 +170,7 @@ class VersionDatabaseVisualisation extends Visualisation {
     }
   }
 
+  @action
   restoreFile(fileIndex) {
     const file = this.files[fileIndex];
     const copy = file.copy();
