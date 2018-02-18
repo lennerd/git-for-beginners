@@ -129,7 +129,11 @@ const gitBranchesChapter = createChapter('Git Branches', {
             <Fragment>
               Use the previous <code>tutorial</code> command to modify selected
               files or create new ones. Use the <code>git</code> command to add
-              files to the staging area or to create new commits.
+              files to the staging area or to create new commits.<br />
+              <em>
+                You can always use the navigation to navigate to previous
+                chapters. The current state of the tutorial will persist.
+              </em>
             </Fragment>
           ),
         },

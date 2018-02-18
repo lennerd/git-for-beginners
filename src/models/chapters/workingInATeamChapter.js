@@ -22,15 +22,14 @@ const workingInATeamChapter = createChapter('Working in a Team', {
     )),
     new ChapterText(() => (
       <Fragment>
-        User A starts editing a file on his or her computer. He or she adds a
-        few changes to it and then uploads the file to the cloud.
+        User A starts editing a file on their computer. They add a few changes
+        to it and then upload the file to the cloud.
       </Fragment>
     )),
     new ChapterText(() => (
       <Fragment>
         Once the file beeing uploaded a second user B wants to work on the file,
-        too. He or she downloads the file, adds some changes and uploads the
-        file again.
+        too. They download the file, add some changes and upload the file again.
       </Fragment>
     )),
     new ChapterText(() => <em>This goes on and on and on …</em>),
