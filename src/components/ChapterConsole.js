@@ -129,6 +129,10 @@ class ChapterConsoleInput extends Component {
             inputRef={ref => {
               this.inputElement = ref;
             }}
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck="false"
             placeholder="Your command …"
             value={this.inputValue}
             onChange={this.handleChange}
