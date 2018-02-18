@@ -6,6 +6,7 @@ import Tutorial, { TutorialReset } from './Tutorial';
 import TutorialNavigation from './TutorialNavigation';
 import TutorialHeader from './TutorialHeader';
 import FontLoader from './FontLoader';
+import TutorialInfo from './TutorialInfo';
 
 @inject('tutorial')
 @observer
@@ -34,6 +35,7 @@ class TutorialContainer extends Component {
             }
           </FontLoader>
         }
+        <TutorialInfo />
         {process.env.NODE_ENV === 'development' && (
           <TutorialReset onClick={tutorial.reset}>Reset</TutorialReset>
         )}

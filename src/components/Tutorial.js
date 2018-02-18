@@ -14,7 +14,7 @@ const Tutorial = styled.div`
     ${props => props.theme.spacing(3.75)};
   grid-template-areas:
     '. header spinner'
-    'navigation chapter .'
+    'navigation chapter info'
     '. chapter .';
   background-image: linear-gradient(135deg, #fef6f5 0%, #c5cdf6 100%);
 
