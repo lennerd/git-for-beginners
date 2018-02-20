@@ -63,7 +63,7 @@ const versioningOfFilesChapter = createChapter('Versioning of Files', {
       ),
       new ChapterText(
         () =>
-          'Dreaming already of having your own version databse? Nice! Let’s finally start with the real thing.',
+          'Dreaming already of having your own version database? Nice! Let’s finally start with the real thing.',
         { skip: true },
       ),
     ];
